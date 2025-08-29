@@ -8,13 +8,6 @@ O objetivo do projeto é desenvolver uma solução tecnológica que aumente a ef
 
 Muitos salões de beleza enfrentam dificuldades em gerenciar seus agendamentos e manter a comunicação organizada entre atendentes e profissionais, principalmente aqueles que ainda usam métodos tradicionais, como agendas físicas ou planilhas, que podem gerar conflitos e erros de marcação, perda de informações ou sobreposição de horários.
 
-Nesse momento, o grupo pode optar por fazer uso  de ferramentas como Design Thinking, que permite um olhar de ponta a ponta para o problema.
-
-> **Links Úteis**:
-> - [Objetivos, Problema de pesquisa e Justificativa](https://medium.com/@versioparole/objetivos-problema-de-pesquisa-e-justificativa-c98c8233b9c3)
-> - [Matriz Certezas, Suposições e Dúvidas](https://medium.com/educa%C3%A7%C3%A3o-fora-da-caixa/matriz-certezas-suposi%C3%A7%C3%B5es-e-d%C3%BAvidas-fa2263633655)
-> - [Brainstorming](https://www.euax.com.br/2018/09/brainstorming/)
-
 ## Objetivos
 
 ### Objetivo Geral:
@@ -22,12 +15,11 @@ Desenvolver um aplicativo mobile para Android que permita a gestão eficiente de
 
 ### Objetivos Específicos:
 1 - Criar uma interface simples e intuitiva para uso das atendentes, que permita o cadastro e consulta de agendamentos.
+
 2 - Reduzir erros e conflitos de horário por meio de uma organização centralizada das marcações.
+
 3 - Permitir a inclusão de observações e informações nos agendamentos, melhorando a comunicação interna da equipe.
  
-> **Links Úteis**:
-> - [Objetivo geral e objetivo específico: como fazer e quais verbos utilizar](https://blog.mettzer.com/diferenca-entre-objetivo-geral-e-objetivo-especifico/)
-
 ## Justificativa
 
 A escolha em desenvolver o AgendaGlow está diretamente relacionada à relevância e crescimento constante do setor de beleza no Brasil. Logo após a pandemia, o setor contava com mais de 2,6 milhões de profissionais ocupados, representando cerca de 2,64% da população ocupada no país, sendo a maior parte deste número formada por pequenos negócios e trabalhadores autônomos (84% atuam por conta própria, em salões e barbearias de bairro, ou atendimento à domicílio).
@@ -38,17 +30,28 @@ Outro aspecto importante é a alta informalidade: grande parte dos profissionais
 
 Desta maneira, o AgendaGlow se justifica como resposta a essa demanda: uma ferramenta prática, leve, intuitiva e acessível que apoia a rotina e gestão dos salões de beleza, centralizando informações, contribuindo para a modernização e fortalecendo a competitividade do setor.
 
-![]()
 
-> **Links Úteis**:
-> - [Como montar a justificativa](https://guiadamonografia.com.br/como-montar-justificativa-do-tcc/)
+![Dados do Senac sobre Profissionais da área de beleza](img/dados-senac.jpg)
+<p align="center"><sub>Fonte: Senac, Departamento Nacional, 2024, a partir de dados da PNAD Contínua.</sub></p>
+
 
 ## Público-Alvo
 
-Descreva quem serão as pessoas que usarão a sua aplicação indicando os diferentes perfis. O objetivo aqui não é definir quem serão os clientes ou quais serão os papéis dos usuários na aplicação. A ideia é, dentro do possível, conhecer um pouco mais sobre o perfil dos usuários: conhecimentos prévios, relação com a tecnologia, relações
-hierárquicas, etc.
+Os principais usuários do AgendaGlow serão atendentes, recepcionistas e gerentes, responsáveis pela marcação de horários, relacionamento com clientes e gestão das rotinas internas.
 
-Adicione informações sobre o público-alvo por meio de uma descrição textual, diagramas de personas e mapa de stakeholders.
+### Características do público alvo:
+- Perfil educacional: maioria possui ensino médio completo, embora exista diversidade de escolaridade
+- Faixa etária: predominância entre 25 e 39 anos (49% do setor), mas com participação relevante de profissionais mais jovens (até 24 anos, 20%)
+- Relação com tecnologia: utilizam smartphones no dia a dia e redes sociais como Instagram e WhatsApp para comunicação com clientes, mas geralmente carecem de ferramentas integradas para gestão.
+
+### Hierarquia:
+- Atendentes/recepcionistas → fazem marcações e lidam diretamente com clientes.
+- Gerentes/donos de salões → responsáveis por supervisionar a equipe, acompanhar agendamentos e manter o negócio organizado.
+- Profissionais autônomos (manicures, cabeleireiros, maquiadores, barbeiros etc.) → podem usar o sistema de forma independente para gerenciar seus próprios clientes e horários.
+
+[CRIAR DIAGRAMA DE PERSONAS E ADICIONAR AQUI!]
+
+[CRIAR MAPA DE STAKEHOLDERS E ADICIONAR AQUI]
 
 > **Links Úteis**:
 > - [Público-alvo](https://blog.hotmart.com/pt-br/publico-alvo/)
