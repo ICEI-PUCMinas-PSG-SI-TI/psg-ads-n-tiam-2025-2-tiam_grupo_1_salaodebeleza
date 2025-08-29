@@ -1,23 +1,27 @@
-# TÍTULO DO PROJETO
+# AgendaGlow: Gestão de Salão de Beleza
 
-`CURSO`
+`CURSO: Tecnologia em Análise e Desenvolvimento de Sistemas` 
 
-`DISCIPLINA`
+`DISCIPLINA: Trabalho Interdisciplinar - Aplicação Móvel`
 
-`SEMESTRE`
+`SEMESTRE: 4º`
 
-Descrever resumidamente, em um ou dois parágrafos, o projeto que está sendo desenvolvido.
+AgendaGlow é um aplicativo mobile desenvolvido para Android, pensado para otimizar a gestão de salões de beleza. Criado para uso interno das atendentes, o app permite cadastrar, consultar, editar e excluir agendamentos de forma simples e intuitiva. Cada registro inclui informações do cliente (nome e contato), serviço solicitado, profissional responsável, data e horário, além de observações opcionais, garantindo maior organização e agilidade no dia a dia do salão.
+
+Com uma interface moderna e prática, o AgendaGlow ajuda a reduzir erros, melhorar a comunicação da equipe e centralizar os horários em um único lugar. A proposta é oferecer uma ferramenta leve e acessível, unindo eficiência na rotina administrativa a um design conectado ao universo da beleza.
 
 ## Integrantes
 
-* Nome completo do aluno 1
-* Nome completo do aluno 2
-* Nome completo do aluno 3
-* Nome completo do aluno 4
+* Arthur Coelho de Souza
+* Livia Cristina Taciano Ferreira
+* Lucas Phillipe Freitas Dias
+* Maria Caroline Alves Silva
+* Melissa Duque Baía
+* Pedro Henrique Freitas Dias
 
 ## Orientador
 
-* Nome completo do professor 1
+* Pedro Felipe Alves de Oliveira
 
 ## Instruções de utilização
 
