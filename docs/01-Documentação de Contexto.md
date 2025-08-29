@@ -1,11 +1,12 @@
 # Introdução
 
-Texto descritivo com a visão geral do projeto abordado. Inclui o contexto, o problema, os objetivos, a justificativa e o público-alvo do projeto.
+O AgendaGlow é um aplicativo mobile desenvolvido para Android, voltado para a otimização da gestão de salões de beleza. O contexto do projeto envolve estabelecimentos de pequeno a médio porte que enfrentam desafios na organização dos agendamentos e comunicação de equipe. O problema central identificado foi a falta de uma ferramenta prática, intuitiva e centralizada para gerenciar clientes, serviços e profissionais, evitando erros e facilitando o dia a dia das atendentes.
+
+O objetivo do projeto é desenvolver uma solução tecnológica que aumente a eficiência e produtividade do negócio, e promova uma experiência mais organizada e profissional para o seu público alvo: atendentes, recepcionistas e gerentes de salão de beleza.
 
 ## Problema
-Nesse momento você deve apresentar o problema que a sua aplicação deve  resolver. No entanto, não é a hora de comentar sobre a aplicação.
 
-Descreva também o contexto em que essa aplicação será usada, se  houver: empresa, tecnologias, etc. Novamente, descreva apenas o que de  fato existir, pois ainda não é a hora de apresentar requisitos  detalhados ou projetos.
+Muitos salões de beleza enfrentam dificuldades em gerenciar seus agendamentos e manter a comunicação organizada entre atendentes e profissionais, principalmente aqueles que ainda usam métodos tradicionais, como agendas físicas ou planilhas, que podem gerar conflitos e erros de marcação, perda de informações ou sobreposição de horários.
 
 Nesse momento, o grupo pode optar por fazer uso  de ferramentas como Design Thinking, que permite um olhar de ponta a ponta para o problema.
 
@@ -16,18 +17,28 @@ Nesse momento, o grupo pode optar por fazer uso  de ferramentas como Design Thin
 
 ## Objetivos
 
-Aqui você deve descrever os objetivos do trabalho indicando que o objetivo geral é desenvolver um software para solucionar o problema apresentado acima. 
+### Objetivo Geral:
+Desenvolver um aplicativo mobile para Android que permita a gestão eficiente de agendamentos em salões de beleza, centralizando as informações de clientes, serviços e profissionais.
 
-Apresente também alguns (pelo menos 2) objetivos específicos dependendo de onde você vai querer concentrar a sua prática investigativa, ou como você vai aprofundar no seu trabalho.
+### Objetivos Específicos:
+1 - Criar uma interface simples e intuitiva para uso das atendentes, que permita o cadastro e consulta de agendamentos.
+2 - Reduzir erros e conflitos de horário por meio de uma organização centralizada das marcações.
+3 - Permitir a inclusão de observações e informações nos agendamentos, melhorando a comunicação interna da equipe.
  
 > **Links Úteis**:
 > - [Objetivo geral e objetivo específico: como fazer e quais verbos utilizar](https://blog.mettzer.com/diferenca-entre-objetivo-geral-e-objetivo-especifico/)
 
 ## Justificativa
 
-Descreva a importância ou a motivação para trabalhar com esta aplicação que você escolheu. Indique as razões pelas quais você escolheu seus objetivos específicos ou as razões para aprofundar em certos aspectos do software.
+A escolha em desenvolver o AgendaGlow está diretamente relacionada à relevância e crescimento constante do setor de beleza no Brasil. Logo após a pandemia, o setor contava com mais de 2,6 milhões de profissionais ocupados, representando cerca de 2,64% da população ocupada no país, sendo a maior parte deste número formada por pequenos negócios e trabalhadores autônomos (84% atuam por conta própria, em salões e barbearias de bairro, ou atendimento à domicílio).
 
-O grupo de trabalho pode fazer uso de questionários, entrevistas e dados estatísticos, que podem ser apresentados, com o objetivo de esclarecer detalhes do problema que será abordado pelo grupo.
+Apesar do crescimento do setor, ainda existem grandes desafios de gestão e organização, visto que a maioria dos salões e profissionais depende de métodos manuais ou pouco integrados (como agendas físicas e planilhas), aumentando o risco de erros de marcação, perda de informações e dificuldade na comunicação da equipe, impactando na produtividade do negócio e na experiência do cliente.
+
+Outro aspecto importante é a alta informalidade: grande parte dos profissionais não contribuem para a Previdência Social, o que evidencia a fragilidade das condições de trabalho e falta de estruturação administrativa. Nesse cenário, ferramentas tecnológicas acessíveis e de fácil uso podem contribuir para aumentar o nível de profissionalização e oferecer maior segurança para os trabalhadores do setor de beleza.
+
+Desta maneira, o AgendaGlow se justifica como resposta a essa demanda: uma ferramenta prática, leve, intuitiva e acessível que apoia a rotina e gestão dos salões de beleza, centralizando informações, contribuindo para a modernização e fortalecendo a competitividade do setor.
+
+![]()
 
 > **Links Úteis**:
 > - [Como montar a justificativa](https://guiadamonografia.com.br/como-montar-justificativa-do-tcc/)
