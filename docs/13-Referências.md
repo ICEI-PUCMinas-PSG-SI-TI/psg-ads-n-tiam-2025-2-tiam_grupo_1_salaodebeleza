@@ -1,7 +1,4 @@
 # Referências
 
-Inclua todas as referências (livros, artigos, sites, etc) utilizados no desenvolvimento do trabalho.
-
-> **Links Úteis**:
-> - [Formato ABNT](https://www.normastecnicas.com/abnt/trabalhos-academicos/referencias/)
-> - [Referências Bibliográficas da ABNT](https://comunidade.rockcontent.com/referencia-bibliografica-abnt/)
+- Senac – Departamento Nacional. *Panorama de mercado: beleza 2023: análise ocupacional do mercado de trabalho formal.* Rio de Janeiro: Senac Departamento Nacional, 2024. 50 p. Disponível em: https://forumsetorial.senac.br/assets/images/panorama_mercado_beleza.pdf
+. Acesso em: 29 ago. 2025.
