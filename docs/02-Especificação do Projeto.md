@@ -33,12 +33,36 @@ Camila Souza tem 23 anos, é manicure autônoma e possui ensino fundamental comp
 
 Com base na análise das personas forma identificadas as seguintes histórias de usuários:
 
-|EU COMO... `PERSONA`| QUERO/PRECISO ... `FUNCIONALIDADE` |PARA ... `MOTIVO/VALOR`                 |
-|--------------------|------------------------------------|----------------------------------------|
-|Usuário do sistema  | Registrar minhas tarefas           | Não esquecer de fazê-las               |
-|Administrador       | Alterar permissões                 | Permitir que possam administrar contas |
+## Agendamento
+| EU COMO... (Persona)    | QUERO/PRECISO... (Funcionalidade)                                               | PARA... (Motivo/Valor)                                               |
+| ----------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Atendente/Recepcionista | Cadastrar um novo agendamento com nome da cliente, serviço, atendente e horário | Garantir que o atendimento seja organizado e registrado corretamente |
+| Atendente/Recepcionista | Inserir observações específicas no agendamento                                  | Informar detalhes importantes sobre a cliente ou serviço             |
+| Atendente/Recepcionista | Editar ou cancelar um agendamento já feito                                      | Corrigir erros ou ajustar conforme solicitações da cliente           |
+| Atendente/Recepcionista | Selecionar mais de um atendente responsável no agendamento                      | Permitir que serviços combinados sejam registrados de forma clara    |
 
-Apresente aqui as histórias de usuário que são relevantes para o projeto de sua solução. As Histórias de Usuário consistem em uma ferramenta poderosa para a compreensão e elicitação dos requisitos funcionais e não funcionais da sua aplicação. Se possível, agrupe as histórias de usuário por contexto, para facilitar consultas recorrentes à essa parte do documento.
+## Gestão e Administração
+| EU COMO... (Persona) | QUERO/PRECISO... (Funcionalidade)                      | PARA... (Motivo/Valor)                             |
+| -------------------- | ------------------------------------------------------ | -------------------------------------------------- |
+| Gerente/Dona         | Visualizar a agenda completa do dia/semana             | Acompanhar a movimentação e ocupação do salão      |
+| Gerente/Dona         | Consultar serviços mais agendados                      | Identificar demandas e planejar equipe e estoque   |
+| Gerente/Dona         | Ter acesso ao histórico de agendamentos                | Analisar recorrência e fidelização de clientes     |
+
+## Consulta de Agenda
+| EU COMO... (Persona)    | QUERO/PRECISO... (Funcionalidade)              | PARA... (Motivo/Valor)                      |
+| ----------------------- | ---------------------------------------------- | ------------------------------------------- |
+| Profissional do salão   | Visualizar apenas meus horários e atendimentos | Me organizar para atender minhas clientes   |
+| Atendente/Recepcionista | Visualizar agenda de todos os profissionais    | Saber a disponibilidade antes de marcar     |
+| Gerente/Dona            | Filtrar agenda por profissional ou serviço     | Ter uma visão clara e rápida das atividades |
+
+
+## Organização e Comunicação Interna
+| EU COMO... (Persona)    | QUERO/PRECISO... (Funcionalidade)                         | PARA... (Motivo/Valor)                                     |
+| ----------------------- | --------------------------------------------------------- | ---------------------------------------------------------- |
+| Atendente/Recepcionista | Registrar informações de contato da cliente (opcional)    | Facilitar comunicação em caso de alterações                |
+| Profissional do salão   | Receber informações sobre alterações em meus atendimentos | Evitar desencontros e atrasos                              |
+| Gerente/Dona            | Garantir que o sistema reduza conflitos de horário        | Melhorar a experiência da cliente e a eficiência da equipe |
+
 
 > **Links Úteis**:
 > - [Histórias de usuários com exemplos e template](https://www.atlassian.com/br/agile/project-management/user-stories)
