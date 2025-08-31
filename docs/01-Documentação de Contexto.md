@@ -49,7 +49,11 @@ Os principais usuários do AgendaGlow serão atendentes, recepcionistas e gerent
 - Gerentes/donos de salões → responsáveis por supervisionar a equipe, acompanhar agendamentos e manter o negócio organizado.
 - Profissionais autônomos (manicures, cabeleireiros, maquiadores, barbeiros etc.) → podem usar o sistema de forma independente para gerenciar seus próprios clientes e horários.
 
-[CRIAR DIAGRAMA DE PERSONAS E ADICIONAR AQUI!]
+<img width="891" height="616" alt="image" src="https://github.com/user-attachments/assets/36fa5075-fb23-44b5-9d9a-18ba22a0b233" />
+<img width="805" height="556" alt="image" src="https://github.com/user-attachments/assets/49cb3893-f650-4cac-9382-7c802b31ab26" />
+<img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/6a11ed3e-8bae-4809-8f5d-e63b613182a1" />
+
+
 
 <img width="1920" height="1080" alt="Maysa Rodrigues (proprietáriagestora do salão)   Gerentesgestoras (Patrícia Reis, Kênia Martins, Eliene Souza) → precisam da ferramenta diariamente e têm grande impacto na operação  (1)" src="https://github.com/user-attachments/assets/e650755d-7575-47d9-bb71-096b919bead3" />
 
