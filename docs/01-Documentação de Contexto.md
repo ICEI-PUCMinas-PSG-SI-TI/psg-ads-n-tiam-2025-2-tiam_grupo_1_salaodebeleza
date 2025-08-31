@@ -51,7 +51,8 @@ Os principais usuários do AgendaGlow serão atendentes, recepcionistas e gerent
 
 [CRIAR DIAGRAMA DE PERSONAS E ADICIONAR AQUI!]
 
-[CRIAR MAPA DE STAKEHOLDERS E ADICIONAR AQUI]
+<img width="1920" height="1080" alt="Maysa Rodrigues (proprietáriagestora do salão)   Gerentesgestoras (Patrícia Reis, Kênia Martins, Eliene Souza) → precisam da ferramenta diariamente e têm grande impacto na operação  (1)" src="https://github.com/user-attachments/assets/e650755d-7575-47d9-bb71-096b919bead3" />
+
 
 > **Links Úteis**:
 > - [Público-alvo](https://blog.hotmart.com/pt-br/publico-alvo/)
