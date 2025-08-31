@@ -8,9 +8,17 @@ Apresente uma visão geral do que será abordado nesta parte do documento, enume
 
 ## Personas
 
-Pedro Paulo tem 26 anos, é arquiteto recém-formado e autônomo. Pensa em se desenvolver profissionalmente através de um mestrado fora do país, pois adora viajar, é solteiro e sempre quis fazer um intercâmbio. Está buscando uma agência que o ajude a encontrar universidades na Europa que aceitem alunos estrangeiros.
+Persona 1 – A Atendente
 
-Enumere e detalhe as personas da sua solução. Para tanto, baseie-se tanto nos documentos disponibilizados na disciplina e/ou nos seguintes links:
+Juliana Ribeiro tem 27 anos, é atendente em um salão de beleza de bairro e possui ensino médio completo. Trabalha há três anos em um salão movimentado na zona urbana, onde precisa atender clientes pelo telefone e WhatsApp, organizar agendamentos e lidar com imprevistos de última hora. Muitas vezes se sente sobrecarregada quando ocorrem conflitos de horários ou quando clientes reclamam de marcações duplicadas. Apesar de usar bastante o celular e redes sociais no dia a dia, Juliana não tem experiência com softwares de gestão. Por isso, busca uma ferramenta simples e rápida que a ajude a organizar os atendimentos sem depender de planilhas ou agendas de papel.
+
+Persona 2 – O Gerente
+
+Ricardo Almeida tem 35 anos, é gerente e dono de um salão de beleza de médio porte. Possui ensino médio completo e fez alguns cursos livres de gestão. Administra um espaço com oito profissionais, entre cabeleireiros, manicures e maquiadores, e enfrenta como principal desafio manter a equipe organizada e a comunicação eficiente. Ricardo sente falta de relatórios claros sobre agendamentos para planejar melhor os atendimentos e reduzir cancelamentos. Pragmático, ele procura soluções tecnológicas acessíveis, que não exijam muito treinamento e que tragam mais profissionalismo e organização ao seu negócio.
+
+Persona 3 – A Profissional Autônoma
+
+Camila Souza tem 23 anos, é manicure autônoma e possui ensino fundamental completo, com cursos profissionalizantes. Atende clientes em sua própria casa e também em domicílio. Atualmente organiza seus compromissos em um caderno e se comunica com clientes pelo WhatsApp, mas frequentemente esquece horários ou acaba marcando dois atendimentos no mesmo período. Camila busca passar uma imagem mais profissional e tornar seu dia a dia mais prático. Para isso, deseja utilizar uma ferramenta que permita registrar seus compromissos de forma confiável, incluindo observações e informações importantes sobre cada cliente.
 
 > **Links Úteis**:
 > - [Rock Content](https://rockcontent.com/blog/personas/)
@@ -20,7 +28,6 @@ Enumere e detalhe as personas da sua solução. Para tanto, baseie-se tanto nos 
 > - [Mapa de Empatia](https://resultadosdigitais.com.br/blog/mapa-da-empatia/)
 > - [Mapa de Stalkeholders](https://www.racecomunicacao.com.br/blog/como-fazer-o-mapeamento-de-stakeholders/)
 >
-Lembre-se que você deve ser enumerar e descrever precisamente e personalizada todos os clientes ideais que sua solução almeja.
 
 ## Histórias de Usuários
 
