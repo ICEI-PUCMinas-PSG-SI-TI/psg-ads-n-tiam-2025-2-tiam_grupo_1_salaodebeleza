@@ -54,8 +54,3 @@ Os principais usuários do AgendaGlow serão atendentes, recepcionistas e gerent
 <img width="1920" height="1080" alt="Maysa Rodrigues (proprietáriagestora do salão)   Gerentesgestoras (Patrícia Reis, Kênia Martins, Eliene Souza) → precisam da ferramenta diariamente e têm grande impacto na operação  (1)" src="https://github.com/user-attachments/assets/e650755d-7575-47d9-bb71-096b919bead3" />
 
 
-> **Links Úteis**:
-> - [Público-alvo](https://blog.hotmart.com/pt-br/publico-alvo/)
-> - [Como definir o público alvo](https://exame.com/pme/5-dicas-essenciais-para-definir-o-publico-alvo-do-seu-negocio/)
-> - [Público-alvo: o que é, tipos, como definir seu público e exemplos](https://klickpages.com.br/blog/publico-alvo-o-que-e/)
-> - [Qual a diferença entre público-alvo e persona?](https://rockcontent.com/blog/diferenca-publico-alvo-e-persona/)
