@@ -19,9 +19,8 @@ foi utilizado para hospedagem do repositório.
 O projeto segue a seguinte convenção para o nome de branches:
 
 - `main`: versão estável já testada do software
-- `unstable`: versão já testada do software, porém instável
 - `testing`: versão em testes do software
-- `dev`: versão de desenvolvimento do software
+- `feature`: versão de desenvolvimento de alguma feature
 
 Quanto à gerência de issues, o projeto adota a seguinte convenção para
 etiquetas:
@@ -48,10 +47,10 @@ Discuta como a configuração do projeto foi feita na ferramenta de versionament
 Apresente a divisão de papéis entre os membros do grupo.
 
 Exemplificação: A equipe utiliza metodologias ágeis, tendo escolhido o Scrum como base para definição do processo de desenvolvimento. A equipe está organizada da seguinte maneira:
-- Scrum Master: Felipe Domingos;
-- Product Owner: Rommel Carneiro;
-- Equipe de Desenvolvimento: Pedro Penna, Pedro Ivo, Rodrigo Richard;
-- Equipe de Design: Simone Nogueira.
+- Scrum Master: Arthur Coelho;
+- Product Owner: Melissa Duque;
+- Equipe de Desenvolvimento: Arthur Coelho, Livia Taciano, Lucas Dias, Maria Caroline, Melissa Duque, Pedro Dias;
+- Equipe de Design: Lívia Taciano, Maria Caroline.
 
 > **Links Úteis**:
 > - [11 Passos Essenciais para Implantar Scrum no seu Projeto](https://mindmaster.com.br/scrum-11-passos/)
@@ -74,14 +73,16 @@ Coloque  informações sobre detalhes da implementação do Scrum seguido pelo g
 
 As ferramentas empregadas no projeto são:
 
-- Editor de código.
-- Ferramentas de comunicação
-- Ferramentas de desenho de tela (_wireframing_)
+- VSCode;
+- Discord;
+- Whatsapp;
+- Figma;
+- Camunda;
+- Lucidchart;
+- Canvas.
 
-O editor de código foi escolhido porque ele possui uma integração com o sistema de versão. As ferramentas de comunicação utilizadas possuem integração semelhante e por isso foram selecionadas. Por fim, para criar diagramas utilizamos essa ferramenta por melhor captar as necessidades da nossa solução.
+O VSCode foi escolhido como editor de código porque ele possui uma integração com o sistema de versão. As ferramentas Whatsapp e Discord utilizadas para comunicação são familares para todos os integrantes do grupo e por isso foram selecionadas. Para criar diagramas utilizamos o Lucidchart, para a maioria dos diagramas, e o Camunda, especificamente para diagramas BPMN. Para criação de wireframes, utilizados o Figma pela versatilidade e familiaridade com a ferramenta.
 
 Liste quais ferramentas foram empregadas no desenvolvimento do projeto, justificando a escolha delas, sempre que possível.
  
-> **Possíveis Ferramentas que auxiliarão no gerenciamento**: 
-> - [Slack](https://slack.com/)
-> - [Github](https://github.com/)
+
