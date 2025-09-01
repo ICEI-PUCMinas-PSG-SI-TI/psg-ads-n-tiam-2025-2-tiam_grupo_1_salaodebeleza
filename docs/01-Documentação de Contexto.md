@@ -50,10 +50,9 @@ Os principais usuários do AgendaGlow serão atendentes, recepcionistas e gerent
 - Profissionais autônomos (manicures, cabeleireiros, maquiadores, barbeiros etc.) → podem usar o sistema de forma independente para gerenciar seus próprios clientes e horários.
 ## Diagrama de Personas
 
-<img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/1ee05120-01c8-40d6-8128-43b1c9cddd98" />
-<img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/71e975a7-21a9-4b83-9c64-1b52e161459f" />
-<img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/cdcb0252-5f34-4864-a06f-2c04ab5d299e" />
-
+<img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/3287fe0a-e88b-4a59-85a3-e75022e20e7e" />
+<img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/51942d85-b206-4c7b-ad5f-25c4efddde0c" />
+<img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/42ad9e14-df7f-4fd7-a359-b545e968d35b" />
 
 ## Mapa de Stakeholders
 
