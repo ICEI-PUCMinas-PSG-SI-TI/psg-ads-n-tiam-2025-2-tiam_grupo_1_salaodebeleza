@@ -10,10 +10,10 @@ Muitos salões de beleza enfrentam dificuldades em gerenciar seus agendamentos e
 
 ## Objetivos
 
-### Objetivo Geral:
+### Objetivo Geral
 Desenvolver um aplicativo mobile para Android que permita a gestão eficiente de agendamentos em salões de beleza, centralizando as informações de clientes, serviços e profissionais.
 
-### Objetivos Específicos:
+### Objetivos Específicos
 1 - Criar uma interface simples e intuitiva para uso das atendentes, que permita o cadastro e consulta de agendamentos.
 
 2 - Reduzir erros e conflitos de horário por meio de uma organização centralizada das marcações.
@@ -39,22 +39,22 @@ Desta maneira, o AgendaGlow se justifica como resposta a essa demanda: uma ferra
 
 Os principais usuários do AgendaGlow serão atendentes, recepcionistas e gerentes, responsáveis pela marcação de horários, relacionamento com clientes e gestão das rotinas internas.
 
-## Características do público alvo:
+## Características do público alvo
 - Perfil educacional: maioria possui ensino médio completo, embora exista diversidade de escolaridade
 - Faixa etária: predominância entre 25 e 39 anos (49% do setor), mas com participação relevante de profissionais mais jovens (até 24 anos, 20%)
 - Relação com tecnologia: utilizam smartphones no dia a dia e redes sociais como Instagram e WhatsApp para comunicação com clientes, mas geralmente carecem de ferramentas integradas para gestão.
 
-## Hierarquia:
+## Hierarquia
 - Atendentes/recepcionistas → fazem marcações e lidam diretamente com clientes.
 - Gerentes/donos de salões → responsáveis por supervisionar a equipe, acompanhar agendamentos e manter o negócio organizado.
 - Profissionais autônomos (manicures, cabeleireiros, maquiadores, barbeiros etc.) → podem usar o sistema de forma independente para gerenciar seus próprios clientes e horários.
-## Diagrama de Personas:
+## Diagrama de Personas
 
 <img width="891" height="616" alt="image" src="https://github.com/user-attachments/assets/36fa5075-fb23-44b5-9d9a-18ba22a0b233" />
 <img width="900" height="623" alt="image" src="https://github.com/user-attachments/assets/ef49fee8-2708-46f3-86d2-2fc3f8b86428" />
 <img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/6a11ed3e-8bae-4809-8f5d-e63b613182a1" />
 
-## Mapa de Stakeholders:
+## Mapa de Stakeholders
 
 <img width="898" height="618" alt="Maysa Rodrigues (proprietáriagestora do salão)   Gerentesgestoras (Patrícia Reis, Kênia Martins, Eliene Souza) → precisam da ferramenta diariamente e têm grande impacto na operação  (1)" src="https://github.com/user-attachments/assets/e650755d-7575-47d9-bb71-096b919bead3" />
 
