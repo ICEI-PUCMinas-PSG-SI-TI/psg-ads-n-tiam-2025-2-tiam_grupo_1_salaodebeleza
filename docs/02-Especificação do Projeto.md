@@ -2,10 +2,6 @@
 
 <span style="color:red">Pré-requisitos: <a href="1-Documentação de Contexto.md"> Documentação de Contexto</a></span>
 
-Definição do problema e ideia de solução a partir da perspectiva do usuário. É composta pela definição do  diagrama de personas, histórias de usuários, requisitos funcionais e não funcionais além das restrições do projeto.
-
-Apresente uma visão geral do que será abordado nesta parte do documento, enumerando as técnicas e/ou ferramentas utilizadas para realizar a especificações do projeto
-
 ## Personas
 
 Persona 1 – A Atendente
@@ -60,11 +56,38 @@ Com base na análise das personas forma identificadas as seguintes histórias de
 
 ### Análise da Situação Atual
 
-Apresente aqui os problemas existentes que viabilizam sua proposta. Apresente o modelo do sistema como ele funciona hoje. Caso sua proposta seja inovadora e não existam processos claramente definidos, apresente como as tarefas que o seu sistema pretende implementar são executadas atualmente, mesmo que não se utilize tecnologia computacional. 
+Atualmente, muitos salões de beleza realizam o agendamento de serviços por meio de agendas físicas, cadernos ou planilhas eletrônicas. Esses métodos manuais apresentam diversas limitações:
 
+- Alto risco de erros de marcação, como duplicidade de horários ou sobreposição de atendimentos.
+
+- Dificuldade em realizar alterações ou cancelamentos, o que pode gerar desorganização e perda de informações.
+
+- Falta de rastreabilidade: não há registro confiável sobre quem realizou ou alterou cada agendamento.
+
+- Comunicação interna falha, já que os profissionais do salão nem sempre têm acesso imediato às atualizações de agenda.
+
+Esses problemas comprometem a produtividade da equipe, a organização do salão e a experiência das clientes.
 ### Descrição Geral da Proposta
 
-Apresente aqui uma descrição da sua proposta abordando seus limites e suas ligações com as estratégias e objetivos do negócio. Apresente aqui as oportunidades de melhorias.
+A proposta consiste no desenvolvimento do AgendaGlow, um aplicativo mobile que centraliza e organiza os agendamentos do salão de beleza.
+
+O sistema está diretamente alinhado às estratégias do negócio, que busca oferecer um atendimento exclusivo, organizado e humanizado. Ele se conecta aos objetivos de:
+
+- Aumentar a eficiência operacional, reduzindo falhas nos processos de marcação.
+
+- Melhorar a comunicação interna, permitindo que atendentes, gerentes e profissionais acessem a agenda em tempo real.
+
+- Garantir experiência diferenciada ao cliente, com atendimento pontual e personalizado.
+
+Oportunidades de melhoria:
+
+- Eliminação de registros manuais suscetíveis a erros.
+
+- Maior transparência e rastreabilidade em alterações.
+
+- Acesso centralizado para toda a equipe.
+
+- Agilidade na tomada de decisão do gerente ou proprietário.
 
 ### Processo 1 – Agendamento de serviço
 
