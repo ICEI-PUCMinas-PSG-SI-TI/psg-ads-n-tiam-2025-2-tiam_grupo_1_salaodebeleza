@@ -51,7 +51,7 @@ Os principais usuários do AgendaGlow serão atendentes, recepcionistas e gerent
 ## Diagrama de Personas
 
 <img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/1ee05120-01c8-40d6-8128-43b1c9cddd98" />
-<img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/ee7336ed-6670-47c1-885b-16602fdefefa" />
+<img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/71e975a7-21a9-4b83-9c64-1b52e161459f" />
 <img width="898" height="618" alt="image" src="https://github.com/user-attachments/assets/cdcb0252-5f34-4864-a06f-2c04ab5d299e" />
 
 
