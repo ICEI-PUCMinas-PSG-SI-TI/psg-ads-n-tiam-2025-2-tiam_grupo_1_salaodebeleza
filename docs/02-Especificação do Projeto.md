@@ -172,17 +172,36 @@ As referências abaixo irão auxiliá-lo na geração do artefato “Diagrama de
 > - [Diagrams](https://app.diagrams.net/)
 
 # Matriz de Rastreabilidade
-
-A matriz de rastreabilidade é uma ferramenta usada para facilitar a visualização dos relacionamento entre requisitos e outros artefatos ou objetos, permitindo a rastreabilidade entre os requisitos e os objetivos de negócio. 
-
-A matriz deve contemplar todos os elementos relevantes que fazem parte do sistema, conforme a figura meramente ilustrativa apresentada a seguir.
-
-![Exemplo de matriz de rastreabilidade](img/02-matriz-rastreabilidade.png)
-
-> **Links Úteis**:
-> - [Artigo Engenharia de Software 13 - Rastreabilidade](https://www.devmedia.com.br/artigo-engenharia-de-software-13-rastreabilidade/12822/)
-> - [Verificação da rastreabilidade de requisitos usando a integração do IBM Rational RequisitePro e do IBM ClearQuest Test Manager](https://developer.ibm.com/br/tutorials/requirementstraceabilityverificationusingrrpandcctm/)
-> - [IBM Engineering Lifecycle Optimization – Publishing](https://www.ibm.com/br-pt/products/engineering-lifecycle-optimization/publishing/)
+| ID      | Descrição do Requisito                                                                   | Tipo          | Prioridade | Relacionamentos (Casos de Uso / Restrições) |
+| ------- | ---------------------------------------------------------------------------------------- | ------------- | ---------- | ------------------------------------------- |
+| RF-001  | Permitir cadastrar um novo agendamento com nome do cliente, serviço, atendente e horário | Funcional     | ALTA       | UC01 - Cadastrar Agendamento / R01, R02     |
+| RF-002  | Permitir inserir observações específicas em cada agendamento                             | Funcional     | MÉDIA      | UC02 - Inserir Observações                  |
+| RF-003  | Permitir editar ou cancelar um agendamento existente                                     | Funcional     | ALTA       | UC03 - Editar/Cancelar Agendamento          |
+| RF-004  | Permitir selecionar mais de um atendente responsável por um agendamento                  | Funcional     | MÉDIA      | UC04 - Selecionar Atendentes                |
+| RF-005  | Exibir a agenda completa por dia e semana                                                | Funcional     | ALTA       | UC05 - Visualizar Agenda                    |
+| RF-006  | Permitir consultar os serviços mais agendados                                            | Funcional     | MÉDIA      | UC06 - Consultar Relatórios                 |
+| RF-007  | Disponibilizar histórico de agendamentos com filtro por cliente e período                | Funcional     | MÉDIA      | UC07 - Histórico de Agendamentos            |
+| RF-008  | Permitir que profissionais visualizem apenas seus próprios atendimentos                  | Funcional     | ALTA       | UC08 - Visualização Restrita                |
+| RF-009  | Permitir que atendentes visualizem a agenda de todos os profissionais                    | Funcional     | ALTA       | UC09 - Agenda Geral                         |
+| RF-010  | Permitir que gerentes filtrem agenda por profissional ou serviço                         | Funcional     | MÉDIA      | UC10 - Filtro de Agenda                     |
+| RF-011  | Permitir registrar informações de contato do cliente (telefone, e-mail, WhatsApp)        | Funcional     | MÉDIA      | UC11 - Cadastro de Contatos                 |
+| RF-012  | Notificar profissionais sobre alterações nos agendamentos                                | Funcional     | ALTA       | UC12 - Notificação                          |
+| RF-013  | Implementar mecanismos de prevenção de conflitos de horário                              | Funcional     | ALTA       | UC13 - Prevenção de Conflitos               |
+| RNF-001 | A interface deve ser simples e intuitiva                                                 | Não Funcional | ALTA       | Usabilidade / R05                           |
+| RNF-002 | O sistema deve ser disponibilizado como aplicativo Android                               | Não Funcional | ALTA       | Plataforma / R03, R04                       |
+| RNF-003 | O carregamento da agenda deve ocorrer em até 3 segundos                                  | Não Funcional | MÉDIA      | Performance                                 |
+| RNF-004 | O sistema deve evitar marcações duplicadas e garantir consistência nos agendamentos      | Não Funcional | ALTA       | Integridade / RF-013                        |
+| RNF-005 | Os dados de clientes devem ser armazenados de forma segura (LGPD)                        | Não Funcional | ALTA       | Segurança                                   |
+| RNF-006 | Alterações em agendamentos devem gerar notificações em tempo real                        | Não Funcional | ALTA       | RF-012                                      |
+| RNF-007 | O sistema deve ser legível e funcional em diferentes tamanhos de tela                    | Não Funcional | MÉDIA      | Usabilidade                                 |
+| RNF-008 | O sistema deve estar disponível 24h por dia, salvo períodos de manutenção                | Não Funcional | MÉDIA      | Confiabilidade                              |
+| RNF-009 | O código deve ser modular para permitir futuras expansões                                | Não Funcional | MÉDIA      | Manutenibilidade                            |
+| RNF-010 | O sistema deve ser compatível com versões Android a partir da 8.0                        | Não Funcional | BAIXA      | Plataforma / R03                            |
+| R01     | O projeto deverá ser entregue até o final do semestre                                    | Restrição     | -          | Impacta todos os requisitos                 |
+| R02     | Não pode ser desenvolvido backend complexo (somente local)                               | Restrição     | -          | RF-001, RF-003, RF-005                      |
+| R03     | O sistema será desenvolvido apenas para Android (não contemplará iOS)                    | Restrição     | -          | RNF-002, RNF-010                            |
+| R04     | O aplicativo deverá ser implementado em linguagem compatível com Android                 | Restrição     | -          | RNF-002                                     |
+| R05     | O desenvolvimento será realizado por equipe reduzida (apenas acadêmica)                  | Restrição     | -          | RNF-001                                     |
 
 
 # Gerenciamento de Projeto
