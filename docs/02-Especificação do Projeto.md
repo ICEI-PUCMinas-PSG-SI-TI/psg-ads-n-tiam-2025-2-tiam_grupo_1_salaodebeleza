@@ -114,21 +114,20 @@ As tabelas que se seguem apresentam os requisitos funcionais e não funcionais q
 
 ### Requisitos Funcionais
 
-| ID     | Descrição do Requisito                                                                   | Prioridade |
-| ------ | ---------------------------------------------------------------------------------------- | ---------- |
-| RF-001 | Permitir cadastrar um novo agendamento com nome do cliente, serviço, atendente e horário | ALTA       |
-| RF-002 | Permitir inserir observações específicas em cada agendamento                             | MÉDIA      |
-| RF-003 | Permitir editar ou cancelar um agendamento existente                                     | ALTA       |
-| RF-004 | Permitir selecionar mais de um atendente responsável por um agendamento                  | MÉDIA      |
-| RF-005 | Exibir a agenda completa por dia e semana                                                | ALTA       |
-| RF-006 | Permitir consultar os serviços mais agendados                                            | MÉDIA      |
-| RF-007 | Disponibilizar histórico de agendamentos com filtro por cliente e período                | MÉDIA      |
-| RF-008 | Permitir que profissionais visualizem apenas seus próprios atendimentos                  | ALTA       |
-| RF-009 | Permitir que atendentes visualizem a agenda de todos os profissionais                    | ALTA       |
-| RF-010 | Permitir que gerentes filtrem agenda por profissional ou serviço                         | MÉDIA      |
-| RF-011 | Permitir registrar informações de contato do cliente (telefone, e-mail, WhatsApp)        | MÉDIA      |
-| RF-012 | Notificar profissionais sobre alterações nos agendamentos                                | ALTA       |
-| RF-013 | Implementar mecanismos de prevenção de conflitos de horário                              | ALTA       |
+| ID     | Descrição do Requisito                                                                                  | Prioridade |
+| ------ | ------------------------------------------------------------------------------------------------------- | ---------- |
+| RF-001 | O sistema deve permitir que o gerente cadastre um novo funcionário gerente ou atendente (nome, cargo, email, contato)          | ALTA       |
+| RF-002 | O sistema deve permitir que o gerente cadastre os serviços oferecidos pelo salão                  | ALTA      |
+| RF-003 | O sistema deve permitir que um usuário cadastre um novo agendamento informando o cliente, serviço e horário  | ALTA       |
+| RF-004 | O sistema deve permitir que um usuário cancele ou altere um agendamento                                 | ALTA      |
+| RF-005 | O sistema deve permitir que um usuário atendente altere os próprios dados de seu cadastro               | MÉDIA       |
+| RF-006 | O sistema deve permitir que o gerente associe um novo usuário ao seu login do Google                    | MÉDIA      |
+| RF-007 | O sistema deve permitir que um usuário filtre os próximos agendamentos por data, cliente, serviço ou atendente                     | MÉDIA      |
+| RF-008 | O sistema deve permitir que o gerente filtre os procedimentos já realizados por data, serviço, cliente ou atendente responsável                  | MÉDIA       |
+| RF-009 | O sistema deve notificar o usuário quando houver um agendamento próximo (30 minutos)                    | MÉDIA       |
+| RF-010 | O sistema deve permitir que um usuário notifique o cliente via Whatsapp sobre seu agendamento           | BAIXA      |
+| RF-011 | O sistema deve permitir registrar informações de contato do cliente (telefone, e-mail, WhatsApp)        | ALTA      |
+| RF-012 | O sistema deve permitir que o gerente emita um relatório em PDF a partir dos filtros de procedimentos já realizados                                 | MÉDIA       |
 
 ### Requisitos não Funcionais
 
