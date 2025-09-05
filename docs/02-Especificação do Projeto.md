@@ -125,7 +125,7 @@ As tabelas que se seguem apresentam os requisitos funcionais e não funcionais q
 | RF-007 | O sistema deve permitir que um usuário filtre os próximos agendamentos por data, cliente, serviço ou atendente                     | MÉDIA      |
 | RF-008 | O sistema deve permitir que o gerente filtre os procedimentos já realizados por data, serviço, cliente ou atendente responsável                  | MÉDIA       |
 | RF-009 | O sistema deve notificar o usuário quando houver um agendamento próximo (30 minutos)                    | MÉDIA       |
-| RF-010 | O sistema deve notificar o cliente via Whatsapp sobre seu agendamento próximo (30 minutos)              | BAIXA       |
+| RF-010 | O sistema deve notificar o cliente via Whatsapp sobre seu agendamento próximo (3 horas)              | BAIXA       |
 | RF-011 | O sistema deve notificar o cliente via Whatsapp sobre um novo agendamento                               | BAIXA       |
 | RF-012 | O sistema deve permitir registrar informações de contato do cliente (telefone, e-mail, WhatsApp)        | ALTA        |
 | RF-013 | O sistema deve permitir que o gerente emita um relatório em PDF a partir dos filtros de procedimentos já realizados                                 | MÉDIA       |
