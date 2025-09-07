@@ -25,31 +25,37 @@ Com base na análise das personas forma identificadas as seguintes histórias de
 | EU COMO... (Persona)    | QUERO/PRECISO... (Funcionalidade)                                               | PARA... (Motivo/Valor)                                               |
 | ----------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | Atendente/Recepcionista | Cadastrar um novo agendamento com nome da cliente, serviço, atendente e horário | Garantir que o atendimento seja organizado e registrado corretamente |
-| Atendente/Recepcionista | Inserir observações específicas no agendamento                                  | Informar detalhes importantes sobre a cliente ou serviço             |
 | Atendente/Recepcionista | Editar ou cancelar um agendamento já feito                                      | Corrigir erros ou ajustar conforme solicitações da cliente           |
-| Atendente/Recepcionista | Selecionar mais de um atendente responsável no agendamento                      | Permitir que serviços combinados sejam registrados de forma clara    |
+| Atendente/Recepcionista | Registrar informações de contato do cliente (telefone, e-mail, WhatsApp)	      | Facilitar comunicação em caso de alterações	                         |
 
 ## Gestão e Administração
-| EU COMO... (Persona) | QUERO/PRECISO... (Funcionalidade)                      | PARA... (Motivo/Valor)                             |
-| -------------------- | ------------------------------------------------------ | -------------------------------------------------- |
-| Gerente/Dona         | Visualizar a agenda completa do dia/semana             | Acompanhar a movimentação e ocupação do salão      |
-| Gerente/Dona         | Consultar serviços mais agendados                      | Identificar demandas e planejar equipe e estoque   |
-| Gerente/Dona         | Ter acesso ao histórico de agendamentos                | Analisar recorrência e fidelização de clientes     |
+| EU COMO... (Persona) | QUERO/PRECISO... (Funcionalidade)                                                       | PARA... (Motivo/Valor)                                     |
+| -------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Gerente/Dona         | Cadastrar um novo funcionário (gerente ou atendente) com nome, cargo, email e contato   | Gerenciar adequadamente os acessos da equipe ao sistema    |
+| Gerente/Dona         | Cadastrar os serviços oferecidos pelo salão	                                           | Disponibilizar todos os serviços para agendamento	        |
+| Gerente/Dona         | Associar um novo usuário ao seu login do Google	                                       | Facilitar o acesso da equipe com autenticação simplificada |
+| Gerente/Dona         | Filtrar os procedimentos já realizados por data, serviço, cliente ou atendente	         | Analisar o histórico de atendimentos e desempenho do salão |
+| Gerente/Dona         | Emitir um relatório em PDF a partir dos filtros de procedimentos já realizados	         | Gerar documentação para análise e controle                 |
+
 
 ## Consulta de Agenda
-| EU COMO... (Persona)    | QUERO/PRECISO... (Funcionalidade)              | PARA... (Motivo/Valor)                      |
-| ----------------------- | ---------------------------------------------- | ------------------------------------------- |
-| Profissional do salão   | Visualizar apenas meus horários e atendimentos | Me organizar para atender minhas clientes   |
-| Atendente/Recepcionista | Visualizar agenda de todos os profissionais    | Saber a disponibilidade antes de marcar     |
-| Gerente/Dona            | Filtrar agenda por profissional ou serviço     | Ter uma visão clara e rápida das atividades |
+| EU COMO... (Persona)    | QUERO/PRECISO... (Funcionalidade)                                           | PARA... (Motivo/Valor)                                      |
+| ----------------------- | ----------------------------------------------------------------------------| ----------------------------------------------------------- |
+| Profissional do salão   | Visualizar apenas meus horários e atendimentos                              | Me organizar para atender minhas clientes                   |
+| Atendente/Recepcionista | Visualizar agenda de todos os profissionais                                 | Saber a disponibilidade antes de marcar                     |
+| Atendente/Recepcionista | Filtrar os próximos agendamentos por data, cliente, serviço ou atendente    | Encontrar rapidamente informações específicas na agenda     |
+| Gerente/Dona            | Filtrar agenda por profissional ou serviço                                  | Ter uma visão clara e rápida das atividades                 |
 
 
 ## Organização e Comunicação Interna
-| EU COMO... (Persona)    | QUERO/PRECISO... (Funcionalidade)                         | PARA... (Motivo/Valor)                                     |
-| ----------------------- | --------------------------------------------------------- | ---------------------------------------------------------- |
-| Atendente/Recepcionista | Registrar informações de contato da cliente (opcional)    | Facilitar comunicação em caso de alterações                |
-| Profissional do salão   | Receber informações sobre alterações em meus atendimentos | Evitar desencontros e atrasos                              |
-| Gerente/Dona            | Garantir que o sistema reduza conflitos de horário        | Melhorar a experiência da cliente e a eficiência da equipe |
+| EU COMO... (Persona)    | QUERO/PRECISO... (Funcionalidade)                                        | PARA... (Motivo/Valor)                                     |
+| ----------------------- | -------------------------------------------------------------------------| ---------------------------------------------------------- |
+| Atendente/Recepcionista | Alterar meus próprios dados de cadastro (nome, email, contato)	         | Manter minhas informações sempre atualizadas               |
+| Profissional do salão   | Receber informações sobre alterações em meus atendimentos                | Evitar desencontros e atrasos                              |
+| Gerente/Dona            | Garantir que o sistema reduza conflitos de horário                       | Melhorar a experiência da cliente e a eficiência da equipe |
+| Sistema                 | Notificar o usuário quando houver um agendamento próximo (30 minutos)	   | Alertar a equipe para se preparar para os atendimentos	    |
+| Sistema                 | Notificar o cliente via WhatsApp sobre seu agendamento próximo (3 horas) | Reduzir faltas e melhorar a experiência do cliente         |
+| Sistema                 | Garantir que o sistema reduza conflitos de horário                       | Notificar o cliente via WhatsApp sobre um novo agendamento |
 
 
 ## Modelagem do Processo de Negócio 
