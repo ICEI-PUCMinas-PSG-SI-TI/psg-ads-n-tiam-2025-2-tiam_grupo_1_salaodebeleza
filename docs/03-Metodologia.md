@@ -1,14 +1,24 @@
 
 # Metodologia
 
-<span style="color:red">Pré-requisitos: <a href="2-Especificação do Projeto.md"> Documentação de Especificação</a></span>
+A equipe definiu uma metodologia de trabalho baseada em práticas ágeis, combinando Scrum com ferramentas de apoio à gestão de projeto, controle de versão e comunicação.
 
-Descreva aqui a metodologia de trabalho do grupo para atacar o problema. Definições sobre os ambiente de trabalho utilizados pela  equipe para desenvolver o projeto. Abrange a relação de ambientes utilizados, a estrutura para gestão do código fonte, além da definição do processo e ferramenta através dos quais a equipe se organiza (Gestão de Times).
+O grupo priorizou ambientes de trabalho que garantem organização, rastreabilidade e colaboração durante todas as etapas do desenvolvimento do software.
 
 ## Relação de Ambientes de Trabalho
 
-Os artefatos do projeto são desenvolvidos a partir de diversas plataformas e a relação dos ambientes com seu respectivo propósito deverá ser apresentada em uma tabela que especifica que detalha Ambiente, Plataforma e Link de Acesso. 
-Nota: Vide documento modelo do estudo de caso "Portal de Notícias" e defina também os ambientes e frameworks que serão utilizados no desenvolvimento de aplicações móveis.
+Os ambientes e plataformas utilizados pela equipe estão descritos na tabela a seguir:
+
+| Ambiente                | Plataforma         | Link de Acesso                                                 |
+| ----------------------- | ------------------ | -------------------------------------------------------------- |
+| Repositório de Código   | GitHub             | [Acessar Repositório GitHub](github.com/ICEI-PUCMinas-PSG-SI-TI/psg-ads-n-tiam-2025-2-tiam_grupo_1_salaodebeleza/)          |
+| Gestão de Projeto       | GitHub Projects    | [Acessar Quadro KanBan](github.com/orgs/ICEI-PUCMinas-PSG-SI-TI/projects/119) |
+| Comunicação             | Discord / WhatsApp | Discord (para reuniões online) e WhatsApp (comunicação rápida) |
+| Modelagem BPMN          | Camunda            | [camunda.com](https://camunda.com/)                            |
+| Diagramas UML           | Lucidchart         | [lucidchart.com](https://lucidchart.com)                       |
+| Wireframes / Protótipos | Figma              | [Acessar Protótipos](https://www.figma.com/design/SZaZNk9k6hhm9TGGcDOgEn/AgendaGlow?node-id=0-1&p=f)                                 |
+| Editor de Código        | VSCode             | [Link para baixar a ferramenta](https://code.visualstudio.com/)        |
+
 
 ## Controle de Versão
 
@@ -30,58 +40,72 @@ etiquetas:
 - `enhancement`: uma funcionalidade precisa ser melhorada
 - `feature`: uma nova funcionalidade precisa ser introduzida
 
-Discuta como a configuração do projeto foi feita na ferramenta de versionamento escolhida. Exponha como a gerência de tags, merges, commits e branchs é realizada. Discuta como a gerência de issues foi realizada.
+Commits seguem a convenção semântica com mensagens curtas e objetivas, ex.:
 
+- `feat`: adiciona cadastro de usuário
+- `fix`: corrige bug no login
+- `docs`: atualiza README
+
+Esse processo garante rastreabilidade, colaboração e qualidade no ciclo de desenvolvimento.
+
+<!--
 > **Links Úteis**:
 > - [Microfundamento: Gerência de Configuração](https://pucminas.instructure.com/courses/87878/)
 > - [Tutorial GitHub](https://guides.github.com/activities/hello-world/)
 > - [Git e Github](https://www.youtube.com/playlist?list=PLHz_AreHm4dm7ZULPAmadvNhH6vk9oNZA)
 >  - [Comparando fluxos de trabalho](https://www.atlassian.com/br/git/tutorials/comparing-workflows)
 > - [Understanding the GitHub flow](https://guides.github.com/introduction/flow/)
-> - [The gitflow workflow - in less than 5 mins](https://www.youtube.com/watch?v=1SXpE08hvGs)
+> - [The gitflow workflow - in less than 5 mins](https://www.youtube.com/watch?v=1SXpE08hvGs) 
+-->
 
 ## Gerenciamento de Projeto
 
 ### Divisão de Papéis
 
-Apresente a divisão de papéis entre os membros do grupo.
+O grupo adotou a metodologia ágil Scrum como guia para o processo de desenvolvimento. A divisão de papéis está organizada da seguinte forma:
 
-Exemplificação: A equipe utiliza metodologias ágeis, tendo escolhido o Scrum como base para definição do processo de desenvolvimento. A equipe está organizada da seguinte maneira:
-- Scrum Master: Arthur Coelho;
-- Product Owner: Melissa Duque;
-- Equipe de Desenvolvimento: Arthur Coelho, Livia Taciano, Lucas Dias, Maria Caroline, Melissa Duque, Pedro Dias;
-- Equipe de Design: Lívia Taciano, Maria Caroline.
+- `Scrum Master`: Arthur Coelho;
+- `Product Owner`: Melissa Duque;
+- `Equipe de Desenvolvimento`: Arthur Coelho, Livia Taciano, Lucas Dias, Maria Caroline, Melissa Duque, Pedro Dias;
+- `Equipe de Design`: Lívia Taciano, Maria Caroline.
 
+<!--
 > **Links Úteis**:
 > - [11 Passos Essenciais para Implantar Scrum no seu Projeto](https://mindmaster.com.br/scrum-11-passos/)
 > - [Scrum em 9 minutos](https://www.youtube.com/watch?v=XfvQWnRgxG0)
 > - [Os papéis do Scrum e a verdade sobre cargos nessa técnica](https://www.atlassian.com/br/agile/scrum/roles)
+-->
 
 ### Processo
 
-Coloque  informações sobre detalhes da implementação do Scrum seguido pelo grupo. O grupo deverá fazer uso do recurso de gerenciamento de projeto oferecido pelo GitHub, que permite acompanhar o andamento do projeto, a execução das tarefas e o status de desenvolvimento da solução.
+A equipe implementou o **Scrum** da seguinte forma:
  
-> **Links Úteis**:
-> - [Planejamento e Gestáo Ágil de Projetos](https://pucminas.instructure.com/courses/87878/pages/unidade-2-tema-2-utilizacao-de-ferramentas-para-controle-de-versoes-de-software)
-> - [Sobre quadros de projeto](https://docs.github.com/pt/issues/organizing-your-work-with-project-boards/managing-project-boards/about-project-boards)
-> - [Project management, made simple](https://github.com/features/project-management/)
-> - [Sobre quadros de projeto](https://docs.github.com/pt/github/managing-your-work-on-github/about-project-boards)
-> - [Como criar Backlogs no Github](https://www.youtube.com/watch?v=RXEy6CFu9Hk)
-> - [Tutorial Slack](https://slack.com/intl/en-br/)
+- Reuniões quinzenais de alinhamento via Discord.
+- Sprints com duração de duas semanas.
+- Product Backlog gerenciado no GitHub Projects, contendo todas as histórias de usuário.
+- Sprint Backlog criado a partir do backlog priorizado, com tarefas distribuídas por membro.
+- Kanban Board no GitHub Projects para acompanhamento visual do status das atividades (To Do, In Progress, Done).
+
+Esse processo permitiu melhor acompanhamento do progresso, transparência das entregas e divisão clara das responsabilidades.
 
 ### Ferramentas
 
-As ferramentas empregadas no projeto são:
+As ferramentas empregadas no projeto foram escolhidas considerando a **familiaridade da equipe**, a **integração entre ambientes** e a **eficiência no fluxo de trabalho**:
 
-- VSCode;
-- Discord;
-- Whatsapp;
-- Figma;
-- Camunda;
-- Lucidchart;
-- Canvas.
+- **VSCode**: editor de código leve e integrado ao Git.  
+- **Discord e WhatsApp**: comunicação síncrona e assíncrona da equipe.  
+- **Figma**: prototipagem de telas e criação de wireframes.  
+- **Camunda**: modelagem de processos de negócio (BPMN).  
+- **Lucidchart**: elaboração de diagramas UML.  
 
-O VSCode foi escolhido como editor de código porque ele possui uma integração com o sistema de versão. As ferramentas Whatsapp e Discord utilizadas para comunicação são familares para todos os integrantes do grupo e por isso foram selecionadas. Para criar diagramas utilizamos o Lucidchart, para a maioria dos diagramas, e o Camunda, especificamente para diagramas BPMN. Para criação de wireframes, utilizados o Figma pela versatilidade e familiaridade com a ferramenta.
+Cada ferramenta foi escolhida para atender a uma necessidade específica do projeto, garantindo **produtividade** e **organização**.
 
-Liste quais ferramentas foram empregadas no desenvolvimento do projeto, justificando a escolha delas, sempre que possível.
- 
+---
+
+### Justificativa
+
+- **VSCode**: escolhido como editor de código pela leveza, ampla aceitação pela comunidade e integração nativa com sistemas de controle de versão.  
+- **WhatsApp e Discord**: selecionados para comunicação por serem familiares aos integrantes da equipe, além de oferecerem praticidade tanto em interações rápidas quanto em reuniões online.  
+- **Lucidchart**: utilizado para criação da maioria dos diagramas, devido à sua interface intuitiva e facilidade de colaboração.  
+- **Camunda**: escolhido especificamente para diagramas **BPMN**, pela robustez e adequação à modelagem de processos de negócio.  
+- **Figma**: adotado para prototipagem de interfaces e elaboração de wireframes, graças à sua versatilidade, suporte a colaboração em tempo real e familiaridade da equipe.
