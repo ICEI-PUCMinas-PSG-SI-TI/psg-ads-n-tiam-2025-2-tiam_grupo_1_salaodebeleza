@@ -54,15 +54,38 @@ Explique como a hospedagem e o lançamento da plataforma foi feita.
 
 ## Qualidade de Software
 
-Conceituar qualidade de fato é uma tarefa complexa, mas ela pode ser vista como um método gerencial que através de procedimentos disseminados por toda a organização, busca garantir um produto final que satisfaça às expectativas dos stakeholders.
+#### 1. Usabilidade Extrema
 
-No contexto de desenvolvimento de software, qualidade pode ser entendida como um conjunto de características a serem satisfeitas, de modo que o produto de software atenda às necessidades de seus usuários. Entretanto, tal nível de satisfação nem sempre é alcançado de forma espontânea, devendo ser continuamente construído. Assim, a qualidade do produto depende fortemente do seu respectivo processo de desenvolvimento.
+**O que é:** É a garantia de que o aplicativo `AgendaGlow` e o site serão fáceis, rápidos e agradáveis de usar. A tecnologia deve ser uma aliada que simplifica o trabalho, e não um obstáculo.
 
-A norma internacional ISO/IEC 25010, que é uma atualização da ISO/IEC 9126, define oito características e 30 subcaracterísticas de qualidade para produtos de software.
-Com base nessas características e nas respectivas sub-características, identifique as sub-características que sua equipe utilizará como base para nortear o desenvolvimento do projeto de software considerando-se alguns aspectos simples de qualidade. Justifique as subcaracterísticas escolhidas pelo time e elenque as métricas que permitirão a equipe avaliar os objetos de interesse.
+**O que isso significa no dia a dia?**
+* **Agilidade no Atendimento:** Quando uma cliente ligar para o salão, a recepcionista não pode perder tempo com um sistema lento ou complicado. Com poucos cliques, ela deve ser capaz de visualizar a agenda de todos os profissionais, encontrar um horário livre, selecionar o serviço (ex: "Mechas") e confirmar o agendamento. O objetivo é que essa operação completa dure **menos de 60 segundos**.
+* **Baixa Necessidade de Treinamento:** A interface será tão clara e intuitiva que uma nova funcionária, mesmo sem familiaridade com tecnologia, conseguirá aprender a usar as funções principais em **poucos minutos**. Não serão necessários manuais complexos ou longos períodos de adaptação.
+* **Redução de Estresse:** Um design limpo e organizado evita a sensação de sobrecarga de informação, tornando o ambiente de trabalho mais tranquilo e produtivo.
 
-> **Links Úteis**:
->
-> - [ISO/IEC 25010:2011 - Systems and software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE) — System and software quality models](https://www.iso.org/standard/35733.html/)
-> - [Análise sobre a ISO 9126 – NBR 13596](https://www.tiespecialistas.com.br/analise-sobre-iso-9126-nbr-13596/)
-> - [Qualidade de Software - Engenharia de Software 29](https://www.devmedia.com.br/qualidade-de-software-engenharia-de-software-29/18209/)
+#### 2. Funcionalidade Completa e Correta
+
+**O que é:** É o compromisso de que o software entregará exatamente o que foi combinado, e que tudo funcionará sem erros.
+
+**O que isso significa no dia a dia?**
+* **Todas as Ferramentas na Mão:** O aplicativo terá a lista completa e atualizada de serviços — de "Corte" a "Plástica dos Pés". Todos os quatro perfis de usuárias (Patrícia, Kênia, Eliene e Maysa) terão seu acesso individual. Nada que foi solicitado ficará de fora.
+* **Zero Erros de Agendamento:** "Correto" significa que, ao agendar um "Spa dos pés" com a profissional Kênia às 14h, o sistema irá bloquear esse horário especificamente na agenda da Kênia. Não haverá risco de o sistema agendar outra cliente no mesmo horário com ela ou de registrar o serviço na agenda de outra profissional por engano.
+* **Informações Precisas:** A observação digitada no agendamento (ex: "cliente tem alergia a esmalte vermelho") será salva e vinculada corretamente àquele atendimento. Da mesma forma, o site exibirá sempre o endereço, telefone e horário de funcionamento corretos para as clientes.
+
+#### 3. Alta Confiabilidade
+
+**O que é:** É a certeza de que o sistema é estável, seguro e estará sempre funcionando quando a equipe precisar dele. É a confiança de que a agenda digital é tão ou mais segura que a antiga agenda de papel.
+
+**O que isso significa no dia a dia?**
+* **Sempre Disponível:** Das 9h às 18h, de terça a sábado, o aplicativo `AgendaGlow` estará no ar. A equipe não chegará para trabalhar e encontrará o sistema "fora do ar". A meta é uma disponibilidade de **99.8%**, o que significa que falhas serão extremamente raras.
+* **À Prova de Travamentos:** O aplicativo foi desenhado para ser robusto. Ele não irá travar no meio de um agendamento nem fechar sozinho, o que poderia causar perda de informações e retrabalho.
+* **Segurança dos Dados:** Um agendamento feito hoje estará lá, intacto, amanhã, na próxima semana e no próximo ano. O sistema terá rotinas de backup para garantir que nenhuma informação seja perdida em caso de problemas técnicos.
+
+#### 4. Segurança Robusta
+
+**O que é:** É a proteção das informações do salão e, principalmente, da privacidade das clientes.
+
+**O que isso significa no dia a dia?**
+* **Acesso Restrito e Controlado:** Apenas as quatro funcionárias cadastradas poderão entrar no sistema, cada uma com sua senha pessoal. Isso impede que ex-funcionários ou pessoas não autorizadas acessem a agenda e os dados dos clientes.
+* **Privacidade das Clientes:** O nome e o telefone de uma cliente são dados sensíveis. O sistema garantirá que essas informações fiquem armazenadas em um ambiente seguro, protegidas contra vazamentos ou ataques cibernéticos.
+* **Integridade do Negócio:** A segurança protege o bem mais valioso do salão depois da sua equipe: sua carteira de clientes e sua organização interna. Garante que a gestão do negócio permaneça privada e sob controle.
