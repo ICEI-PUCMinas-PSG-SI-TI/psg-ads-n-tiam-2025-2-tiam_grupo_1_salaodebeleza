@@ -19,13 +19,15 @@ As referências abaixo irão auxiliá-lo na geração do artefato “Diagrama de
 
 O Modelo ER representa através de um diagrama como as entidades (coisas, objetos) se relacionam entre si na aplicação interativa.]
 
-![Modelo ER](img/Diagrama ER - AgendaGlow.png)
+<img width="3004" height="2844" alt="image" src="https://github.com/user-attachments/assets/556ad49b-887f-4149-9d1f-82e86711a764" />
+
 
 ## Esquema Relacional
 
 O Esquema Relacional corresponde à representação dos dados em tabelas juntamente com as restrições de integridade e chave primária.
  
-![Esquema ER](img/Esquema ER - AgendaGlow.png)
+<img width="5884" height="3084" alt="image" src="https://github.com/user-attachments/assets/1d4ec242-70df-461f-8585-ca3a13d900e5" />
+
 
 ## Modelo Físico
 
