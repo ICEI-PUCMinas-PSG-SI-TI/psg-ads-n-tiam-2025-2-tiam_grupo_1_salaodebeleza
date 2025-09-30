@@ -16,7 +16,7 @@ As telas contemplam:
 
 ## Diagrama de Fluxo
 
-![Exemplo de Diagrama de Fluxo](img/diagramafluxo2.jpg)
+![Diagrama de Fluxo](./img/FluxoAgendaGlow.drawio.png)
 
 ## Wireframes
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
