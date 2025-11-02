@@ -3,15 +3,17 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-nati
 import Header from '../components/Header';
 import Square from '../components/Square';
 import Card from '../components/Card';
-import BottomTabs from '../components/BottomTabs';
+import { useNavigation } from '@react-navigation/native';
 import { theme } from '../styles/theme';
 
-export default function Home({ navigation }) {
+export default function Home() {
   const agenda = [
     { id: 1, name: 'Maria Silva', service: 'Cortes + Escova', time: '08:00', staff: 'Bruna' },
     { id: 2, name: 'Maria Silva', service: 'Cortes + Escova', time: '08:00', staff: 'Bruna' },
     { id: 3, name: 'Maria Silva', service: 'Cortes + Escova', time: '08:00', staff: 'Bruna' },
   ];
+
+  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -81,8 +83,6 @@ export default function Home({ navigation }) {
         </View>
       </ScrollView>
 
-      {/* Bottom Tabs */}
-      <BottomTabs navigation={navigation} current="Home" />
     </View>
   );
 }
