@@ -1,4 +1,4 @@
-// src/screens/FuncionarioCadastro.js
+// src/screens/ServicosCadastro.js
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';

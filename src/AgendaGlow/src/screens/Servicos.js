@@ -1,4 +1,4 @@
-// src/screens/Funcionarios.js
+// src/screens/Servicos.js
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Header from '../components/Header';
