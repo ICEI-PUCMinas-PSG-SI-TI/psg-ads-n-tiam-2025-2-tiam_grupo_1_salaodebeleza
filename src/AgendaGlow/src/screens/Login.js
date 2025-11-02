@@ -7,14 +7,23 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFonts } from "expo-font";
 import { Feather } from "@expo/vector-icons";
-import { login } from "../services/loginService";
+import {
+  login,
+  loginComGoogleToken,
+  forgotPassword,
+} from "../services/loginService";
+import * as AuthSession from "expo-auth-session";
+
+const CLIENT_ID =
+  "223905135120-7juc9frafb7jm75k5ajtm6nf8k6cnjb8.apps.googleusercontent.com";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [message, setMessage] = useState("");
 
   const efetuarLogin = async () => {
     try {
@@ -24,10 +33,46 @@ export default function Login() {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setMessage("Insira seu e-mail para redefinir a senha.");
+      return;
+    }
+
+    const result = await forgotPassword(email);
+
+    if (result.success) {
+      console.log("Sucesso", result.message);
+    } else {
+      console.log("Erro", result.message);
+    }
+  };
+
+  //**Login com Google - INCIO */
+  const [request, response, promptAsync] = AuthSession.useAuthRequest(
+    {
+      clientId: CLIENT_ID,
+      redirectUri: AuthSession.makeRedirectUri({ useProxy: true }),
+      scopes: ["profile", "email"],
+    },
+    { authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth" }
+  );
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { authentication } = response;
+      loginComGoogleToken(authentication.accessToken)
+        .then((user) => console.log("Usuário logado com Google:", user.email))
+        .catch((error) => console.error("Erro ao logar com Google:", error));
+    }
+  }, [response]);
+  //**Login com Google - FIM */
+
   const [fontsLoaded] = useFonts({
     "Inspiration-Regular": require("../../assets/fonts/Inspiration-Regular.ttf"),
     Inter: require("../../assets/fonts/Inter.ttf"),
   });
+
   if (!fontsLoaded) {
     return null;
   }
@@ -43,6 +88,8 @@ export default function Login() {
       <Text style={styles.frase}>
         Gerencie seu salão de forma prática e elegante!
       </Text>
+
+      <Text style={styles.message}>{message}</Text>
 
       <View style={styles.inputCima}>
         <Feather
@@ -82,12 +129,17 @@ export default function Login() {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={efetuarLogin}>
-        <Text style={styles.textButton}>Salvar</Text>
+        <Text style={styles.textButton}>Logar</Text>
       </TouchableOpacity>
 
-      <Text>Esqueci minha senha</Text>
-      <Text style={styles.textNegrito}>Criar Conta</Text>
-      <TouchableOpacity style={styles.googleButton}>
+      <TouchableOpacity onPress={handleForgotPassword}>
+        <Text style={styles.espacos}>Esqueci minha senha</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.googleButton}
+        onPress={() => promptAsync()}
+      >
         <Image
           source={require("../../assets/google-icon.png")}
           style={styles.googleIcon}
@@ -211,4 +263,16 @@ const styles = StyleSheet.create({
     fontWeight: 400,
     bottom: 30,
   },
+  espacos: {
+    marginBlock: 20,
+  },
+  message:{
+    color: "#e95454ff",
+    fontFamily: "Inter",
+    fontWeight: 400,
+    textAlign: "left",
+    width: '100%',
+    paddingInline: 10,
+    paddingBlock: 4
+  }
 });

@@ -8,6 +8,7 @@ import Funcionarios from './src/screens/Funcionarios';
 import FuncionarioCadastro from './src/screens/FuncionarioCadastro';
 import Agenda from './src/screens/Agenda';
 import Clientes from './src/screens/Clientes';
+import Login from './src/screens/Login';
 import Mais from './src/screens/Mais';
 import { theme } from './src/styles/theme';
 
@@ -17,12 +18,13 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="Login"
         screenOptions={{ headerShown: false }} // usamos nosso Header personalizado
       >
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Funcionarios" component={Funcionarios} />
         <Stack.Screen name="FuncionarioCadastro" component={FuncionarioCadastro} />
+        <Stack.Screen name="Login" component={Login} />
       </Stack.Navigator>
     </NavigationContainer>
   );
