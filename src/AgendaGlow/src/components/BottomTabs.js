@@ -8,8 +8,6 @@ import Agenda from '../screens/Agenda';
 import Clientes from '../screens/Clientes';
 import Mais from '../screens/Mais';
 
-// Implementar o createBottomTabNavigator, ele substitui o BottomTabs manual e mostra as telas certinho!
-
 const BottomTabs = () => {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
@@ -26,16 +24,67 @@ const BottomTabs = () => {
     mais: Mais,
   });
 
-  return (
+   return (
     <BottomNavigation
       navigationState={{ index, routes }}
       onIndexChange={setIndex}
       renderScene={renderScene}
+      labeled={false} // desativa label padrão para usar customizado
+      barStyle={styles.bar}
+      renderIcon={({ route, focused }) => {
+        return (
+          <View style={[styles.tabWrapper, focused && styles.tabFocused]}>
+            <Ionicons
+              name={route.icon}
+              size={26}
+              color={focused ? theme.colors.primary : theme.colors.textInput}
+            />
+            <Text
+              style={[
+                styles.label,
+                { color: focused ? theme.colors.primary : theme.colors.textInput },
+              ]}
+            >
+              {route.title}
+            </Text>
+          </View>
+        );
+      }}
     />
   );
 };
 
 export default BottomTabs;
+
+// --- ESTILOS personalizados ---
+const styles = StyleSheet.create({
+  bar: {
+    backgroundColor: theme.colors.white,
+    height: 65,
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    borderTopWidth: 0,
+    justifyContent: 'center',
+  },
+  tabWrapper: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    marginHorizontal: 8,
+  },
+  tabFocused: {
+    backgroundColor: '#FFEBE6', // cor do fundo do botão selecionado, igual da imagem (rosa claro)
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+});
 
 /*export default function BottomTabs({ navigation, current }) {
   const tabs = [
@@ -71,7 +120,7 @@ export default BottomTabs;
       ))}
     </View>
   );
-}*/
+}
 
 // Estilos padrão para o Bottom Tabs
 const styles = StyleSheet.create({
@@ -91,4 +140,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 2,
   },
-});
+});*/

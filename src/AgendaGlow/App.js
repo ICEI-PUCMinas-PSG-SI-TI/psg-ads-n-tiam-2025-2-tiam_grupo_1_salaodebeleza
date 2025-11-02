@@ -8,11 +8,11 @@ import { theme } from './src/styles/theme';
 
 export default function App() {
   return (
-    <PaperProvider>
+   
       <NavigationContainer>
         <Main />  
       </NavigationContainer>
-    </PaperProvider>
+    
   );
 }
 
