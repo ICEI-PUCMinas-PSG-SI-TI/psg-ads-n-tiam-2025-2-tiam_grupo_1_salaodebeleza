@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-nati
 import Header from '../components/Header';
 import Square from '../components/Square';
 import Card from '../components/Card';
-import BottomTabs from '../components/BottomTabs';
+import { useNavigation } from '@react-navigation/native';
 import { theme } from '../styles/theme';
 
 export default function Home({ navigation }) {
@@ -81,8 +81,6 @@ export default function Home({ navigation }) {
         </View>
       </ScrollView>
 
-      {/* Bottom Tabs */}
-      <BottomTabs navigation={navigation} current="Home" />
     </View>
   );
 }

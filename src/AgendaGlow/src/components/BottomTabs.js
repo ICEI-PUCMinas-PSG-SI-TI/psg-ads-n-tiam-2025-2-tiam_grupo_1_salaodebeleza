@@ -1,11 +1,43 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { BottomNavigation } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../styles/theme';
+import Home from '../screens/Home';
+import Agenda from '../screens/Agenda';
+import Clientes from '../screens/Clientes';
+import Mais from '../screens/Mais';
 
 // Implementar o createBottomTabNavigator, ele substitui o BottomTabs manual e mostra as telas certinho!
 
-export default function BottomTabs({ navigation, current }) {
+const BottomTabs = () => {
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    { key: 'home', title: 'Início', icon: 'home-outline' },
+    { key: 'agenda', title: 'Agenda', icon: 'calendar-outline' },
+    { key: 'clientes', title: 'Clientes', icon: 'people-outline' },
+    { key: 'mais', title: 'Mais', icon: 'menu-outline' },
+  ]);
+
+  const renderScene = BottomNavigation.SceneMap({
+    home: Home,
+    agenda: Agenda,
+    clientes: Clientes,
+    mais: Mais,
+  });
+
+  return (
+    <BottomNavigation
+      navigationState={{ index, routes }}
+      onIndexChange={setIndex}
+      renderScene={renderScene}
+    />
+  );
+};
+
+export default BottomTabs;
+
+/*export default function BottomTabs({ navigation, current }) {
   const tabs = [
     { name: 'Início', icon: 'home-outline', route: 'Home' },
     { name: 'Agenda', icon: 'calendar-outline', route: 'Agenda' },
@@ -39,7 +71,7 @@ export default function BottomTabs({ navigation, current }) {
       ))}
     </View>
   );
-}
+}*/
 
 // Estilos padrão para o Bottom Tabs
 const styles = StyleSheet.create({
