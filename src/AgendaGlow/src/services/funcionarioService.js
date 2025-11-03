@@ -8,7 +8,6 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 
 const FUNCIONARIOS_COLLECTION = 'funcionarios';
 
-/** Adiciona um novo funcionário (O TEU CÓDIGO) */
 export const addFuncionario = async (funcionario) => {
   try {
     const senhaPadrao = "agendaglow12345";
@@ -31,7 +30,6 @@ export const addFuncionario = async (funcionario) => {
   }
 };
 
-/** Escuta em tempo real (O TEU CÓDIGO) */
 export const listenFuncionarios = (callback) => {
   const q = query(collection(db, FUNCIONARIOS_COLLECTION), where('ativo', '==', true));
   const unsubscribe = onSnapshot(
@@ -45,7 +43,6 @@ export const listenFuncionarios = (callback) => {
   return unsubscribe;
 };
 
-/** Exclui (O TEU CÓDIGO) */
 export const deleteFuncionario = async (uid, docId) => {
   try {
     const functions = getFunctions();
@@ -63,9 +60,7 @@ export const deleteFuncionario = async (uid, docId) => {
   }
 };
 
-/** * [FUNÇÃO ADICIONADA] 
- * Busca os dados de um funcionário no Firestore usando o UID (do Auth).
- */
+
 export const getFuncionarioByUid = async (uid) => {
   try {
     const q = query(
@@ -84,9 +79,7 @@ export const getFuncionarioByUid = async (uid) => {
   }
 };
 
-/** * [FUNÇÃO ADICIONADA] 
- * Atualiza um funcionário no Firestore.
- */
+
 export const updateFuncionario = async (id, dados) => {
   try {
     const ref = doc(db, FUNCIONARIOS_COLLECTION, id);
