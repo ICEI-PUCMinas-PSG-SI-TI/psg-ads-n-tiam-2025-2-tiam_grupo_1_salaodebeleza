@@ -53,7 +53,7 @@ const Main = () => {
         }}
       />
       <Stack.Screen
-        name="FuncionariosCadastro"
+        name="FuncionarioCadastro"
         component={FuncionarioCadastro}
         options={{
           header: () => null,
