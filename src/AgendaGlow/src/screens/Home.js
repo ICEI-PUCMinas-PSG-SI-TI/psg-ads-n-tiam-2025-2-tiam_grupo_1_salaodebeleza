@@ -20,7 +20,7 @@ export default function Home() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Header */}
         <Header
-          userName="NomeUsuario"
+          userName="Usuario"
           onNotificationPress={() => {}}
           onProfilePress={() => {}}
         />
@@ -53,7 +53,7 @@ export default function Home() {
         <View style={styles.shortcuts}>
           <Square
             icon="people-outline"
-            title="Time"
+            title="Equipe"
             onPress={() => navigation.navigate('Funcionarios')}
             color="#FFE9E0"
           />

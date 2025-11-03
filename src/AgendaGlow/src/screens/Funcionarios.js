@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { 
+  View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity, 
+  ActivityIndicator, Alert 
+} from 'react-native';
 import Header from '../components/Header';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { theme } from '../styles/theme';
-import { listenFuncionarios } from '../services/funcionarioService';
+import { listenFuncionarios, deleteFuncionario } from '../services/funcionarioService'; // ✅ import atualizado
 import { Ionicons } from '@expo/vector-icons';
 
 export default function Funcionarios({ navigation }) {
   const [funcionarios, setFuncionarios] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalViewVisible, setModalViewVisible] = useState(false);
   const [funcionarioSelecionado, setFuncionarioSelecionado] = useState(null);
 
   useEffect(() => {
@@ -21,25 +24,67 @@ export default function Funcionarios({ navigation }) {
     return () => unsubscribe();
   }, []);
 
-  const abrirModal = (funcionario) => {
+  const abrirModalView = (funcionario) => {
     setFuncionarioSelecionado(funcionario);
-    setModalVisible(true);
+    setModalViewVisible(true);
   };
 
-  const fecharModal = () => {
+  const fecharModalView = () => {
     setFuncionarioSelecionado(null);
-    setModalVisible(false);
+    setModalViewVisible(false);
+  };
+
+  // ✅ Função para excluir funcionário com confirmação
+  const handleExcluir = async () => {
+    if (!funcionarioSelecionado) return;
+
+    Alert.alert(
+      'Excluir funcionário',
+      `Tem certeza que deseja excluir ${funcionarioSelecionado.nome}?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              const result = await deleteFuncionario(
+                funcionarioSelecionado.uid,
+                funcionarioSelecionado.id
+              );
+
+              if (result.success) {
+                Alert.alert('Sucesso', 'Funcionário excluído com sucesso!');
+                setFuncionarios((prev) =>
+                  prev.filter((f) => f.id !== funcionarioSelecionado.id)
+                );
+                fecharModalView();
+              } else {
+                Alert.alert('Erro', result.message || 'Falha ao excluir funcionário.');
+              }
+            } catch (error) {
+              Alert.alert('Erro', error.message);
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
     <View style={styles.container}>
-      <Header userName="Melissa" />
+      <Header userName="Usuario" />
 
+      {/* Cabeçalho */}
       <View style={styles.headerRow}>
         <Text style={styles.title}>Equipe</Text>
         <Button title="Adicionar +" small onPress={() => navigation.navigate('FuncionarioCadastro')} />
       </View>
 
+      {/* Lista */}
       {loading ? (
         <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 40 }} />
       ) : (
@@ -54,26 +99,25 @@ export default function Funcionarios({ navigation }) {
                 key={f.id}
                 title={f.nome}
                 subtitle={f.cargo}
-                onView={() => abrirModal(f)}
-                onEdit={() => navigation.navigate('FuncionariosEditar', { funcionario: f })}
+                onView={() => abrirModalView(f)}
               />
             ))
           )}
         </ScrollView>
       )}
 
-      {/* --- MODAL DE VISUALIZAÇÃO --- */}
+      {/* MODAL DE VISUALIZAÇÃO */}
       <Modal
-        visible={modalVisible}
-        animationType="slide"
+        visible={modalViewVisible}
+        animationType="none"
         transparent={true}
-        onRequestClose={fecharModal}
+        onRequestClose={fecharModalView}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Detalhes do Funcionário</Text>
-              <TouchableOpacity onPress={fecharModal}>
+              <TouchableOpacity onPress={fecharModalView}>
                 <Ionicons name="close" size={26} color={theme.colors.text} />
               </TouchableOpacity>
             </View>
@@ -84,6 +128,16 @@ export default function Funcionarios({ navigation }) {
                 <Text style={styles.info}><Text style={styles.label}>Cargo:</Text> {funcionarioSelecionado.cargo}</Text>
                 <Text style={styles.info}><Text style={styles.label}>Telefone:</Text> {funcionarioSelecionado.telefone}</Text>
                 <Text style={styles.info}><Text style={styles.label}>E-mail:</Text> {funcionarioSelecionado.email}</Text>
+
+                {/* ✅ Botão de excluir dentro do modal */}
+                <Button
+                  title="Excluir Funcionário"
+                  onPress={handleExcluir}
+                  style={{
+                    backgroundColor: theme.colors.primary || '#FF4C4C',
+                    marginTop: 20,
+                  }}
+                />
               </View>
             )}
           </View>
@@ -93,6 +147,7 @@ export default function Funcionarios({ navigation }) {
   );
 }
 
+// --- ESTILOS ---
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   headerRow: {
@@ -105,7 +160,6 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: '700', color: theme.colors.text },
   listContainer: { paddingHorizontal: theme.spacing.large, paddingBottom: 100 },
 
-  // --- Modal ---
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',

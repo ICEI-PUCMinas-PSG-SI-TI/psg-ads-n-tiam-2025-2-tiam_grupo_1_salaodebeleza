@@ -1,15 +1,33 @@
-// src/services/funcionarioService.js
-import { db } from '../database/firebase';
+import { auth, db } from '../database/firebase';
 import { 
-  collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot 
+  collection, addDoc, query, where, onSnapshot, deleteDoc, doc
 } from 'firebase/firestore';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 const FUNCIONARIOS_COLLECTION = 'funcionarios';
 
 /** Adiciona um novo funcionário */
 export const addFuncionario = async (funcionario) => {
   try {
-    await addDoc(collection(db, FUNCIONARIOS_COLLECTION), funcionario);
+    const senhaPadrao = "agendaglow12345";
+    
+    // Cria o usuário no Authentication
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      funcionario.email,
+      senhaPadrao
+    );
+    const user = userCredential.user;
+
+    // Cria o documento na coleção "funcionarios" com o UID do usuário e status ativo
+    await addDoc(collection(db, FUNCIONARIOS_COLLECTION), {
+      ...funcionario,
+      uid: user.uid,
+      ativo: true,
+      criadoEm: new Date(),
+    });
+
     return { success: true };
   } catch (error) {
     console.error('Erro ao adicionar funcionário:', error);
@@ -17,36 +35,39 @@ export const addFuncionario = async (funcionario) => {
   }
 };
 
-/** Retorna todos os funcionários (escuta em tempo real) */
+/** Escuta em tempo real apenas funcionários ativos */
 export const listenFuncionarios = (callback) => {
+  const q = query(collection(db, FUNCIONARIOS_COLLECTION), where('ativo', '==', true));
+
   const unsubscribe = onSnapshot(
-    collection(db, FUNCIONARIOS_COLLECTION),
+    q,
     (snapshot) => {
-      const lista = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const lista = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       callback(lista);
     },
     (error) => console.error('Erro ao ouvir funcionários:', error)
   );
+
   return unsubscribe;
 };
 
-/** Atualiza um funcionário */
-export const updateFuncionario = async (id, dados) => {
+/** Exclui completamente um funcionário (Firestore + Authentication) */
+export const deleteFuncionario = async (uid, docId) => {
   try {
-    const ref = doc(db, FUNCIONARIOS_COLLECTION, id);
-    await updateDoc(ref, dados);
-    return { success: true };
-  } catch (error) {
-    console.error('Erro ao atualizar funcionário:', error);
-    return { success: false, message: error.message };
-  }
-};
+    // 1️⃣ Chama a Cloud Function para remover da Authentication e do Firestore
+    const functions = getFunctions();
+    const deleteFuncionarioFn = httpsCallable(functions, 'deleteFuncionario');
 
-/** Remove um funcionário */
-export const deleteFuncionario = async (id) => {
-  try {
-    const ref = doc(db, FUNCIONARIOS_COLLECTION, id);
-    await deleteDoc(ref);
+    await deleteFuncionarioFn({ uid });
+
+    // 2️⃣ (Opcional, mas recomendado) Remove o documento localmente do Firestore
+    // caso a função na nuvem só apague do Auth e não do banco
+    if (docId) {
+      const ref = doc(db, FUNCIONARIOS_COLLECTION, docId);
+      await deleteDoc(ref);
+    }
+
+    console.log('Funcionário excluído com sucesso.');
     return { success: true };
   } catch (error) {
     console.error('Erro ao excluir funcionário:', error);

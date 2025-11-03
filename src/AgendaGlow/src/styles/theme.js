@@ -43,10 +43,10 @@ export const theme = {
 
   shadows: {
     light: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.05,
-      shadowRadius: 4,
+      boxShadowColor: '#000',
+      boxShadowOffset: { width: 0, height: 2 },
+      boxShadowOpacity: 0.05,
+      boxShadowRadius: 4,
       elevation: 2,
     },
   },

@@ -7,6 +7,7 @@ import Home from '../screens/Home';
 import Agenda from '../screens/Agenda';
 import Clientes from '../screens/Clientes';
 import Mais from '../screens/Mais';
+import Login from '../screens/Login';
 
 const BottomTabs = () => {
   const [index, setIndex] = React.useState(0);
@@ -15,11 +16,12 @@ const BottomTabs = () => {
     { key: 'agenda', title: 'Agenda', icon: 'calendar-outline' },
     { key: 'clientes', title: 'Clientes', icon: 'people-outline' },
     { key: 'mais', title: 'Mais', icon: 'menu-outline' },
+  
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
     home: Home,
-    agenda: Agenda,
+    agenda: Login,
     clientes: Clientes,
     mais: Mais,
   });
@@ -29,7 +31,7 @@ const BottomTabs = () => {
       navigationState={{ index, routes }}
       onIndexChange={setIndex}
       renderScene={renderScene}
-      labeled={false} // desativa label padrão para usar customizado
+      labeled={false} 
       barStyle={styles.bar}
       renderIcon={({ route, focused }) => {
         return (
@@ -62,9 +64,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     height: 65,
     elevation: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
+    boxShadowColor: '#000',
+    boxShadowOpacity: 0.1,
+    boxShadowRadius: 6,
     borderTopWidth: 0,
     justifyContent: 'center',
   },
