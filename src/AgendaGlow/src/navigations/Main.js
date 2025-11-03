@@ -6,8 +6,11 @@ import Agenda from '../screens/Agenda';
 import Clientes from '../screens/Clientes';
 import Funcionarios from '../screens/Funcionarios';
 import FuncionarioCadastro from '../screens/FuncionarioCadastro';
+import FuncionarioEditar from '../screens/FuncionarioEditar';
 import Login from '../screens/Login';
 import Mais from '../screens/Mais';
+import Relatorios from '../screens/Relatorios';
+import VincularGoogle from '../screens/VincularGoogle';
 import Servicos from '../screens/Servicos';
 import ServicosCadastro from '../screens/ServicosCadastro';
 import BottomTabs from '../components/BottomTabs';
@@ -33,7 +36,7 @@ const Main = () => {
       />
       <Stack.Screen
         name="Agenda"
-        component={Agenda}
+        component={Login}
         options={{
           header: () => null,
         }}
@@ -55,6 +58,13 @@ const Main = () => {
       <Stack.Screen
         name="FuncionarioCadastro"
         component={FuncionarioCadastro}
+        options={{
+          header: () => null,
+        }}
+      />
+      <Stack.Screen
+        name="FuncionarioEditar"
+        component={FuncionarioEditar}
         options={{
           header: () => null,
         }}
@@ -83,6 +93,20 @@ const Main = () => {
       <Stack.Screen
         name="ServicosCadastro"
         component={ServicosCadastro}
+        options={{
+          header: () => null,
+        }}
+      />
+      <Stack.Screen
+        name="Relatorios"
+        component={Relatorios}
+        options={{
+          header: () => null,
+        }}
+      />
+      <Stack.Screen
+        name="VincularGoogle"
+        component={VincularGoogle}
         options={{
           header: () => null,
         }}

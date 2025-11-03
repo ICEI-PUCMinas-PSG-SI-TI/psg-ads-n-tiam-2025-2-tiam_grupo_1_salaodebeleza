@@ -34,12 +34,12 @@ export default function FuncionarioCadastro({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header userName="Melissa" />
+      <Header userName="Usuario" />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Cadastrar Funcionário</Text>
 
         <Input placeholder="Nome completo" value={nome} onChangeText={setNome} />
-        <View style={styles.selectContainer}>
+        <View>
           <Picker
             selectedValue={cargo}
             onValueChange={setCargo}
@@ -53,6 +53,11 @@ export default function FuncionarioCadastro({ navigation }) {
         </View>
         <Input placeholder="Telefone" value={telefone} onChangeText={setTelefone} />
         <Input placeholder="E-mail" value={email} onChangeText={setEmail} />
+
+        <Text style={styles.senhaInfo}>
+          A senha padrão do funcionário será <Text style={styles.bold}>agendaglow12345</Text>.{"\n"}
+          Ele poderá alterá-la mais tarde.
+        </Text>
 
         <Button
           title={loading ? 'Salvando...' : 'Salvar'}
@@ -69,7 +74,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   content: { padding: theme.spacing.large },
   title: { fontSize: 20, fontWeight: '700', color: theme.colors.text, marginBottom: theme.spacing.medium },
-  selectContainer: { marginVertical: theme.spacing.small },
   inputLike: {
     backgroundColor: theme.colors.container3,
     borderRadius: theme.radius.medium,
@@ -78,6 +82,14 @@ const styles = StyleSheet.create({
     marginVertical: theme.spacing.small,
     color: theme.colors.textInput,
     fontSize: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.container3,
   },
+  senhaInfo: {
+    color: theme.colors.textSecondary || '#777',
+    fontSize: 14,
+    marginTop: theme.spacing.medium,
+  },
+  bold: { fontWeight: '700', color: theme.colors.text },
   saveButton: { marginTop: theme.spacing.large },
 });
