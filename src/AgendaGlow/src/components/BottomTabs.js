@@ -7,7 +7,6 @@ import Home from '../screens/Home';
 import Agenda from '../screens/Agenda';
 import Clientes from '../screens/Clientes';
 import Mais from '../screens/Mais';
-import Login from '../screens/Login';
 
 const BottomTabs = () => {
   const [index, setIndex] = React.useState(0);
@@ -21,7 +20,7 @@ const BottomTabs = () => {
 
   const renderScene = BottomNavigation.SceneMap({
     home: Home,
-    agenda: Login,
+    agenda: Agenda,
     clientes: Clientes,
     mais: Mais,
   });

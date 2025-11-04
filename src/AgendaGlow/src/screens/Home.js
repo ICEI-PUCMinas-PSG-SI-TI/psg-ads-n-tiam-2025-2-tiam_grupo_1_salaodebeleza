@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Button } from 'react-native';
 import Header from '../components/Header';
 import Square from '../components/Square';
 import Card from '../components/Card';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../styles/theme';
+import BottomTabs from '../components/BottomTabs';
 
 export default function Home() {
   const agenda = [
@@ -69,7 +70,7 @@ export default function Home() {
           />
         </View>
       </ScrollView>
-
+      
     </View>
   );
 }
