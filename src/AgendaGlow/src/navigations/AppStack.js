@@ -13,6 +13,7 @@ import VincularGoogle from '../screens/VincularGoogle';
 import Servicos from '../screens/Servicos';
 import ServicosCadastro from '../screens/ServicosCadastro';
 import BottomTabs from '../components/BottomTabs';
+import CadastroAgendamento from '../screens/AgendamentoCadastro';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,7 @@ const AppStack = () => (
     <Stack.Screen name="ServicosCadastro" component={ServicosCadastro} />
     <Stack.Screen name="Relatorios" component={Relatorios} />
     <Stack.Screen name="VincularGoogle" component={VincularGoogle} />
+    <Stack.Screen name="AgendamentoCadastro" component={CadastroAgendamento} />
   </Stack.Navigator>
 );
 
