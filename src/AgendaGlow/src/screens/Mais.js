@@ -62,6 +62,11 @@ export default function Mais() {
           onPress={() => navigation.navigate('VincularGoogle')}
           style={{ width: '100%' }}
         />
+        <Button
+          title="Cadastro de Agendamento"
+          onPress={() => navigation.navigate('AgendamentoCadastro')}
+          style={{ width: '100%' }}
+        />
       </ScrollView>
     </View>
   );
