@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView, Text, Alert } from "react-native";
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Alert } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Header from "../components/Header";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { theme } from "../styles/theme";
 import { listenFuncionarios } from "../services/funcionarioService";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { addAgendamento } from '../services/agendamentoService';
 
 export default function AgendamentoCadastro() {
   const [cliente, setCliente] = useState(null);
   const [servico, setServico] = useState(null);
-  const [profissional, setProfissional] = useState([null]);
+  const [profissional, setProfissional] = useState(null);
   const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
   const [valor, setValor] = useState("");
@@ -43,54 +45,107 @@ export default function AgendamentoCadastro() {
     return () => unsubscribe();
   }, []);
 
-  async function handleSalvar({cliente, servico, profissional, data, horario, valor, observacoes}){
+  async function handleSalvar() {
+    const novoAgendamento = {
+      cliente,
+      servico,
+      profissional,
+      data,
+      horario,
+      valor,
+      observacoes,
+    };
 
+    try {
+      const result = await addAgendamento(novoAgendamento);
+      console.log(result);
+
+      if (result.success) {
+        Alert.alert("Sucesso", "Agendamento salvo com sucesso!");
+        // limpa os campos
+        setCliente(null);
+        setServico(null);
+        setProfissional(null);
+        setData("");
+        setHorario("");
+        setValor("");
+        setObservacoes("");
+      } else {
+        Alert.alert("Erro", result.message || "Falha ao salvar agendamento.");
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível salvar o agendamento.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
+  const showTimePicker = () => setTimePickerVisibility(true);
+  const hideTimePicker = () => setTimePickerVisibility(false);
+
+  const handleConfirm = (selectedDate) => {
+    const formattedDate = selectedDate.toLocaleDateString("pt-BR");
+    setData(formattedDate);
+    hideDatePicker();
+  };
+  const handleTimeConfirm = (selectedTime) => {
+    const formattedTime = selectedTime.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    setHorario(formattedTime);
+    hideTimePicker();
+  };
 
   return (
     <View style={styles.container}>
-      <Header userName="Usuario" />
+      <Header userName="Usuário" />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Cadastrar Funcionário</Text>
+        <Text style={styles.title}>Cadastrar Agendamento</Text>
+
         <Picker
           style={styles.inputLike}
           dropdownIconColor={theme.colors.textInput}
-          label="Cliente"
           selectedValue={cliente}
           onValueChange={setCliente}
-          required
         >
-          {listaClientes.map((c) => (
+          {listaClientes.map((c, index) => (
             <Picker.Item
+              key={index}
               color={theme.colors.textInput}
               label={c.label}
               value={c.value}
             />
           ))}
         </Picker>
+
         <Picker
           style={styles.inputLike}
           dropdownIconColor={theme.colors.textInput}
-          label="Serviço"
           selectedValue={servico}
           onValueChange={setServico}
-          required
         >
-          {listaServicos.map((s) => (
+          {listaServicos.map((s, index) => (
             <Picker.Item
+              key={index}
               color={theme.colors.textInput}
               label={s.label}
               value={s.value}
             />
           ))}
         </Picker>
+
         <Picker
           style={styles.inputLike}
           dropdownIconColor={theme.colors.textInput}
-          label="Profissional"
           selectedValue={profissional}
           onValueChange={setProfissional}
-          required
         >
           {listaFuncionarios.map((f) => (
             <Picker.Item
@@ -101,16 +156,46 @@ export default function AgendamentoCadastro() {
             />
           ))}
         </Picker>
-        <Input placeholder="Data" value={data} onChangeText={setData} />
-        <Input
-          placeholder="horario"
-          value={horario}
-          onChangeText={setHorario}
+
+        {/* Campo de Data como Input */}
+        <TouchableOpacity onPress={showDatePicker} activeOpacity={0.7}>
+          <View pointerEvents="none">
+            <Input
+              placeholder="Selecione a data"
+              value={data}
+              editable={false}
+            />
+          </View>
+        </TouchableOpacity>
+
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="date"
+          onConfirm={handleConfirm}
+          onCancel={hideDatePicker}
+        />
+
+
+        <TouchableOpacity onPress={showTimePicker} activeOpacity={0.7}>
+          <View pointerEvents="none">
+            <Input
+              placeholder="Selecione o horário"
+              value={horario}
+              editable={false}
+            />
+          </View>
+        </TouchableOpacity>
+
+        <DateTimePickerModal
+          isVisible={isTimePickerVisible}
+          mode="time"
+          onConfirm={handleTimeConfirm}
+          onCancel={hideTimePicker}
         />
         <Input
           placeholder="Valor serviço"
           value={valor}
-          onChangeText={setServico}
+          onChangeText={setValor}
         />
         <Input
           placeholder="Observações"
@@ -148,11 +233,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.container3,
   },
-  senhaInfo: {
-    color: theme.colors.textSecondary || "#777",
-    fontSize: 14,
-    marginTop: theme.spacing.medium,
-  },
-  bold: { fontWeight: "700", color: theme.colors.text },
   saveButton: { marginTop: theme.spacing.large },
 });
