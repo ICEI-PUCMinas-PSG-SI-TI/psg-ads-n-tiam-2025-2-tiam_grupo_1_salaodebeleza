@@ -90,3 +90,24 @@ export const updateFuncionario = async (id, dados) => {
     return { success: false, message: error.message };
   }
 };
+
+export const getFuncionarioByEmail = async (email) => {
+  try {
+    console.log('Email na service: ', email)
+    const q = query(
+      collection(db, FUNCIONARIOS_COLLECTION),
+      where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      return { success: false, message: "Funcionário não encontrado." };
+    }
+    const funcionario = querySnapshot.docs[0];
+    return {
+      success: true,
+      data: { id: funcionario.id, ...funcionario.data() },
+    };
+  } catch (error) {
+    console.error("Erro ao buscar funcionário por e-mail:", error);
+    return { success: false, message: error.message };
+  }
+};

@@ -27,7 +27,7 @@ export const login = async (email, senha) => {
  * Recupera o usuário salvo localmente
  */
 export const getUser = async () => {
-  const userData = await AsyncStorage.getItem('user');
+  const userData = await AsyncStorage.getItem('@user');
   return userData ? JSON.parse(userData) : null;
 };
 
