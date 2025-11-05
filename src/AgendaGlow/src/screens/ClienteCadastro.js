@@ -3,9 +3,8 @@ import { View, StyleSheet, ScrollView, Text, Alert, TextInput } from 'react-nati
 import Header from '../components/Header';
 import Input from '../components/Input';
 import Button from '../components/Button';
-import TextArea from '../components/TextArea';
 import { theme } from '../styles/theme';
-import { addServicos } from '../services/servicoService';
+import { addClientes } from '../services/clienteService'; 
 
 export default function ClienteCadastro({ navigation }) {
   const [nome, setNome] = useState('');
@@ -20,14 +19,14 @@ export default function ClienteCadastro({ navigation }) {
     }
 
     setLoading(true);
-    const result = await addServicos({ nome, descricao, observacoes });
+    const result = await addClientes({ nome, descricao, observacoes });
     setLoading(false);
 
     if (result.success) {
-      Alert.alert('Sucesso', 'Serviço cadastrado com sucesso!');
+      Alert.alert('Sucesso', 'Cliente cadastrado com sucesso!');
       navigation.goBack();
     } else {
-      Alert.alert('Erro', result.message || 'Falha ao cadastrar serviço.');
+      Alert.alert('Erro', result.message || 'Falha ao cadastrar cliente.');
     }
   };
 
@@ -35,9 +34,9 @@ export default function ClienteCadastro({ navigation }) {
     <View style={styles.container}>
       <Header userName="Usuario" />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Cadastrar Serviço</Text>
+        <Text style={styles.title}>Cadastrar Cliente</Text>
 
-        <Input placeholder="Nome do serviço" value={nome} onChangeText={setNome} />
+        <Input placeholder="Nome do cliente" value={nome} onChangeText={setNome} />
         <View style={styles.container}>
           <TextArea
             style={styles.textArea}

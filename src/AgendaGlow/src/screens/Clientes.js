@@ -7,40 +7,40 @@ import Header from '../components/Header';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { theme } from '../styles/theme';
-import { listenServicos, deleteServico } from '../services/servicoService'; // ✅ import atualizado
+import { listenClientes, deleteCliente } from '../services/clienteService'; // ✅ import atualizado
 import { Ionicons } from '@expo/vector-icons';
 
-export default function Servicos({ navigation }) {
-  const [servicos, setServicos] = useState([]);
+export default function Clientes({ navigation }) {
+  const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalViewVisible, setModalViewVisible] = useState(false);
-  const [servicoSelecionado, setServicoSelecionado] = useState(null);
+  const [clienteSelecionado, setClienteSelecionado] = useState(null);
 
-  useEffect(() => {
-    const unsubscribe = listenServicos((lista) => {
-      setServicos(lista);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+useEffect(() => {
+  const unsubscribe = listenClientes((lista) => {
+    setClientes(lista);
+    setLoading(false);
+  });
+  return () => unsubscribe();
+}, []);
 
-  const abrirModalView = (servico) => {
-    setServicoSelecionado(servico);
+  const abrirModalView = (cliente) => {
+    setClienteSelecionado(cliente);
     setModalViewVisible(true);
   };
 
   const fecharModalView = () => {
-    setServicoSelecionado(null);
+    setClienteSelecionado(null);
     setModalViewVisible(false);
   };
 
-  // ✅ Função para excluir serviço com confirmação
+  // ✅ Função para excluir cliente com confirmação
   const handleExcluir = async () => {
-    if (!servicoSelecionado) return;
+    if (!clienteSelecionado) return;
 
     Alert.alert(
-      'Excluir serviço',
-      `Tem certeza que deseja excluir ${servicoSelecionado.nome}?`,
+      'Excluir cliente',
+      `Tem certeza que deseja excluir ${clienteSelecionado.nome}?`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -49,15 +49,15 @@ export default function Servicos({ navigation }) {
           onPress: async () => {
             try {
               setLoading(true);
-              const result = await deleteServico(
-                servicoSelecionado.sid,
-                servicoSelecionado.id
+              const result = await deleteCliente(
+                clienteSelecionado.sid,
+                clienteSelecionado.id
               );
 
               if (result.success) {
-                Alert.alert('Sucesso', 'Serviço excluído com sucesso!');
-                setServicos((prev) =>
-                  prev.filter((f) => f.id !== servicoSelecionado.id)
+                Alert.alert('Sucesso', 'Cliente excluído com sucesso!');
+                setClientes((prev) =>
+                  prev.filter((f) => f.id !== clienteSelecionado.id)
                 );
                 fecharModalView();
               } else {
@@ -80,8 +80,8 @@ export default function Servicos({ navigation }) {
 
       {/* Cabeçalho */}
       <View style={styles.headerRow}>
-        <Text style={styles.title}>Serviços</Text>
-        <Button title="Adicionar +" small onPress={() => navigation.navigate('ServicosCadastro')} />
+        <Text style={styles.title}>Clientes</Text>
+        <Button title="Adicionar +" small onPress={() => navigation.navigate('ClientesCadastro')} />
       </View>
 
       {/* Lista */}
@@ -89,12 +89,12 @@ export default function Servicos({ navigation }) {
         <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 40 }} />
       ) : (
         <ScrollView contentContainerStyle={styles.listContainer}>
-          {servicos.length === 0 ? (
+          {clientes.length === 0 ? (
             <Text style={{ textAlign: 'center', color: theme.colors.textInput }}>
-              Nenhum serviço cadastrado.
+              Nenhum cliente cadastrado.
             </Text>
           ) : (
-            servicos.map((s) => (
+            clientes.map((s) => (
               <Card
                 key={s.id}
                 title={s.nome}
@@ -116,21 +116,21 @@ export default function Servicos({ navigation }) {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Detalhes do Serviço</Text>
+              <Text style={styles.modalTitle}>Detalhes do Cliente</Text>
               <TouchableOpacity onPress={fecharModalView}>
                 <Ionicons name="close" size={26} color={theme.colors.text} />
               </TouchableOpacity>
             </View>
 
-            {servicoSelecionado && (
+            {clienteSelecionado && (
               <View style={styles.modalContent}>
-                <Text style={styles.info}><Text style={styles.label}>Nome:</Text> {servicoSelecionado.nome}</Text>
-                <Text style={styles.info}><Text style={styles.label}>Descrição:</Text> {servicoSelecionado.descricao}</Text>
-                <Text style={styles.info}><Text style={styles.label}>Observações:</Text> {servicoSelecionado.observacoes}</Text>
+                <Text style={styles.info}><Text style={styles.label}>Nome:</Text> {clienteSelecionado.nome}</Text>
+                <Text style={styles.info}><Text style={styles.label}>Descrição:</Text> {clienteSelecionado.descricao}</Text>
+                <Text style={styles.info}><Text style={styles.label}>Observações:</Text> {clienteSelecionado.observacoes}</Text>
 
                 {/* ✅ Botão de excluir dentro do modal */}
                 <Button
-                  title="Excluir Serviço"
+                  title="Excluir Cliente"
                   onPress={handleExcluir}
                   style={{
                     backgroundColor: theme.colors.primary || '#FF4C4C',
