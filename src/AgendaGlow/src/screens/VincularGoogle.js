@@ -16,12 +16,13 @@ export default function VincularGoogle() {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const jsonValue = await AsyncStorage.getItem("@user");
-        if (jsonValue != null) {
-          const user = await getUser()
-          setUser(await getFuncionarioByEmail(user.email))
-          console.log("Usuário carregado localmente:", user);
-          //await updateFuncionario(user.uid, user)
+        const userAuth = await getUser()
+        
+        if (userAuth != null) {
+          const dataFuncionario = await getFuncionarioByEmail(userAuth.email);
+          dataFuncionario.data.email = 'lucas.pfd.2002@gmail.com'
+          setUser(dataFuncionario)
+          await updateFuncionario(user.uid, user)
         }
       } catch (error) {
         console.error("Erro ao carregar usuário:", error);
