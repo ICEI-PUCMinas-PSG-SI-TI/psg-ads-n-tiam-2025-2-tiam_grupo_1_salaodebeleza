@@ -28,11 +28,11 @@ export default function Mais() {
           onPress={() => navigation.navigate("Funcionarios")}
           style={{ width: "100%" }}
         />
-        <Button
+        {/*<Button
           title="Alterar meus dados"
           onPress={handleEditarPerfil}
           style={{ width: "100%" }}
-        />
+        />*/}
         <Button
           title="Vincular conta Google"
           onPress={() => navigation.navigate("VincularGoogle")}
