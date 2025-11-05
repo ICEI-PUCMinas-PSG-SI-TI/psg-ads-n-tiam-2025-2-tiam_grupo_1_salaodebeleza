@@ -6,6 +6,7 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import { theme } from "../styles/theme";
 import { listenFuncionarios } from "../services/funcionarioService";
+import { listenServicos } from "../services/servicoService";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { addAgendamento } from '../services/agendamentoService';
 
@@ -25,23 +26,26 @@ export default function AgendamentoCadastro() {
     { label: "João Oliveira", value: "joao" },
   ];
 
-  const mockServicos = [
-    { label: "Selecione o Serviço", value: null },
-    { label: "Corte de Cabelo", value: "corte" },
-    { label: "Coloração Completa", value: "coloracao" },
-    { label: "Hidratação", value: "hidratacao" },
-  ];
-
   const [listaFuncionarios, setListaFuncionarios] = useState([]);
   const [listaClientes, setListaClientes] = useState(mockClientes);
-  const [listaServicos, setListaServicos] = useState(mockServicos);
+  const [listaServicos, setListaServicos] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = listenFuncionarios((lista) => {
+    const unsubscribeFuncionarios = listenFuncionarios((lista) => {
       setLoading(true);
       setListaFuncionarios(lista);
       setLoading(false);
     });
+    const unsubscribeServicos = listenServicos((lista) => {
+      setLoading(true);
+      setListaServicos(lista);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    
     return () => unsubscribe();
   }, []);
 
@@ -131,12 +135,17 @@ export default function AgendamentoCadastro() {
           selectedValue={servico}
           onValueChange={setServico}
         >
-          {listaServicos.map((s, index) => (
+          <Picker.Item
+            color={theme.colors.textInput}
+            label="Selecione o Serviço"
+            value={null}
+          />
+          {listaServicos.map((s) => (
             <Picker.Item
-              key={index}
               color={theme.colors.textInput}
-              label={s.label}
-              value={s.value}
+              key={s.id}
+              label={s.nome}
+              value={s.id}
             />
           ))}
         </Picker>
