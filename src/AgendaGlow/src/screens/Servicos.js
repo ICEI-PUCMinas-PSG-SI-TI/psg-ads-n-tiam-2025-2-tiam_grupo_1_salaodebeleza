@@ -34,45 +34,33 @@ export default function Servicos({ navigation }) {
     setModalViewVisible(false);
   };
 
-  // ✅ Função para excluir serviço com confirmação
+  // ✅ Função direta de exclusão sem alerta
   const handleExcluir = async () => {
+    console.log('🧩 handleExcluir chamado');
+    console.log('servicoSelecionado:', servicoSelecionado);
+
     if (!servicoSelecionado) return;
 
-    Alert.alert(
-      'Excluir serviço',
-      `Tem certeza que deseja excluir ${servicoSelecionado.nome}?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              setLoading(true);
-              const result = await deleteServico(
-                servicoSelecionado.sid,
-                servicoSelecionado.id
-              );
+    try {
+      setLoading(true);
+      fecharModalView();
 
-              if (result.success) {
-                Alert.alert('Sucesso', 'Serviço excluído com sucesso!');
-                setServicos((prev) =>
-                  prev.filter((f) => f.id !== servicoSelecionado.id)
-                );
-                fecharModalView();
-              } else {
-                Alert.alert('Erro', result.message || 'Falha ao excluir serviço.');
-              }
-            } catch (error) {
-              Alert.alert('Erro', error.message);
-            } finally {
-              setLoading(false);
-            }
-          },
-        },
-      ]
-    );
+      const result = await deleteServico(servicoSelecionado.sid, servicoSelecionado.id);
+      console.log('🧾 Resultado de deleteServico:', result);
+
+      if (result.success) {
+        console.log(`✅ Serviço ${servicoSelecionado.nome} excluído com sucesso.`);
+        setServicos(prev => prev.filter(s => s.id !== servicoSelecionado.id));
+      } else {
+        console.error('❌ Falha ao excluir serviço:', result.message);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao excluir serviço:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <View style={styles.container}>
