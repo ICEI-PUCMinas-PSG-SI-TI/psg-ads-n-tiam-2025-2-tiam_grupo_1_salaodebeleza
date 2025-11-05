@@ -14,6 +14,7 @@ import Servicos from '../screens/Servicos';
 import ServicosCadastro from '../screens/ServicosCadastro';
 import BottomTabs from '../components/BottomTabs';
 import ClienteCadastro from '../screens/ClienteCadastro';
+import CadastroAgendamento from '../screens/AgendamentoCadastro';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,7 @@ const AppStack = () => (
     <Stack.Screen name="ClienteCadastro" component={ClienteCadastro} />
     <Stack.Screen name="Relatorios" component={Relatorios} />
     <Stack.Screen name="VincularGoogle" component={VincularGoogle} />
+    <Stack.Screen name="AgendamentoCadastro" component={CadastroAgendamento} />
   </Stack.Navigator>
 );
 

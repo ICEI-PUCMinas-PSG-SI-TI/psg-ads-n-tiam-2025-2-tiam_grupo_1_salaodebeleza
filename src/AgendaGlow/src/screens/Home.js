@@ -5,7 +5,6 @@ import Square from '../components/Square';
 import Card from '../components/Card';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../styles/theme';
-import BottomTabs from '../components/BottomTabs';
 
 export default function Home() {
   const agenda = [
