@@ -1,102 +1,106 @@
-// src/screens/ServicosCadastro.js
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, StyleSheet, ScrollView, Text, Alert, TextInput } from 'react-native';
 import Header from '../components/Header';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import TextArea from '../components/TextArea';
 import { theme } from '../styles/theme';
+import { addServicos } from '../services/servicoService';
 
 export default function ServicosCadastro({ navigation }) {
   const [nome, setNome] = useState('');
-  const [cargo, setCargo] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [email, setEmail] = useState('');
+  const [descricao, setDescricao] = useState('');
+  const [observacoes, setObservacoes] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSalvar = () => {
-    console.log('Salvar funcionário:', { nome, cargo, telefone, email });
-    navigation.goBack();
+  const handleSalvar = async () => {
+    if (!nome || !descricao || !observacoes ) {
+      Alert.alert('Atenção', 'Preencha todos os campos antes de salvar.');
+      return;
+    }
+
+    setLoading(true);
+    const result = await addServicos({ nome, descricao, observacoes });
+    setLoading(false);
+
+    if (result.success) {
+      Alert.alert('Sucesso', 'Serviço cadastrado com sucesso!');
+      navigation.goBack();
+    } else {
+      Alert.alert('Erro', result.message || 'Falha ao cadastrar serviço.');
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Header
-        userName="Melissa"
-        onNotificationPress={() => console.log('Notificações')}
-        onProfilePress={() => console.log('Perfil')}
-      />
-
+      <Header userName="Usuario" />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Cadastrar Funcionário</Text>
+        <Text style={styles.title}>Cadastrar Serviço</Text>
 
-        <Input placeholder="Nome completo" value={nome} onChangeText={setNome} />
-
-        {/* Campo de seleção de cargo */}
-        <View style={styles.selectContainer}>
-          <Picker
-            selectedValue={cargo}
-            onValueChange={(itemValue) => setCargo(itemValue)}
-            style={styles.inputLike}
-            dropdownIconColor={theme.colors.textInput}
-          >
-            <Picker.Item label="Cargo" value="" color={theme.colors.textInput} />
-            <Picker.Item label="Gestor" value="Gestor" />
-            <Picker.Item label="Funcionário" value="Funcionário" />
-          </Picker>
+        <Input placeholder="Nome do serviço" value={nome} onChangeText={setNome} />
+        <View style={styles.container}>
+          <TextArea
+            style={styles.textArea}
+            placeholder="Descrição"
+            value={descricao}
+            onChangeText={setDescricao}
+            multiline
+            numberOfLines={4} // define a altura inicial
+            textAlignVertical="top" // faz o texto começar do topo
+          />
+        </View>
+        <View style={styles.container}>
+          <TextArea
+            style={styles.textArea}
+            placeholder="Observações"
+            value={observacoes}
+            onChangeText={setObservacoes}
+            multiline
+            numberOfLines={4} // define a altura inicial
+            textAlignVertical="top" // faz o texto começar do topo
+          />
         </View>
 
-        <Input placeholder="Telefone" value={telefone} onChangeText={setTelefone} />
-        <Input placeholder="E-mail" value={email} onChangeText={setEmail} />
-
-        <Button title="Salvar" onPress={handleSalvar} style={styles.saveButton} />
+        <Button
+          title={loading ? 'Salvando...' : 'Salvar'}
+          onPress={handleSalvar}
+          style={styles.saveButton}
+          disabled={loading}
+        />
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  content: {
-    padding: theme.spacing.large,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.medium,
-  },
-  selectContainer: {
-    marginVertical: theme.spacing.small,
-  },
-  label: {
-    color: theme.colors.text,
-    fontSize: 16,
-    marginBottom: 6,
-    fontWeight: '500',
-  },
-  pickerWrapper: {
-    backgroundColor: theme.colors.container3,
-    borderRadius: theme.radius.medium,
-    overflow: 'hidden',
-  },
-  picker: {
-    color: theme.colors.Input,
-    fontSize: 16,
-  },
-  saveButton: {
-    marginTop: theme.spacing.large,
-  },
+  container: { flex: 1, backgroundColor: theme.colors.background },
+  content: { padding: theme.spacing.large },
+  title: { fontSize: 20, fontWeight: '700', color: theme.colors.text, marginBottom: theme.spacing.medium },
   inputLike: {
     backgroundColor: theme.colors.container3,
     borderRadius: theme.radius.medium,
     paddingHorizontal: theme.spacing.medium,
     paddingVertical: 10,
-    borderColor: theme.colors.container3,
     marginVertical: theme.spacing.small,
     color: theme.colors.textInput,
     fontSize: 16,
-  },  
+    borderWidth: 1,
+    borderColor: theme.colors.container3,
+  },
+  senhaInfo: {
+    color: theme.colors.textSecondary || '#777',
+    fontSize: 14,
+    marginTop: theme.spacing.medium,
+  },
+  bold: { fontWeight: '700', color: theme.colors.text },
+  saveButton: { marginTop: theme.spacing.large },
+  textArea: {
+    height: 120,
+    borderColor: theme?.colors?.textInput || '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
 });
