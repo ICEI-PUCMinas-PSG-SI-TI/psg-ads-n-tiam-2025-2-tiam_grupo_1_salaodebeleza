@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, Text, Alert, TextInput } from 'react-nati
 import Header from '../components/Header';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import TextArea from '../components/TextArea';
 import { theme } from '../styles/theme';
 import { addClientes } from '../services/clienteService'; 
 

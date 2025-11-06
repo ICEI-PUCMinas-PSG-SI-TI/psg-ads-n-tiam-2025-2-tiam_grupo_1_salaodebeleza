@@ -1,26 +1,20 @@
 
-import { auth, db } from '../database/firebase';
+import { db } from '../database/firebase';
 import { 
   collection, addDoc, query, where, onSnapshot, deleteDoc, doc, updateDoc, getDocs
 } from 'firebase/firestore';
-import { getFunctions, httpsCallable } from 'firebase/functions';
 
 const CLIENTES_COLLECTION = 'cliente';
 
 /** Adiciona um novo cliente */
 export const addClientes = async (cliente) => {
   try {
-    // 1️⃣ Cria o documento sem o SID
-    const docRef = await addDoc(collection(db, CLIENTES_COLLECTION), {
+    await addDoc(collection(db, CLIENTES_COLLECTION), {
       ...cliente,
       ativo: true,
       criadoEm: new Date(),
     });
-
-    // 2️⃣ Atualiza o documento com o SID = ID gerado
-    await updateDoc(docRef, { sid: docRef.id });
-
-    return { success: true, id: docRef.id };
+    return { success: true };
   } catch (error) {
     console.error('Erro ao adicionar cliente:', error);
     return { success: false, message: error.message };
@@ -37,7 +31,7 @@ export const listenClientes = (callback) => {
       const lista = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       callback(lista);
     },
-    (error) => console.error('Erro ao ouvir serviços:', error)
+    (error) => console.error('Erro ao ouvir clientes:', error)
   );
 
   return unsubscribe;

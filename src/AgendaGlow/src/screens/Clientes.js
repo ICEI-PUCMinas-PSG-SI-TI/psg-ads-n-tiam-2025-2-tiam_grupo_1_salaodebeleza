@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native'; // 👈 importa o hook
 import React, { useEffect, useState } from 'react';
 import { 
   View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity, 
@@ -10,7 +11,8 @@ import { theme } from '../styles/theme';
 import { listenClientes, deleteCliente } from '../services/clienteService'; // ✅ import atualizado
 import { Ionicons } from '@expo/vector-icons';
 
-export default function Clientes({ navigation }) {
+export default function Clientes() {
+   const navigation = useNavigation();
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalViewVisible, setModalViewVisible] = useState(false);
@@ -81,7 +83,7 @@ useEffect(() => {
       {/* Cabeçalho */}
       <View style={styles.headerRow}>
         <Text style={styles.title}>Clientes</Text>
-        <Button title="Adicionar +" small onPress={() => navigation.navigate('ClientesCadastro')} />
+        <Button title="Adicionar" small onPress={() => navigation.navigate('ClienteCadastro')} />
       </View>
 
       {/* Lista */}
