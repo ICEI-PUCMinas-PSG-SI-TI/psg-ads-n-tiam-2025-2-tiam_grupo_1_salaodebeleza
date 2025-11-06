@@ -93,7 +93,7 @@ export const updateFuncionario = async (id, dados) => {
 
 export const getFuncionarioByEmail = async (email) => {
   try {
-    console.log('Email na service: ', email)
+    //console.log('Email na service: ', email)
     const q = query(
       collection(db, FUNCIONARIOS_COLLECTION),
       where("email", "==", email));

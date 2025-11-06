@@ -1,49 +1,118 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, TextInput } from "react-native";
 import { Text } from "react-native-paper";
 import Button from "../components/Button";
 import { theme } from "../styles/theme";
 import Loading from "../components/Loading";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getFuncionarioByEmail, updateFuncionario } from "../services/funcionarioService";
 import { getUser } from "../services/loginService";
+import * as Google from "expo-auth-session/providers/google";
+import * as WebBrowser from "expo-web-browser";
+import { auth } from "../database/firebase";
+import {
+  updateEmail,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+} from "firebase/auth";
 
+WebBrowser.maybeCompleteAuthSession();
 
 export default function VincularGoogle() {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState(null);
+  const [senhaAtual, setSenhaAtual] = useState("");
 
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId:
+      "223905135120-7juc9frafb7jm75k5ajtm6nf8k6cnjb8.apps.googleusercontent.com",
+    prompt: "select_account",
+    scopes: ["profile", "email"],
+    useProxy: true,
+  });
+
+  // --- EFFECT PRINCIPAL ---
   useEffect(() => {
-    const loadUser = async () => {
+    const getUserData = async () => {
       try {
-        const userAuth = await getUser()
-        
-        if (userAuth != null) {
-          const dataFuncionario = await getFuncionarioByEmail(userAuth.email);
-          dataFuncionario.data.email = 'lucas.pfd.2002@gmail.com'
-          setUser(dataFuncionario)
-          await updateFuncionario(user.uid, user)
+        const userApp = await getUser();
+
+        if (response?.type === "success") {
+          const { authentication } = response;
+
+          // Busca informações do perfil Google
+          const userInfoResponse = await fetch(
+            "https://www.googleapis.com/userinfo/v2/me",
+            {
+              headers: { Authorization: `Bearer ${authentication.accessToken}` },
+            }
+          );
+
+          const userInfo = await userInfoResponse.json();
+          setUser(userInfo);
+          console.log("Usuário logado via Google:", userInfo);
+
+          // Atualiza no Firestore
+          const dataFuncionario = await getFuncionarioByEmail(userApp.email);
+          if (dataFuncionario?.data) {
+            dataFuncionario.data.email = userInfo.email;
+            await updateFuncionario(
+              dataFuncionario.data.uid,
+              dataFuncionario.data
+            );
+            console.log("E-mail atualizado no Firestore!");
+          }
+
+          // Atualiza no Firebase Authentication
+          const currentUser = auth.currentUser;
+          if (!currentUser) {
+            Alert.alert("Erro", "Nenhum usuário autenticado.");
+            return;
+          }
+
+          try {
+            const credential = EmailAuthProvider.credential(
+              currentUser.email,
+              senhaAtual
+            );
+            await reauthenticateWithCredential(currentUser, credential);
+            await updateEmail(currentUser, userInfo.email);
+            Alert.alert("Sucesso", "E-mail atualizado com sucesso!");
+          } catch (error) {
+            console.error("Erro ao atualizar e-mail no Auth:", error);
+            Alert.alert("Erro", error.message);
+          }
         }
       } catch (error) {
-        console.error("Erro ao carregar usuário:", error);
+        console.error("Erro geral:", error);
       }
     };
 
-    loadUser();
-  }, []);
+    getUserData();
+  }, [response]); // <-- fecha aqui corretamente
 
-  const showConsole = () => {
-    console.log(user)
-  }
+  // --- BOTÃO ---
+  const atualizarEmailFuncionario = async () => {
+    setLoading(true);
+    await promptAsync({ useProxy: true, showInRecents: true });
+    setLoading(false);
+  };
 
   return (
     <View style={styles.container}>
       <View>
-        <Text style={styles.title}>Digite seu novo endereço de e-mail</Text>
+        <Text style={styles.title}>Conecte com seu e-mail do Google</Text>
         <Text style={styles.subtitle}>
-          Conecte-se com sua conta Google para atualizar seu e-mail do app. {"\n\n"}
-          Isso irá redefinir seu email de login.
+          Vincule sua conta Google e atualize seu e-mail do app. {"\n\n"}
+          Isso irá redefinir seu e-mail de login.
         </Text>
+
+        <TextInput
+          placeholder="Senha atual"
+          value={senhaAtual}
+          onChangeText={setSenhaAtual}
+          secureTextEntry
+          style={{ borderWidth: 1, marginBottom: 10, padding: 8, width: "100%" }}
+        />
       </View>
 
       {loading ? (
@@ -51,9 +120,10 @@ export default function VincularGoogle() {
       ) : (
         <Button
           mode="contained"
-          onPress={()=> showConsole()}
-          title={"Vincular e-mail"}
+          onPress={atualizarEmailFuncionario}
+          title="Vincular e-mail"
           style={styles.button}
+          disabled={!request}
         />
       )}
     </View>
