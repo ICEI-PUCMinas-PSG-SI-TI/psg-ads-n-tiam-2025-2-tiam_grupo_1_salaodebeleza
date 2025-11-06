@@ -1,14 +1,20 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { theme } from '../styles/theme';
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { theme } from "../styles/theme";
+import Logout from "./Logout";
 
-export default function Header({ userName = 'UserName', onNotificationPress, onProfilePress }) {
+export default function Header({
+  userName = "UserName",
+  onNotificationPress,
+  onProfilePress,
+}) {
   return (
     <View style={styles.container}>
       <Text style={styles.userName}>Olá, {userName}</Text>
 
       <View style={styles.right}>
+
         <TouchableOpacity onPress={onNotificationPress}>
           <Ionicons
             name="notifications-outline"
@@ -25,6 +31,8 @@ export default function Header({ userName = 'UserName', onNotificationPress, onP
             color={theme.colors.primary}
           />
         </TouchableOpacity>
+
+        <Logout/>
       </View>
     </View>
   );
@@ -32,21 +40,21 @@ export default function Header({ userName = 'UserName', onNotificationPress, onP
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: theme.colors.background,
     paddingHorizontal: theme.spacing.large,
     paddingVertical: theme.spacing.medium,
   },
   userName: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: theme.colors.text,
   },
   right: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   icon: {
     marginRight: theme.spacing.medium,
@@ -54,4 +62,5 @@ const styles = StyleSheet.create({
   avatar: {
     borderRadius: 50,
   },
+  
 });
