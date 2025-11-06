@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-// A linha 'import' corrigida (com o 'from' e o 'Alert')
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native'; 
 import Header from '../components/Header';
 import Button from '../components/Button';
@@ -7,17 +6,16 @@ import { theme } from '../styles/theme';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import { getFuncionarioByUid } from '../services/funcionarioService';
-import { logout } from '../services/loginService'; // Importar logout
+import { logout } from '../services/loginService'; 
 
 export default function Mais() {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext); 
   const [loadingMeusDados, setLoadingMeusDados] = useState(false);
 
-  // Função nova e corrigida para "Alterar meus dados"
+  // Lógica principal: Busca os dados antes de navegar
   const handleMeusDados = async () => {
     if (!user) {
-      // Lida com sessão expirada
       Alert.alert(
         'Sessão expirada',
         'Sua sessão expirou. Por favor, faça o login novamente.',
@@ -29,15 +27,15 @@ export default function Mais() {
     }
 
     setLoadingMeusDados(true);
-    // Busca os dados do funcionário no Firestore
+    // Busca os dados no Firestore
     const result = await getFuncionarioByUid(user.uid);
     setLoadingMeusDados(false);
 
     if (result.success) {
-      // Envia os dados para a tela de edição
+      // Se encontrar, navega E ENVIA OS DADOS
       navigation.navigate('FuncionarioEditar', { funcionario: result.data });
     } else {
-      // Mostra o erro (ex: "Dados não encontrados")
+      // Se não encontrar dados (e.g., conta de teste sem documento), avisa
       Alert.alert('Erro', result.message || 'Não foi possível buscar seus dados.');
     }
   };
@@ -49,7 +47,7 @@ export default function Mais() {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.sectionTitle}>Mais</Text>
 
-        {/* --- TODOS OS 5 BOTÕES ORIGINAIS --- */}
+        {/* Todos os 5 botões originais */}
         <Button
           title="Serviços"
           onPress={() => navigation.navigate('Servicos')}
@@ -67,7 +65,6 @@ export default function Mais() {
         />
         <Button
           title={loadingMeusDados ? 'Carregando...' : 'Alterar meus dados'}
-          // Usa a nova função corrigida
           onPress={handleMeusDados} 
           style={{ width: '100%' }}
           disabled={loadingMeusDados}
@@ -82,7 +79,6 @@ export default function Mais() {
   );
 }
 
-// Os seus estilos originais
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-// Removi o 'Alert' pois não vamos usá-lo para erros
 import { View, StyleSheet, ScrollView, Text } from 'react-native'; 
 import Header from '../components/Header';
 import Input from '../components/Input';
@@ -8,7 +7,6 @@ import { theme } from '../styles/theme';
 import { 
   deleteFuncionario, 
   updateFuncionarioPassword, 
-  // 1. Importa a função de salvar segura
   updateFuncionarioComAuth 
 } from '../services/funcionarioService';
 import { auth } from '../database/firebase';
@@ -33,10 +31,8 @@ export default function FuncionarioEditar({ navigation, route }) {
   const [nome, setNome] = useState(funcionario.nome || '');
   const [telefone, setTelefone] = useState(funcionario.telefone || '');
   const [email, setEmail] = useState(funcionario.email || '');
-  // 2. Campo de senha para confirmar a EDIÇÃO DE DADOS
   const [senhaConfirmacao, setSenhaConfirmacao] = useState('');
 
-  // Campos da seção "Alterar Senha"
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
@@ -45,33 +41,28 @@ export default function FuncionarioEditar({ navigation, route }) {
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
 
-  // 3. Estados para as mensagens de erro (para mostrar na tela)
   const [errorSave, setErrorSave] = useState(null);
   const [errorPassword, setErrorPassword] = useState(null);
   const [errorDelete, setErrorDelete] = useState(null);
 
-  // Verifica se o utilizador fez login com e-mail/senha
   const providerId = userLogado?.providerData[0]?.providerId || 'password';
   const isPasswordUser = providerId === 'password';
-
-  // Verifica se o utilizador está a editar o próprio perfil
   const isEditingSelf = userLogado && userLogado.uid === funcionario.uid;
 
   // --- Função Salvar Dados ---
   const handleEditar = async () => {
-    setErrorSave(null); // Limpa erros antigos
+    setErrorSave(null); 
     
-    // 4. VERIFICAÇÕES (Nome, E-mail, Senha)
+    // Validação de campos obrigatórios e formato de e-mail
     if (!nome || !email) {
       setErrorSave('Nome e E-mail são obrigatórios.');
       return;
     }
-    // 5. CONFERE SE É UM EMAIL VÁLIDO
     if (!email.includes('@') || !email.includes('.')) {
       setErrorSave('Por favor, insira um e-mail válido.');
       return;
     }
-    // 6. PEDE SENHA PRA EDITAR OS DADOS
+    // Pede senha de confirmação
     if (isPasswordUser && !senhaConfirmacao) {
       setErrorSave('Digite sua senha atual para confirmar as alterações.');
       return;
@@ -80,7 +71,6 @@ export default function FuncionarioEditar({ navigation, route }) {
     setLoadingSave(true);
     const dadosAtualizados = { nome, telefone, email: email.toLowerCase() };
     
-    // 7. CHAMA A FUNÇÃO SEGURA
     const result = await updateFuncionarioComAuth(
       funcionario.id, 
       dadosAtualizados, 
@@ -90,19 +80,17 @@ export default function FuncionarioEditar({ navigation, route }) {
     setLoadingSave(false);
     setSenhaConfirmacao(''); 
 
-    // 8. ENVIA AVISO
     if (result.success) {
-      alert('Sucesso: Dados atualizados com sucesso!'); // alert() funciona na web
+      alert('Sucesso: Dados atualizados com sucesso!');
       navigation.goBack(); 
     } else {
-      // (ex: "Senha atual incorreta", "E-mail já em uso")
       setErrorSave(result.message || 'Falha ao atualizar dados.');
     }
   };
 
   // --- Função Alterar Senha ---
   const handleAlterarSenha = async () => {
-    setErrorPassword(null); // Limpa erros antigos
+    setErrorPassword(null); 
     
     if (!senhaAtual || !novaSenha || !confirmarSenha) {
       setErrorPassword('Preencha todos os campos de senha.');
@@ -127,12 +115,11 @@ export default function FuncionarioEditar({ navigation, route }) {
       setNovaSenha('');
       setConfirmarSenha('');
     } else {
-      // 9. ENVIA AVISO DE SENHA INVÁLIDA
       setErrorPassword(result.message || 'Ocorreu uma falha.');
     }
   };
 
-  // --- Função Excluir Conta ---
+  // --- Função Excluir Conta (A ser corrigida no servidor no futuro) ---
   const handleExcluir = async () => {
     setErrorDelete(null); 
     
@@ -142,7 +129,6 @@ export default function FuncionarioEditar({ navigation, route }) {
     
     if (deveExcluir) {
       setLoadingDelete(true);
-      // Nota: Esta função precisa do 'firebase deploy' (do 'functions/index.js') para funcionar
       const result = await deleteFuncionario(funcionario.uid, funcionario.id); 
       setLoadingDelete(false);
       
@@ -151,7 +137,6 @@ export default function FuncionarioEditar({ navigation, route }) {
         if (isEditingSelf) { auth.signOut(); } 
         else { navigation.goBack(); }
       } else {
-        // Mostra o erro "internal" / "CORS" se o deploy não foi feito
         setErrorDelete(result.message || 'Falha ao excluir funcionário.');
       }
     }
@@ -171,9 +156,8 @@ export default function FuncionarioEditar({ navigation, route }) {
         <Text style={styles.label}>E-mail</Text>
         <Input placeholder="E-mail" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
         
-        {/* 10. CAMPO DE CARGO REMOVIDO */}
+        {/* Campo de Cargo removido */}
 
-        {/* 11. CAMPO DE SENHA PARA EDITAR DADOS */}
         {isPasswordUser && (
           <>
             <Text style={styles.labelConfirm}>Senha Atual (para confirmar alterações)</Text>
@@ -181,7 +165,6 @@ export default function FuncionarioEditar({ navigation, route }) {
           </>
         )}
 
-        {/* 12. ÁREA DE MENSAGEM DE ERRO (para Salvar Dados) */}
         {errorSave && (
           <Text style={styles.errorMessage}>{errorSave}</Text>
         )}
@@ -200,7 +183,6 @@ export default function FuncionarioEditar({ navigation, route }) {
             <Input placeholder="Nova Senha (mín. 6 caracteres)" value={novaSenha} onChangeText={setNovaSenha} secureTextEntry />
             <Input placeholder="Confirmar Nova Senha" value={confirmarSenha} onChangeText={setConfirmarSenha} secureTextEntry />
             
-            {/* 13. ÁREA DE MENSAGEM DE ERRO (para Alterar Senha) */}
             {errorPassword && (
               <Text style={styles.errorMessage}>{errorPassword}</Text>
             )}
@@ -218,7 +200,6 @@ export default function FuncionarioEditar({ navigation, route }) {
            <View style={{ marginTop: theme.spacing.large, width: '100%' }}>
               <Text style={styles.deleteWarning}>Atenção: Excluir a conta é uma ação permanente.</Text>
               
-              {/* 14. ÁREA DE MENSAGEM DE ERRO (para Excluir Conta) */}
               {errorDelete && (
                 <Text style={styles.errorMessage}>{errorDelete}</Text>
               )}
@@ -237,7 +218,6 @@ export default function FuncionarioEditar({ navigation, route }) {
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   content: { padding: theme.spacing.large },
@@ -246,17 +226,14 @@ const styles = StyleSheet.create({
   label: { fontSize: 14, color: theme.colors.text, fontWeight: '500', marginLeft: 4, marginTop: 8 },
   labelConfirm: { fontSize: 14, color: theme.colors.text, fontWeight: '700', marginLeft: 4, marginTop: 12 },
   
-  // 15. ESTILO PARA A MENSAGEM DE ERRO
   errorMessage: {
-    color: '#D9534F', // Vermelho
+    color: '#D9534F',
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
     marginTop: 8,
     marginBottom: 4,
   },
-
-  // (Estilo 'inputDisabled' mantido para referência, embora não seja usado agora)
   inputDisabled: { 
     backgroundColor: theme.colors.container3 || '#FCEDED', 
     color: theme.colors.textInput 
@@ -264,7 +241,6 @@ const styles = StyleSheet.create({
   saveButton: { marginTop: theme.spacing.medium },
   deleteButton: { 
     marginTop: theme.spacing.small, 
-    // Cor de erro do seu tema
     backgroundColor: theme.colors.error || '#D9534F' 
   },
   deleteWarning: { 

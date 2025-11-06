@@ -60,12 +60,9 @@ export const listenFuncionarios = (callback) => {
 /** Exclui um funcionário (Corrigido para o 'functions/index.js' com CORS) */
 export const deleteFuncionario = async (uid, docId) => {
   try {
-    const functions = getFunctions();
-    const deleteFuncionarioFn = httpsCallable(functions, 'deleteFuncionario');
-    // 2. A 'Cloud Function' (com 'onRequest') espera os dados num objeto 'data'
-    const result = await deleteFuncionarioFn({ data: { uid } }); 
-    
-    if (docId) {
+    const functions = getFunctions();
+    const deleteFuncionarioFn = httpsCallable(functions, 'deleteFuncionario');
+    const result = await deleteFuncionarioFn({ uid });    if (docId) {
       const ref = doc(db, FUNCIONARIOS_COLLECTION, docId);
       await deleteDoc(ref);
     }
