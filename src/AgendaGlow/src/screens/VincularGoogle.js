@@ -1,131 +1,88 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Alert, TextInput } from "react-native";
-import { Text } from "react-native-paper";
-import Button from "../components/Button";
-import { theme } from "../styles/theme";
-import Loading from "../components/Loading";
-import { getFuncionarioByEmail, updateFuncionario } from "../services/funcionarioService";
-import { getUser } from "../services/loginService";
-import * as Google from "expo-auth-session/providers/google";
-import * as WebBrowser from "expo-web-browser";
-import { auth } from "../database/firebase";
-import {
-  updateEmail,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
-} from "firebase/auth";
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import { makeRedirectUri } from 'expo-auth-session';
+import { Ionicons } from '@expo/vector-icons';
+import { theme } from '../styles/theme';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function VincularGoogle() {
-  const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
-  const [senhaAtual, setSenhaAtual] = useState("");
+export default function VincularGoogle({ navigation }) {
+  const [loading, setLoading] = React.useState(false);
 
+  // Ajuste clientId para sua credencial (Web/Android/iOS conforme necessário)
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId:
-      "223905135120-7juc9frafb7jm75k5ajtm6nf8k6cnjb8.apps.googleusercontent.com",
-    prompt: "select_account",
-    scopes: ["profile", "email"],
-    useProxy: true,
+    clientId: '223905135120-7juc9frafb7jm75k5ajtm6nf8k6cnjb8.apps.googleusercontent.com',
+    scopes: ['profile', 'email'],
+    redirectUri: makeRedirectUri({ useProxy: true }),
   });
 
-  // --- EFFECT PRINCIPAL ---
-  useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const userApp = await getUser();
-
-        if (response?.type === "success") {
-          const { authentication } = response;
-
-          // Busca informações do perfil Google
-          const userInfoResponse = await fetch(
-            "https://www.googleapis.com/userinfo/v2/me",
-            {
-              headers: { Authorization: `Bearer ${authentication.accessToken}` },
-            }
-          );
-
-          const userInfo = await userInfoResponse.json();
-          setUser(userInfo);
-          console.log("Usuário logado via Google:", userInfo);
-
-          // Atualiza no Firestore
-          const dataFuncionario = await getFuncionarioByEmail(userApp.email);
-          if (dataFuncionario?.data) {
-            dataFuncionario.data.email = userInfo.email;
-            await updateFuncionario(
-              dataFuncionario.data.uid,
-              dataFuncionario.data
-            );
-            console.log("E-mail atualizado no Firestore!");
-          }
-
-          // Atualiza no Firebase Authentication
-          const currentUser = auth.currentUser;
-          if (!currentUser) {
-            Alert.alert("Erro", "Nenhum usuário autenticado.");
-            return;
-          }
-
-          try {
-            const credential = EmailAuthProvider.credential(
-              currentUser.email,
-              senhaAtual
-            );
-            await reauthenticateWithCredential(currentUser, credential);
-            await updateEmail(currentUser, userInfo.email);
-            Alert.alert("Sucesso", "E-mail atualizado com sucesso!");
-          } catch (error) {
-            console.error("Erro ao atualizar e-mail no Auth:", error);
-            Alert.alert("Erro", error.message);
-          }
-        }
-      } catch (error) {
-        console.error("Erro geral:", error);
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      const { access_token } = response.params;
+      if (access_token) {
+        fetchGoogleProfile(access_token);
+      } else {
+        console.log('Erro', 'Não foi possível obter token de acesso do Google.');
       }
-    };
+    } else if (response?.type === 'error') {
+      console.log('Erro', 'Autenticação cancelada ou falhou.');
+    }
+  }, [response]);
 
-    getUserData();
-  }, [response]); // <-- fecha aqui corretamente
-
-  // --- BOTÃO ---
-  const atualizarEmailFuncionario = async () => {
+  async function fetchGoogleProfile(accessToken) {
     setLoading(true);
-    await promptAsync({ useProxy: true, showInRecents: true });
-    setLoading(false);
-  };
+    try {
+      // Obter perfil do usuário com o access token
+      const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const profile = await res.json();
+
+      if (profile && profile.email) {
+        // Aqui você deve enviar o token/profile para seu backend para vincular a conta
+        // Exemplo (substitua a URL e payload conforme seu backend):
+        // await fetch('https://seu-backend.com/api/link-google', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ accessToken, email: profile.email }),
+        // });
+
+        console.log('Sucesso', `Conta vinculada: ${profile.email}`);
+        // navigation.goBack() // ou redirecione conforme necessário
+      } else {
+        console.log('Erro', 'Não foi possível ler o e‑mail do perfil Google.');
+      }
+    } catch (err) {
+      console.log(err);
+      console.log('Erro', 'Falha ao buscar perfil do Google.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <View style={styles.container}>
-      <View>
-        <Text style={styles.title}>Conecte com seu e-mail do Google</Text>
-        <Text style={styles.subtitle}>
-          Vincule sua conta Google e atualize seu e-mail do app. {"\n\n"}
-          Isso irá redefinir seu e-mail de login.
-        </Text>
+      <Text style={styles.title}>Vincular conta Google</Text>
+      <Text style={styles.subtitle}>
+        Ao vincular sua conta Google, poderemos usar seu e‑mail para logins e sincronizações.
+      </Text>
 
-        <TextInput
-          placeholder="Senha atual"
-          value={senhaAtual}
-          onChangeText={setSenhaAtual}
-          secureTextEntry
-          style={{ borderWidth: 1, marginBottom: 10, padding: 8, width: "100%" }}
-        />
-      </View>
-
-      {loading ? (
-        <Loading />
-      ) : (
-        <Button
-          mode="contained"
-          onPress={atualizarEmailFuncionario}
-          title="Vincular e-mail"
-          style={styles.button}
-          disabled={!request}
-        />
-      )}
+      <TouchableOpacity
+        style={[styles.button, !request && styles.buttonDisabled]}
+        onPress={() => promptAsync({ useProxy: true })}
+        disabled={!request || loading}
+      >
+        {loading ? (
+          <ActivityIndicator color={theme.colors.white} />
+        ) : (
+          <View style={styles.buttonContent}>
+            <Ionicons name="logo-google" size={20} color={theme.colors.white} style={{ marginRight: 10 }} />
+            <Text style={styles.buttonText}>Vincular com Google</Text>
+          </View>
+        )}
+      </TouchableOpacity>
     </View>
   );
 }
@@ -133,25 +90,43 @@ export default function VincularGoogle() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    padding: 24,
     backgroundColor: theme.colors.background,
+    padding: theme.spacing.large,
+    justifyContent: 'center',
   },
   title: {
     fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 8,
     color: theme.colors.text,
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 14,
     color: theme.colors.textInput,
-    marginBottom: 32,
-    textAlign: "left",
+    textAlign: 'center',
+    marginBottom: 24,
   },
   button: {
-    borderRadius: 12,
-    width: "100%",
+    backgroundColor: theme.colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: theme.radius.medium,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    minWidth: 260,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: theme.colors.white,
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
