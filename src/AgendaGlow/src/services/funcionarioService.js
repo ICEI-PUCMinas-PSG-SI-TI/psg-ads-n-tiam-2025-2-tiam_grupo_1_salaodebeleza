@@ -106,77 +106,23 @@ export const updateFuncionario = async (id, dados) => {
   }
 };
 
-/** Atualiza a senha do usuário logado (COM VERIFICAÇÃO DE PROVIDER) */
-export const updateFuncionarioPassword = async (senhaAtual, novaSenha) => {
-  const user = auth.currentUser;
-  if (!user || !user.email) {
-    return { success: false, message: 'Nenhum usuário logado ou email indisponível.' };
-  }
-  
-  const providerId = user.providerData[0]?.providerId;
-  if (providerId !== 'password') {
-    return { success: false, message: `Não é possível alterar a senha de uma conta '${providerId}'.` };
-  }
-
-  const credential = EmailAuthProvider.credential(user.email, senhaAtual);
-  
+export const getFuncionarioByEmail = async (email) => {
   try {
-    await reauthenticateWithCredential(user, credential);
-    await updatePassword(user, novaSenha);
-    return { success: true };
+    //console.log('Email na service: ', email)
+    const q = query(
+      collection(db, FUNCIONARIOS_COLLECTION),
+      where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      return { success: false, message: "Funcionário não encontrado." };
+    }
+    const funcionario = querySnapshot.docs[0];
+    return {
+      success: true,
+      data: { id: funcionario.id, ...funcionario.data() },
+    };
   } catch (error) {
-    console.error('Erro ao atualizar senha:', error);
-    if (error.code === 'auth/wrong-password') {
-      return { success: false, message: 'Senha atual incorreta.' };
-    }
-    return { success: false, message: error.message };
-  }
-};
-
-// 3. --- A FUNÇÃO QUE ESTAVA EM FALTA ---
-/**
- * Atualiza dados (incluindo e-mail) no Auth e Firestore (COM VERIFICAÇÃO DE PROVIDER)
- */
-export const updateFuncionarioComAuth = async (docId, dados, senhaAtual) => {
-  const user = auth.currentUser;
-  if (!user || !user.email) {
-    return { success: false, message: 'Nenhum usuário logado.' };
-  }
-
-  const providerId = user.providerData[0]?.providerId;
-
-  if (providerId === 'password') {
-    if (!senhaAtual) {
-      return { success: false, message: 'A senha atual é obrigatória para salvar.' };
-    }
-    
-    const credential = EmailAuthProvider.credential(user.email, senhaAtual);
-    try {
-      await reauthenticateWithCredential(user, credential);
-    } catch (error) {
-      console.error('Falha na reautenticação:', error);
-      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        return { success: false, message: 'Senha atual incorreta.' };
-      }
-      return { success: false, message: 'Falha ao reautenticar. Tente fazer login novamente.' };
-    }
-  }
-
-  try {
-    if (dados.email && dados.email.toLowerCase() !== user.email.toLowerCase()) {
-      await updateEmail(user, dados.email);
-    }
-    const ref = doc(db, FUNCIONARIOS_COLLECTION, docId);
-    await updateDoc(ref, dados);
-    return { success: true };
-  } catch (error) {
-    console.error('Erro ao atualizar dados:', error);
-    if (error.code === 'auth/email-already-in-use') {
-      return { success: false, message: 'Este novo e-mail já está em uso por outra conta.' };
-    }
-    if (error.code === 'auth/invalid-email') {
-      return { success: false, message: 'O novo e-mail fornecido é inválido.' };
-    }
+    console.error("Erro ao buscar funcionário por e-mail:", error);
     return { success: false, message: error.message };
   }
 };
