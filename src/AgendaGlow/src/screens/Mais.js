@@ -12,7 +12,7 @@ export default function Mais() {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext); 
   const [loadingMeusDados, setLoadingMeusDados] = useState(false);
-
+  
   // Lógica principal: Busca os dados antes de navegar
   const handleMeusDados = async () => {
     if (!user) {
@@ -39,29 +39,28 @@ export default function Mais() {
       Alert.alert('Erro', result.message || 'Não foi possível buscar seus dados.');
     }
   };
+
   
   return (
     <View style={styles.container}>
       <Header userName="Usuario" />
-
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.sectionTitle}>Mais</Text>
 
-        {/* Todos os 5 botões originais */}
         <Button
           title="Serviços"
-          onPress={() => navigation.navigate('Servicos')}
-          style={{ width: '100%' }}
+          onPress={() => navigation.navigate("Servicos")}
+          style={{ width: "100%" }}
         />
         <Button
           title="Relatórios"
-          onPress={() => navigation.navigate('Relatorios')}
-          style={{ width: '100%' }}
+          onPress={() => navigation.navigate("Relatorios")}
+          style={{ width: "100%" }}
         />
         <Button
           title="Equipe"
-          onPress={() => navigation.navigate('Funcionarios')}
-          style={{ width: '100%' }}
+          onPress={() => navigation.navigate("Funcionarios")}
+          style={{ width: "100%" }}
         />
         <Button
           title={loadingMeusDados ? 'Carregando...' : 'Alterar meus dados'}
@@ -71,8 +70,8 @@ export default function Mais() {
         />
         <Button
           title="Vincular conta Google"
-          onPress={() => navigation.navigate('VincularGoogle')}
-          style={{ width: '100%' }}
+          onPress={() => navigation.navigate("VincularGoogle")}
+          style={{ width: "100%" }}
         />
       </ScrollView>
     </View>
@@ -86,13 +85,13 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: theme.spacing.large,
-    alignItems: 'center',
+    alignItems: "center",
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "700",
     color: theme.colors.text,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     marginBottom: theme.spacing.medium,
   },
 });

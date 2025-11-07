@@ -1,5 +1,3 @@
-// src/AgendaGlow/App.js
-
 import React from 'react';
 import { AuthProvider } from './src/context/AuthContext';
 import AppRoutes from './src/navigations/AppRoutes';

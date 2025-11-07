@@ -30,6 +30,7 @@ const BottomTabs = () => {
       navigationState={{ index, routes }}
       onIndexChange={setIndex}
       renderScene={renderScene}
+      sceneAnimationEnabled={false}
       labeled={false} 
       barStyle={styles.bar}
       renderIcon={({ route, focused }) => {
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   tabFocused: {
-    backgroundColor: '#FFEBE6', // cor do fundo do botão selecionado, igual da imagem (rosa claro)
+    backgroundColor: '#FFEBE6', 
   },
   label: {
     fontSize: 12,
