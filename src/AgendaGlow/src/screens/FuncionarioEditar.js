@@ -1,120 +1,218 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Text, Alert } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, StyleSheet, ScrollView, Text } from 'react-native'; 
 import Header from '../components/Header';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { theme } from '../styles/theme';
-import { updateFuncionario, deleteFuncionario } from '../services/funcionarioService';
+import { 
+  deleteFuncionario, 
+  updateFuncionarioPassword, 
+  updateFuncionarioComAuth 
+} from '../services/funcionarioService';
 import { auth } from '../database/firebase';
+import { AuthContext } from '../context/AuthContext';
 
 export default function FuncionarioEditar({ navigation, route }) {
-  
-  const { funcionario } = route.params;
 
-  const [nome, setNome] = useState(funcionario.nome);
-  const [cargo, setCargo] = useState(funcionario.cargo);
-  const [telefone, setTelefone] = useState(funcionario.telefone);
-  const [email, setEmail] = useState(funcionario.email);
-  
+  const { user: userLogado } = useContext(AuthContext);
+
+  const funcionario = route && route.params && route.params.funcionario ? route.params.funcionario : null;
+
+  if (!funcionario) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Header userName="Usuário" />
+        <Text style={{ color: theme.colors.text, fontSize: 16 }}>Nenhum funcionário selecionado para edição.</Text>
+        <Button title="Voltar" onPress={() => navigation.goBack()} style={{ marginTop: 16 }} />
+      </View>
+    );
+  }
+
+  const [nome, setNome] = useState(funcionario.nome || '');
+  const [telefone, setTelefone] = useState(funcionario.telefone || '');
+  const [email, setEmail] = useState(funcionario.email || '');
+  const [senhaConfirmacao, setSenhaConfirmacao] = useState('');
+
+  const [senhaAtual, setSenhaAtual] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
+  const [loadingPassword, setLoadingPassword] = useState(false);
 
+  const [errorSave, setErrorSave] = useState(null);
+  const [errorPassword, setErrorPassword] = useState(null);
+  const [errorDelete, setErrorDelete] = useState(null);
+
+  const providerId = userLogado?.providerData[0]?.providerId || 'password';
+  const isPasswordUser = providerId === 'password';
+  const isEditingSelf = userLogado && userLogado.uid === funcionario.uid;
+
+  // --- Função Salvar Dados ---
   const handleEditar = async () => {
-    if (!nome || !telefone || !email) {
-      Alert.alert('Atenção', 'Nome, E-mail e Telefone são obrigatórios.');
+    setErrorSave(null); 
+    
+    // Validação de campos obrigatórios e formato de e-mail
+    if (!nome || !email) {
+      setErrorSave('Nome e E-mail são obrigatórios.');
+      return;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+      setErrorSave('Por favor, insira um e-mail válido.');
+      return;
+    }
+    // Pede senha de confirmação
+    if (isPasswordUser && !senhaConfirmacao) {
+      setErrorSave('Digite sua senha atual para confirmar as alterações.');
       return;
     }
     
     setLoadingSave(true);
-    const dadosAtualizados = { 
-      nome: nome, 
-      telefone: telefone,
-      email: email, 
-    };
+    const dadosAtualizados = { nome, telefone, email: email.toLowerCase() };
     
-    const result = await updateFuncionario(funcionario.id, dadosAtualizados);
+    const result = await updateFuncionarioComAuth(
+      funcionario.id, 
+      dadosAtualizados, 
+      isPasswordUser ? senhaConfirmacao : null
+    );
+    
     setLoadingSave(false);
+    setSenhaConfirmacao(''); 
 
     if (result.success) {
-      Alert.alert('Sucesso', 'Dados atualizados com sucesso!');
+      alert('Sucesso: Dados atualizados com sucesso!');
       navigation.goBack(); 
     } else {
-      Alert.alert('Erro', result.message || 'Falha ao atualizar dados.');
+      setErrorSave(result.message || 'Falha ao atualizar dados.');
     }
   };
 
+  // --- Função Alterar Senha ---
+  const handleAlterarSenha = async () => {
+    setErrorPassword(null); 
+    
+    if (!senhaAtual || !novaSenha || !confirmarSenha) {
+      setErrorPassword('Preencha todos os campos de senha.');
+      return;
+    }
+    if (novaSenha.length < 6) {
+      setErrorPassword('A nova senha deve ter no mínimo 6 caracteres.');
+      return;
+    }
+    if (novaSenha !== confirmarSenha) {
+      setErrorPassword('A "Nova Senha" e a "Confirmação" não conferem.');
+      return;
+    }
 
+    setLoadingPassword(true);
+    const result = await updateFuncionarioPassword(senhaAtual, novaSenha);
+    setLoadingPassword(false);
+
+    if (result.success) {
+      alert('Sucesso: Senha alterada com sucesso!');
+      setSenhaAtual('');
+      setNovaSenha('');
+      setConfirmarSenha('');
+    } else {
+      setErrorPassword(result.message || 'Ocorreu uma falha.');
+    }
+  };
+
+  // --- Função Excluir Conta (A ser corrigida no servidor no futuro) ---
   const handleExcluir = async () => {
-    Alert.alert(
-      'Confirmar Exclusão',
-      `Tem certeza que deseja excluir ${funcionario.nome}?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Excluir', 
-          style: 'destructive', 
-          onPress: async () => {
-            setLoadingDelete(true);
-            const result = await deleteFuncionario(funcionario.uid, funcionario.id);
-            setLoadingDelete(false);
-            
-            if (result.success) {
-              Alert.alert('Sucesso', 'Funcionário excluído com sucesso.');
-              if (auth.currentUser && auth.currentUser.uid === funcionario.uid) {
-                auth.signOut(); 
-              } else {
-                navigation.goBack();
-              }
-            } else {
-              Alert.alert('Erro', result.message || 'Falha ao excluir funcionário.');
-            }
-          } 
-        }
-      ]
+    setErrorDelete(null); 
+    
+    const deveExcluir = window.confirm(
+      `Confirmar Exclusão: Tem certeza que deseja excluir ${funcionario.nome}? Esta ação é irreversível.`
     );
+    
+    if (deveExcluir) {
+      setLoadingDelete(true);
+      const result = await deleteFuncionario(funcionario.uid, funcionario.id); 
+      setLoadingDelete(false);
+      
+      if (result.success) {
+        alert('Sucesso: Funcionário excluído com sucesso.');
+        if (isEditingSelf) { auth.signOut(); } 
+        else { navigation.goBack(); }
+      } else {
+        setErrorDelete(result.message || 'Falha ao excluir funcionário.');
+      }
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Header userName="Usuario" /> 
+      <Header userName={nome.split(' ')[0]} /> 
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Editar Dados</Text>
-
+        
+        <Text style={styles.sectionTitle}>Dados de Perfil</Text>
         <Text style={styles.label}>Nome Completo</Text>
         <Input placeholder="Nome completo" value={nome} onChangeText={setNome} />
-        
-        <Text style={styles.label}>E-mail</Text>
-        <Input 
-          placeholder="E-mail" value={email} onChangeText={setEmail}
-          keyboardType="email-address"
-        />
-
         <Text style={styles.label}>Telefone</Text>
-        <Input 
-          placeholder="Telefone" value={telefone} onChangeText={setTelefone} 
-          keyboardType="phone-pad"
-        />
+        <Input placeholder="Telefone" value={telefone} onChangeText={setTelefone} keyboardType="phone-pad" />
+        <Text style={styles.label}>E-mail</Text>
+        <Input placeholder="E-mail" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+        
+        {/* Campo de Cargo removido */}
 
-        <Text style={styles.label}>Cargo (não pode ser alterado)</Text>
-        <Input 
-          placeholder="Cargo" value={cargo} 
-          editable={false} 
-          style={styles.inputDisabled}
-        />
+        {isPasswordUser && (
+          <>
+            <Text style={styles.labelConfirm}>Senha Atual (para confirmar alterações)</Text>
+            <Input placeholder="Digite sua senha atual" value={senhaConfirmacao} onChangeText={setSenhaConfirmacao} secureTextEntry />
+          </>
+        )}
 
+        {errorSave && (
+          <Text style={styles.errorMessage}>{errorSave}</Text>
+        )}
+        
         <Button
-          title={loadingSave ? 'Salvando...' : 'Salvar Alterações'}
+          title={loadingSave ? 'Salvando...' : 'Salvar Dados'}
           onPress={handleEditar}
           style={styles.saveButton}
-          disabled={loadingSave || loadingDelete}
+          disabled={loadingSave || loadingDelete || loadingPassword}
         />
         
-        <Button
-          title={loadingDelete ? 'Excluindo...' : 'Excluir Conta'}
-          onPress={handleExcluir}
-          style={styles.deleteButton} 
-          disabled={loadingSave || loadingDelete}
-        />
+        {isEditingSelf && isPasswordUser && (
+          <>
+            <Text style={styles.sectionTitle}>Alterar Senha</Text>
+            <Input placeholder="Senha Atual" value={senhaAtual} onChangeText={setSenhaAtual} secureTextEntry />
+            <Input placeholder="Nova Senha (mín. 6 caracteres)" value={novaSenha} onChangeText={setNovaSenha} secureTextEntry />
+            <Input placeholder="Confirmar Nova Senha" value={confirmarSenha} onChangeText={setConfirmarSenha} secureTextEntry />
+            
+            {errorPassword && (
+              <Text style={styles.errorMessage}>{errorPassword}</Text>
+            )}
+            
+            <Button
+              title={loadingPassword ? 'Alterando...' : 'Alterar Senha'}
+              onPress={handleAlterarSenha}
+              style={styles.saveButton}
+              disabled={loadingSave || loadingDelete || loadingPassword}
+            />
+          </>
+        )}
+        
+        {isEditingSelf && (
+           <View style={{ marginTop: theme.spacing.large, width: '100%' }}>
+              <Text style={styles.deleteWarning}>Atenção: Excluir a conta é uma ação permanente.</Text>
+              
+              {errorDelete && (
+                <Text style={styles.errorMessage}>{errorDelete}</Text>
+              )}
+              
+              <Button
+                title={loadingDelete ? 'Excluindo...' : 'Excluir Conta'}
+                onPress={handleExcluir}
+                style={styles.deleteButton} 
+                disabled={loadingSave || loadingDelete || loadingPassword}
+              />
+          </View>
+        )}
+
       </ScrollView>
     </View>
   );
@@ -123,33 +221,32 @@ export default function FuncionarioEditar({ navigation, route }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   content: { padding: theme.spacing.large },
-  title: { 
-    fontSize: 20, fontWeight: '700', color: theme.colors.text, 
-    marginBottom: theme.spacing.medium 
+  title: { fontSize: 20, fontWeight: '700', color: theme.colors.text, marginBottom: theme.spacing.medium },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: theme.colors.primary, marginTop: theme.spacing.large, marginBottom: theme.spacing.small, alignSelf: 'flex-start' },
+  label: { fontSize: 14, color: theme.colors.text, fontWeight: '500', marginLeft: 4, marginTop: 8 },
+  labelConfirm: { fontSize: 14, color: theme.colors.text, fontWeight: '700', marginLeft: 4, marginTop: 12 },
+  
+  errorMessage: {
+    color: '#D9534F',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 8,
+    marginBottom: 4,
   },
-  label: {
-    fontSize: 14, color: theme.colors.text, fontWeight: '500',
-    marginLeft: 4, marginTop: 8,
+  inputDisabled: { 
+    backgroundColor: theme.colors.container3 || '#FCEDED', 
+    color: theme.colors.textInput 
   },
-  inputDisabled: {
-    backgroundColor: theme.colors.container, 
-    color: theme.colors.textInput,
+  saveButton: { marginTop: theme.spacing.medium },
+  deleteButton: { 
+    marginTop: theme.spacing.small, 
+    backgroundColor: theme.colors.error || '#D9534F' 
   },
-  selectContainer: { marginVertical: theme.spacing.small },
-  inputLike: {
-    backgroundColor: theme.colors.container3,
-    borderRadius: theme.radius.medium,
-    paddingHorizontal: theme.spacing.medium,
-    paddingVertical: 10,
-    borderColor: theme.colors.container3,
-    marginVertical: theme.spacing.small,
-    color: theme.colors.textInput,
-    fontSize: 16,
-    borderWidth: 1,
-  },  
-  saveButton: { marginTop: theme.spacing.large },
-  deleteButton: {
-    marginTop: theme.spacing.medium,
-    backgroundColor: theme.colors.error, 
-  },
+  deleteWarning: { 
+    color: theme.colors.error || '#D9534F', 
+    textAlign: 'center', 
+    marginBottom: 8, 
+    fontSize: 12 
+  }
 });
