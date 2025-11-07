@@ -16,7 +16,7 @@ export default function Header({
   const navigation = useNavigation();
   const route = useRoute();
 
-  // Verifica se a rota atual está dentro do BottomTabs
+  // Verifica se a rota atual é uma das barra de navegação
   const isBottomTabsRoute = BOTTOM_TABS_ROUTES.includes(route.name?.toLowerCase());
   
   // Verifica se pode voltar (tem histórico de navegação)
