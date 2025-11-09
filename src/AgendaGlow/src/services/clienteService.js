@@ -1,22 +1,29 @@
-
 import { db } from '../database/firebase';
 import { 
-  collection, addDoc, query, where, onSnapshot, deleteDoc, doc, updateDoc, getDocs
+  collection, doc, setDoc, query, where, onSnapshot, updateDoc, getDocs,getDoc 
 } from 'firebase/firestore';
 
-const CLIENTES_COLLECTION = 'cliente';
+const CLIENTES_COLLECTION = 'clientes';
 
 /** Adiciona um novo cliente */
-export const addClientes = async (cliente) => {
+export const addCliente = async (cliente) => {
   try {
-    await addDoc(collection(db, CLIENTES_COLLECTION), {
+    console.log('🟢 Salvando cliente...', cliente);
+
+    const colRef = collection(db, CLIENTES_COLLECTION);
+    const docRef = doc(colRef);
+
+    await setDoc(docRef, {
       ...cliente,
+      cid: docRef.id,
       ativo: true,
       criadoEm: new Date(),
     });
-    return { success: true };
+
+    console.log('✅ Cliente criado com ID:', docRef.id);
+    return { success: true, id: docRef.id };
   } catch (error) {
-    console.error('Erro ao adicionar cliente:', error);
+    console.error('❌ Erro ao adicionar cliente:', error);
     return { success: false, message: error.message };
   }
 };
@@ -28,7 +35,12 @@ export const listenClientes = (callback) => {
   const unsubscribe = onSnapshot(
     q,
     (snapshot) => {
-      const lista = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const lista = snapshot.docs.map((doc) => ({ 
+        id: doc.id, 
+        cid: doc.id,
+        ...doc.data() 
+      }));
+      console.log('📡 Atualização de clientes recebida:', lista.length);
       callback(lista);
     },
     (error) => console.error('Erro ao ouvir clientes:', error)
@@ -37,48 +49,76 @@ export const listenClientes = (callback) => {
   return unsubscribe;
 };
 
-/**
- * Exclui um cliente (Firestore + Cloud Function opcional)
- * @param {string} sid - ID único do cliente (igual ao docRef.id)
- * @param {string} [docId] - ID do documento (opcional)
- */
-export const deleteCliente = async (sid, docId = null) => {
+/**  Exclui cliente (marca como inativo) */
+export const deleteCliente = async (id) => {
   try {
-    if (!sid) throw new Error('O campo "sid" é obrigatório.');
+    console.log("🚨 Exclusão lógica iniciada para ID:", id);
+    const clienteRef = doc(db, "clientes", id);
 
-    // 1️⃣ Tenta chamar a Cloud Function (se existir)
-    try {
-      const functions = getFunctions(undefined, 'southamerica-east1'); // ajuste região se necessário
-      const deleteClienteFn = httpsCallable(functions, 'deleteCliente');
-      await deleteClienteFn({ sid });
-      console.log('Cloud Function deleteServico executada com sucesso:', sid);
-    } catch (fnErr) {
-      console.warn('Cloud Function deleteServico não foi executada (seguindo sem ela):', fnErr.message);
-    }
+    await updateDoc(clienteRef, {
+      ativo: false,
+      atualizadoEm: new Date(),
+    });
 
-    // 2️⃣ Localiza o documento (caso docId não tenha sido passado)
-    let targetDocId = docId;
-
-    if (!targetDocId) {
-      // Busca por campo sid no Firestore
-      const q = query(collection(db, CLIENTES_COLLECTION), where('sid', '==', sid));
-      const snap = await getDocs(q);
-      if (!snap.empty) {
-        targetDocId = snap.docs[0].id;
-      } else {
-        // fallback: tenta usar sid como docId
-        targetDocId = sid;
-      }
-    }
-
-    // 3️⃣ Remove o documento
-    const ref = doc(db, CLIENTES_COLLECTION, targetDocId);
-    await deleteDoc(ref);
-
-    console.log(`Cliente ${sid} removido com sucesso do Firestore.`);
+    console.log("✅ Cliente marcado como inativo:", id);
     return { success: true };
   } catch (error) {
-    console.error('Erro ao excluir cliente:', error);
+    console.error("❌ Erro na exclusão lógica:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+/** Atualiza um cliente existente */
+export const updateCliente = async (cid, dadosAtualizados) => {
+  try {
+    if (!cid) throw new Error('O campo "cid" é obrigatório.');
+
+    console.log('🔄 Atualizando cliente:', { cid, dadosAtualizados });
+
+    // Buscar o documento pelo cid
+    const q = query(collection(db, CLIENTES_COLLECTION), where('cid', '==', cid));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      throw new Error('Cliente não encontrado');
+    }
+
+    const targetDocId = snap.docs[0].id;
+    const ref = doc(db, CLIENTES_COLLECTION, targetDocId);
+
+    await updateDoc(ref, {
+      ...dadosAtualizados,
+      atualizadoEm: new Date(),
+    });
+
+   
+  } catch (error) {
+    console.error('❌ Erro ao atualizar cliente:', error);
+    return { success: false, message: error.message };
+  }
+};
+
+/**  Busca um cliente pelo ID */
+export const getClienteById = async (id) => {
+  try {
+    console.log('🔍 Buscando cliente por ID:', id);
+    
+    const ref = doc(db, CLIENTES_COLLECTION, id);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      const cliente = {
+        id: snap.id,
+        ...snap.data()
+      };
+      console.log('✅ Cliente encontrado:', cliente);
+      return { success: true, data: cliente };
+    } else {
+      console.log('❌ Cliente não encontrado');
+      return { success: false, message: 'Cliente não encontrado' };
+    }
+  } catch (error) {
+    console.error('❌ Erro ao buscar cliente:', error);
     return { success: false, message: error.message };
   }
 };
