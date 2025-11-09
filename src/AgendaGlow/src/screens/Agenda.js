@@ -11,6 +11,7 @@ import { theme } from '../styles/theme';
 import { listenAgendamentos, deleteAgendamento } from '../services/agendamentoService';
 import { listenFuncionarios } from '../services/funcionarioService';
 import { listenServicos } from '../services/servicoService';
+import { listenClientes } from '../services/clienteService';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function Agenda() {
@@ -18,6 +19,7 @@ export default function Agenda() {
   const [agendamentos, setAgendamentos] = useState([]);
   const [agendamentosDoDia, setAgendamentosDoDia] = useState([]);
   const [funcionarios, setFuncionarios] = useState([]);
+  const [clientes, setClientes] = useState([]);
   const [servicos, setServicos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalViewVisible, setModalViewVisible] = useState(false);
@@ -41,27 +43,59 @@ export default function Agenda() {
     return servico ? servico.nome : 'Não informado';
   };
 
+  // Converte string 'dd/mm/yyyy' para objeto Date (local)
+  const parseDatePtBr = (dateStr) => {
+    if (!dateStr || typeof dateStr !== 'string') return null;
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return null;
+    const [day, month, year] = parts.map(p => parseInt(p, 10));
+    if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year)) return null;
+    return new Date(year, month - 1, day);
+  };
+
   // Função para obter nome do cliente (mock por enquanto)
   const getClienteNome = (clienteId) => {
-    const mockClientes = {
-      'maria': 'Maria Silva',
-      'joao': 'João Oliveira',
-    };
-    return mockClientes[clienteId] || clienteId || 'Não informado';
+    if (!clienteId) return 'Não informado';
+    const cliente = clientes.find(c => c.cid === clienteId);
+    return cliente ? cliente.nome : (clienteId || 'Não informado');
+  };
+
+  // Formata cabeçalho de data: mostra 'Hoje - dd/mm/yyyy' quando aplicável
+  const formatDateHeader = (dateStr) => {
+    if (!dateStr) return 'Sem data';
+    const dt = parseDatePtBr(dateStr);
+    if (!dt) return dateStr;
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    dt.setHours(0, 0, 0, 0);
+    if (dt.getTime() === hoje.getTime()) {
+      return `Hoje - ${dateStr}`;
+    }
+    return dateStr;
   };
 
   useEffect(() => {
     const unsubscribeAgendamentos = listenAgendamentos((lista) => {
       setAgendamentos(lista);
-      // Filtrar agendamentos do dia atual
-      const dataHoje = formatarDataHoje();
-      const agendamentosHoje = lista.filter(a => a.data === dataHoje);
-      setAgendamentosDoDia(agendamentosHoje);
+      // Filtrar agendamentos a partir do dia atual (hoje em diante)
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      const agendamentosFuturos = lista.filter((a) => {
+        const dt = parseDatePtBr(a.data);
+        if (!dt) return false; // ignora registros sem data válida
+        dt.setHours(0, 0, 0, 0);
+        return dt.getTime() >= hoje.getTime();
+      });
+      setAgendamentosDoDia(agendamentosFuturos);
       setLoading(false);
     });
 
     const unsubscribeFuncionarios = listenFuncionarios((lista) => {
       setFuncionarios(lista);
+    });
+
+    const unsubscribeClientes = listenClientes((lista) => {
+      setClientes(lista);
     });
 
     const unsubscribeServicos = listenServicos((lista) => {
@@ -72,6 +106,7 @@ export default function Agenda() {
       unsubscribeAgendamentos();
       unsubscribeFuncionarios();
       unsubscribeServicos();
+      unsubscribeClientes();
     };
   }, []);
 
@@ -132,30 +167,63 @@ export default function Agenda() {
         <Button title="Adicionar +" small onPress={() => navigation.navigate('AgendamentoCadastro')} />
       </View>
 
-      {/* Data do dia */}
-      <View style={styles.dateContainer}>
-        <Text style={styles.dateText}>Hoje - {formatarDataHoje()}</Text>
-      </View>
-
       {/* Lista */}
       {loading ? (
         <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 40 }} />
       ) : (
         <ScrollView contentContainerStyle={styles.listContainer}>
+          
           {agendamentosDoDia.length === 0 ? (
             <Text style={{ textAlign: 'center', color: theme.colors.textInput }}>
               Nenhum agendamento para hoje.
             </Text>
           ) : (
-            agendamentosDoDia.map((a) => (
-              <Card
-                key={a.id}
-                icon="calendar-outline"
-                title={`${getClienteNome(a.cliente)} - ${a.horario || 'Sem horário'}`}
-                subtitle={`${getServicoNome(a.servico)} · ${getFuncionarioNome(a.profissional)}`}
-                onView={() => abrirModalView(a)}
-              />
-            ))
+            (() => {
+              // Agrupa por data (a.data) e ordena as datas e os agendamentos por horário
+              const groups = agendamentosDoDia.reduce((acc, a) => {
+                const key = a.data || 'Sem data';
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(a);
+                return acc;
+              }, {});
+
+              const sortedDates = Object.keys(groups).sort((d1, d2) => {
+                const dt1 = parseDatePtBr(d1);
+                const dt2 = parseDatePtBr(d2);
+                if (!dt1 || !dt2) return d1.localeCompare(d2);
+                return dt1.getTime() - dt2.getTime();
+              });
+
+              return sortedDates.map((dateKey) => {
+                const items = groups[dateKey].slice();
+                // ordenar por horário quando disponível ('HH:MM')
+                items.sort((x, y) => {
+                  const t1 = x.horario || '';
+                  const t2 = y.horario || '';
+                  if (!t1 && !t2) return 0;
+                  if (!t1) return 1;
+                  if (!t2) return -1;
+                  return t1.localeCompare(t2);
+                });
+
+                return (
+                  <View key={dateKey}>
+                    <View style={styles.dateContainer}>
+                      <Text style={styles.dateText}>{formatDateHeader(dateKey)}</Text>
+                    </View>
+                    {items.map((a) => (
+                      <Card
+                        key={a.id}
+                        icon="calendar-outline"
+                        title={`${getClienteNome(a.cliente)} - ${a.horario || 'Sem horário'}`}
+                        subtitle={`${getServicoNome(a.servico)} · ${getFuncionarioNome(a.profissional)}`}
+                        onView={() => abrirModalView(a)}
+                      />
+                    ))}
+                  </View>
+                );
+              });
+            })()
           )}
         </ScrollView>
       )}
@@ -234,11 +302,13 @@ const styles = StyleSheet.create({
   dateContainer: {
     paddingHorizontal: theme.spacing.large,
     paddingBottom: theme.spacing.small,
+    alignItems: 'flex-start',
   },
   dateText: {
     fontSize: 14,
     color: theme.colors.textInput,
     fontWeight: '500',
+    textAlign: 'left',
   },
   listContainer: { paddingHorizontal: theme.spacing.large, paddingBottom: 100 },
 
