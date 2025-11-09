@@ -1,7 +1,8 @@
 import { auth } from '../database/firebase';
-import { signInWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AuthSession from "expo-auth-session";
+import { getAuth, signInWithCredential, GoogleAuthProvider } from "firebase/auth";
 
 
 /* Faz login com email e senha e salva localmente */
@@ -27,7 +28,7 @@ export const login = async (email, senha) => {
  * Recupera o usuário salvo localmente
  */
 export const getUser = async () => {
-  const userData = await AsyncStorage.getItem('user');
+  const userData = await AsyncStorage.getItem('@user');
   return userData ? JSON.parse(userData) : null;
 };
 
@@ -42,11 +43,16 @@ export const logout = async () => {
 /**
  * Login com o Google 
  */
-export const loginComGoogleToken = async (accessToken) => {
-  const credential = GoogleAuthProvider.credential(null, accessToken);
-  const result = await signInWithCredential(auth, credential);
-  return result.user;
-};
+export async function loginComGoogleToken(idToken, accessToken) {
+  try {
+    // use a instância auth importada (não chame getAuth() novamente)
+    const credential = GoogleAuthProvider.credential(idToken, accessToken); // idToken é suficiente
+    const userCredential = await signInWithCredential(auth, credential);
+    return userCredential.user;
+  } catch (err) {
+    throw err;
+  }
+}
 
 /**Esqueci a senha */
 export const forgotPassword = async (email) => {
