@@ -1,14 +1,18 @@
 import { db } from '../database/firebase';
-import { 
-  collection, addDoc, query, where, onSnapshot, deleteDoc, doc, getDocs, updateDoc 
+import {
+  collection, addDoc, query, where, onSnapshot, deleteDoc, doc, getDocs, updateDoc
 } from 'firebase/firestore';
 
 const AGENDAMENTOS_COLLECTION = 'agendamentos';
 
 export const addAgendamento = async (agendamento) => {
   try {
+    const colRef = collection(db, AGENDAMENTOS_COLLECTION);
+    const docRef = doc(colRef);
+
     await addDoc(collection(db, AGENDAMENTOS_COLLECTION), {
       ...agendamento,
+      uid: docRef.id,
       ativo: true,
       criadoEm: new Date(),
     });
