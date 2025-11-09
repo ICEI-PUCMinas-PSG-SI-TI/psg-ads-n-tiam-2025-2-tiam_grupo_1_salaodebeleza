@@ -1,10 +1,10 @@
-
 import { db } from '../database/firebase';
 import { 
-  collection, addDoc, query, where, onSnapshot, deleteDoc, doc, updateDoc, getDocs
+  collection, addDoc, query, where, onSnapshot, deleteDoc, doc, updateDoc, getDocs, serverTimestamp
 } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
-const CLIENTES_COLLECTION = 'cliente';
+const CLIENTES_COLLECTION = 'clientes';
 
 /** Adiciona um novo cliente */
 export const addClientes = async (cliente) => {
@@ -12,7 +12,7 @@ export const addClientes = async (cliente) => {
     await addDoc(collection(db, CLIENTES_COLLECTION), {
       ...cliente,
       ativo: true,
-      criadoEm: new Date(),
+      criadoEm: serverTimestamp(), // mais consistente que new Date()
     });
     return { success: true };
   } catch (error) {
@@ -38,47 +38,55 @@ export const listenClientes = (callback) => {
 };
 
 /**
- * Exclui um cliente (Firestore + Cloud Function opcional)
- * @param {string} sid - ID único do cliente (igual ao docRef.id)
- * @param {string} [docId] - ID do documento (opcional)
+ * Exclusão lógica: marca o cliente como inativo (ativo = false)
+ * @param {string} sid - identificador lógico do cliente (campo sid)
+ * @param {string} [docId] - id do documento Firestore (opcional)
  */
 export const deleteCliente = async (sid, docId = null) => {
   try {
-    if (!sid) throw new Error('O campo "sid" é obrigatório.');
-
-    // 1️⃣ Tenta chamar a Cloud Function (se existir)
-    try {
-      const functions = getFunctions(undefined, 'southamerica-east1'); // ajuste região se necessário
-      const deleteClienteFn = httpsCallable(functions, 'deleteCliente');
-      await deleteClienteFn({ sid });
-      console.log('Cloud Function deleteServico executada com sucesso:', sid);
-    } catch (fnErr) {
-      console.warn('Cloud Function deleteServico não foi executada (seguindo sem ela):', fnErr.message);
-    }
-
-    // 2️⃣ Localiza o documento (caso docId não tenha sido passado)
+    // Se docId foi fornecido, use direto (mais confiável)
     let targetDocId = docId;
-
     if (!targetDocId) {
-      // Busca por campo sid no Firestore
+      if (!sid) throw new Error('É necessário fornecer docId ou sid para excluir o cliente.');
+      // procurar pelo campo sid no documento
       const q = query(collection(db, CLIENTES_COLLECTION), where('sid', '==', sid));
       const snap = await getDocs(q);
       if (!snap.empty) {
         targetDocId = snap.docs[0].id;
       } else {
-        // fallback: tenta usar sid como docId
-        targetDocId = sid;
+        throw new Error(`Cliente com sid "${sid}" não encontrado.`);
       }
     }
 
-    // 3️⃣ Remove o documento
     const ref = doc(db, CLIENTES_COLLECTION, targetDocId);
-    await deleteDoc(ref);
 
-    console.log(`Cliente ${sid} removido com sucesso do Firestore.`);
+    // atualiza documento para exclusão lógica
+    await updateDoc(ref, {
+      ativo: false,
+      removidoEm: serverTimestamp(),
+    });
+
+    console.log(`Cliente (docId=${targetDocId}) marcado como inativo.`);
     return { success: true };
   } catch (error) {
-    console.error('Erro ao excluir cliente:', error);
+    console.error('Erro ao excluir cliente (soft):', error);
+    return { success: false, message: error?.message ?? 'Erro desconhecido ao excluir cliente.' };
+  }
+};
+
+/**
+ * Exclusão física (hard delete) — use com cuidado
+ * @param {string} docId - id do documento no Firestore
+ */
+export const hardDeleteCliente = async (docId) => {
+  try {
+    if (!docId) throw new Error('docId é obrigatório para exclusão física.');
+    const ref = doc(db, CLIENTES_COLLECTION, docId);
+    await deleteDoc(ref);
+    console.log(`Documento ${docId} removido permanentemente.`);
+    return { success: true };
+  } catch (error) {
+    console.error('Erro ao excluir cliente (hard):', error);
     return { success: false, message: error.message };
   }
 };
