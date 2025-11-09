@@ -2,6 +2,12 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../styles/theme';
+import { auth } from "../database/firebase";
+import {
+  updateEmail,
+  reauthenticateWithCredential,
+  GoogleAuthProvider,
+} from "firebase/auth";
 
 // Botão com título e/ou ícone, com opção de desabilitar e estilos variados
 export default function Button({

@@ -138,6 +138,18 @@ export default function Funcionarios({ navigation }) {
                     marginTop: 20,
                   }}
                 />
+                {/* Botão para abrir tela de edição */}
+                <Button
+                  title="Editar Funcionário"
+                  onPress={() => {
+                    fecharModalView();
+                    navigation.navigate('FuncionarioEditar', { funcionario: funcionarioSelecionado });
+                  }}
+                  style={{
+                    marginTop: 12,
+                    backgroundColor: theme.colors.secondary || '#4C8CFF',
+                  }}
+                />
               </View>
             )}
           </View>

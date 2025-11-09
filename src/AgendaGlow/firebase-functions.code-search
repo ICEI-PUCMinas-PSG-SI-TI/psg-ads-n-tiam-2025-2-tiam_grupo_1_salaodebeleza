@@ -1,0 +1,11 @@
+# Query: firebase-functions
+# ContextLines: 1
+
+2 resultados - 2 arquivos
+
+src\AgendaGlow\index.js:
+ 
+
+src\AgendaGlow\src\functions\index.js:
+  1: const functions = require("firebase-functions");
+  2  const admin = require("firebase-admin");
