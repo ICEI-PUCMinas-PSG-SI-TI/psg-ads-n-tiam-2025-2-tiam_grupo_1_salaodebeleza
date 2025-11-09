@@ -2,6 +2,12 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../styles/theme';
+import { auth } from "../database/firebase";
+import {
+  updateEmail,
+  reauthenticateWithCredential,
+  GoogleAuthProvider,
+} from "firebase/auth";
 
 // Botão com título e/ou ícone, com opção de desabilitar e estilos variados
 export default function Button({
@@ -70,15 +76,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: theme.spacing.medium,
+    paddingVertical: theme.spacing.small,
     paddingHorizontal: theme.spacing.large,
+    marginVertical: theme.spacing.small,
     borderRadius: theme.radius.large,
   },
   // Botão para usar no "Add+" das telas de Clientes, Serviços, etc...
   small: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: theme.radius.small,
+    paddingVertical: theme.spacing.small,
+    paddingHorizontal: theme.spacing.medium,
+    borderRadius: theme.radius.large,
   },
   // Botão usado dentro dos Cards, para Visualizar, Editar, etc...
   iconOnly: {

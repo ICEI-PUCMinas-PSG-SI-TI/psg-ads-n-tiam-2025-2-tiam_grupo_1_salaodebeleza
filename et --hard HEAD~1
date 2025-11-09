@@ -1,0 +1,90 @@
+[33m6edac99[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtesting[m[33m, [m[1;31morigin/testing[m[33m)[m Commit antes que eu estrague tudo
+[33mc17a724[m Merge pull request #45 from ICEI-PUCMinas-PSG-SI-TI/feature/melissa/cadastro-de-funcionario
+[33m5472ed7[m[33m ([m[1;31morigin/feature/melissa/cadastro-de-funcionario[m[33m, [m[1;32mfeature/melissa/cadastro-de-funcionario[m[33m)[m funcionarioService criado
+[33mea8c24d[m Merge pull request #44 from ICEI-PUCMinas-PSG-SI-TI/feature/lucas/login-google
+[33m18cca50[m Merge branch 'testing' into feature/lucas/login-google
+[33m338f8a2[m feat: Adicionado funções de logar com google e redefinição de senha
+[33m4e0d415[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/feature/arthur/cadastro-de-servicos[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #43 from ICEI-PUCMinas-PSG-SI-TI/feature/arthur/cadastro-de-servicos
+[33m118cc00[m Criação dos arquivos de serviços
+[33m37a3ddf[m Inclusão da Stack de Navegação
+[33me6d5c59[m Merge da testing
+[33m3a48dd2[m Merge branch 'testing' into feature/arthur/cadastro-de-servicos
+[33m151beaa[m Merge pull request #41 from ICEI-PUCMinas-PSG-SI-TI/feature/lucas/page-login
+[33mefcb333[m Merge branch 'testing' into feature/lucas/page-login
+[33m1bec6f6[m Merge branch 'testing' into feature/arthur/cadastro-de-servicos
+[33m406c957[m feat: Adicionando funcionalidade da page de login
+[33mbfae81c[m Merge pull request #40 from ICEI-PUCMinas-PSG-SI-TI/feature/melissa/cadastro-de-funcionario
+[33mcdf1811[m Home pronta, arquivos das demais telas criados, falta implementar
+[33m727aaae[m Merge branch 'testing' into feature/cadastro-de-servicos
+[33mdb37ae9[m Merge pull request #39 from ICEI-PUCMinas-PSG-SI-TI/feature/melissa/cadastro-de-funcionario
+[33ma825767[m Tela de Funcionarios e Cadastro de Funcionarios
+[33mef1ff5c[m Merge branch 'testing' into feature/cadastro-de-servicos
+[33m9efd122[m .
+[33mdc7c5b1[m Merge remote-tracking branch 'origin/testing' into feature/melissa/cadastro-de-funcionario
+[33med91267[m Merge pull request #37 from ICEI-PUCMinas-PSG-SI-TI/feature/lucas/conexao-firebase
+[33m6a656eb[m[33m ([m[1;32mmain[m[33m)[m Criei todos componentes e estilos!
+[33ma4ec778[m[33m ([m[1;31morigin/feature/lucas/conexao-firebase[m[33m)[m feat: adicionando o firebase ao projeto
+[33m5822046[m[33m ([m[1;31morigin/feature/lucas-cadastro-de-agendamento[m[33m)[m feat: Adicionando estrutura base do projeto
+[33m54397e9[m Projeto apagado
+[33m00fc0ff[m feat: iniciando projeto front com expo no vsCode
+[33m082bbf2[m Update 04-Projeto de Interface.md
+[33m295a9cb[m Add files via upload
+[33m64b2346[m Update 04-Projeto de Interface.md
+[33md98b1d9[m Upload Wireframes
+[33m203a888[m Update 04-Projeto de Interface.md
+[33m19df7d0[m Update 05-Arquitetura da Solução.md
+[33m9d9353c[m Update 05-Arquitetura da Solução.md
+[33m326b292[m Diagrama e Esquema ER finalizados
+[33m75d3c7c[m Update 05-Arquitetura da Solução.md
+[33m6bea207[m Delete docs/Plano de Testes.md
+[33m7966a11[m docs: Elaborando planos de testes
+[33m556a5c7[m docs: adicionando a tabela de relação de ambiente e revisando o restante dessa documentação Metodologia.md
+[33m24f25c4[m Create Plano de Testes.md
+[33mc953836[m Update 02-Especificação do Projeto.md
+[33mbd1db6c[m Update 03-Metodologia.md
+[33m98f4299[m Update 03-Metodologia.md
+[33m701b6c9[m Script adicionado ao site (Envio de mensagem para o Whatsapp)
+[33m159a655[m Site da Cliente - modelo está pronto
+[33m19f74a7[m Update 02-Especificação do Projeto.md
+[33m8787d12[m Update 02-Especificação do Projeto.md
+[33m969c82c[m Update 02-Especificação do Projeto.md
+[33maaa60d0[m Update 02-Especificação do Projeto.md
+[33m6a19a2a[m Add files via upload
+[33m04cb342[m Add files via upload
+[33md223d72[m Update 02-Especificação do Projeto.md
+[33mfbaceff[m Update 02-Especificação do Projeto.md
+[33m8c1b0be[m Revisão dos requisitos funcionais Especificação.md
+[33mce2ccbe[m Add files via upload
+[33m87ac8ca[m Add files via upload
+[33m0e6a43d[m Ferramentas utilizadas, padrões de branches e divisão de papéis scrum
+[33ma969769[m Merge pull request #3 from ICEI-PUCMinas-PSG-SI-TI/LiviaCristinaT-patch-1
+[33m389c249[m Update 02-Especificação do Projeto.md
+[33m49a82f1[m[33m ([m[1;31morigin/LiviaCristinaT-patch-1[m[33m)[m Update 02-Especificação do Projeto.md
+[33m06b0886[m Add files via upload
+[33mcc1cd9a[m Update 01-Documentação de Contexto.md
+[33mfc01d94[m Update 01-Documentação de Contexto.md
+[33m305fcd7[m Update 01-Documentação de Contexto.md
+[33m6f277cb[m Update 02-Especificação do Projeto.md
+[33m0c56a7a[m Update 02-Especificação do Projeto.md
+[33m8479e83[m Update 01-Documentação de Contexto.md
+[33maa46597[m Update 01-Documentação de Contexto.md
+[33ma247425[m Update 01-Documentação de Contexto.md
+[33mbbd0955[m Update 01-Documentação de Contexto.md
+[33m43d5465[m Update 01-Documentação de Contexto.md
+[33mbf12322[m Update 01-Documentação de Contexto.md
+[33m64cbc66[m Add files via upload
+[33ma286021[m Delete docs/img/mapa de stakeholders
+[33mde6080a[m  mapa de stakeholders
+[33ma0b2c45[m Mapa de stakeholders
+[33m3c9e2ea[m Update 01-Documentação de Contexto.md
+[33m11b2397[m Update 02-Especificação do Projeto.md
+[33m113530b[m Add imagem do diagrama PBMN
+[33m1183c56[m Update 02-Especificação do Projeto.md
+[33mdc3d726[m Update 02-Especificação do Projeto.md
+[33md56a0bc[m Update 02-Especificação do Projeto.md
+[33m4428690[m Update 13-Referências.md
+[33m0f09070[m Update 01-Documentação de Contexto.md
+[33mc65cca8[m Add files via upload
+[33m8ddbc98[m Update 01-Documentação de Contexto.md
+[33m1942f6e[m Update README.md
+[33m9bd7569[m Initial commit

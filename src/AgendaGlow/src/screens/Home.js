@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Button } from 'react-native';
 import Header from '../components/Header';
 import Square from '../components/Square';
 import Card from '../components/Card';
@@ -8,9 +8,9 @@ import { theme } from '../styles/theme';
 
 export default function Home() {
   const agenda = [
-    { id: 1, name: 'Maria Silva', service: 'Cortes + Escova', time: '08:00', staff: 'Bruna' },
-    { id: 2, name: 'Maria Silva', service: 'Cortes + Escova', time: '08:00', staff: 'Bruna' },
-    { id: 3, name: 'Maria Silva', service: 'Cortes + Escova', time: '08:00', staff: 'Bruna' },
+    { id: 1, name: 'Maria Silva', service: 'Corte + Escova', time: '08:00', staff: 'Bruna' },
+    { id: 2, name: 'Ana Carolina', service: 'Corte + Hidratação', time: '09:30', staff: 'Bruna' },
+    { id: 3, name: 'Maria Clara', service: 'Corte', time: '12:00', staff: 'Bruna' },
   ];
 
   const navigation = useNavigation();
@@ -20,16 +20,10 @@ export default function Home() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Header */}
         <Header
-          userName="Bom dia adm!"
+          userName="Usuario"
           onNotificationPress={() => {}}
           onProfilePress={() => {}}
         />
-
-        {/* Saudação */}
-        <View style={styles.greeting}>
-          <Text style={styles.hello}>Opa, Bom dia adm!</Text>
-          <Text style={styles.subtitle}>Segue abaixo informações do dia!</Text>
-        </View>
 
         {/* Resumo do Dia */}
         <Text style={styles.sectionTitle}>Resumo do dia</Text>
@@ -44,29 +38,22 @@ export default function Home() {
         <View style={styles.agendaList}>
           {agenda.map((item) => (
             <TouchableOpacity key={item.id} activeOpacity={0.8}>
-              <View style={styles.agendaCard}>
-                <View style={styles.agendaLeft}>
-                  <View style={styles.profilePicPlaceholder} />
-                  <View>
-                    <Text style={styles.clientName}>{item.name}</Text>
-                    <Text style={styles.service}>{item.service}</Text>
-                  </View>
-                </View>
-                <View>
-                  <Text style={styles.time}>{item.time}</Text>
-                  <Text style={styles.staff}>{item.staff}</Text>
-                </View>
-              </View>
+              <Card
+                icon="person-outline"
+                title={`${item.name} — ${item.time}`}
+                subtitle={`${item.service} · ${item.staff}`}
+                onView={() => navigation.navigate('DetalhesAgendamento', { id: item.id })}
+              />
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Atalhos Rápidos */}
-        <Text style={styles.sectionTitle}>Atalhos rápidos</Text>
+        <Text style={styles.sectionTitle}>Atalhos</Text>
         <View style={styles.shortcuts}>
           <Square
             icon="people-outline"
-            title="Time"
+            title="Equipe"
             onPress={() => navigation.navigate('Funcionarios')}
             color="#FFE9E0"
           />
@@ -82,7 +69,7 @@ export default function Home() {
           />
         </View>
       </ScrollView>
-
+      
     </View>
   );
 }

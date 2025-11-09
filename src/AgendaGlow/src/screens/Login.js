@@ -7,14 +7,35 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useFonts } from "expo-font";
 import { Feather } from "@expo/vector-icons";
-import { login } from "../services/loginService";
+import {
+  login,
+  loginComGoogleToken,
+  forgotPassword,
+} from "../services/loginService";
+
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { makeRedirectUri } from "expo-auth-session";
+
+const CLIENT_ID =
+  "223905135120-7juc9frafb7jm75k5ajtm6nf8k6cnjb8.apps.googleusercontent.com";
+
+WebBrowser.maybeCompleteAuthSession();
+
+// helper simples para gerar nonce (pode usar expo-random para mais entropia)
+function makeNonce() {
+  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`;
+}
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [message, setMessage] = useState("");
+
+  const nonceRef = useRef(makeNonce());
 
   const efetuarLogin = async () => {
     try {
@@ -24,10 +45,64 @@ export default function Login() {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setMessage("Insira seu e-mail para redefinir a senha.");
+      return;
+    }
+
+    const result = await forgotPassword(email);
+
+    if (result.success) {
+      console.log("Sucesso", result.message);
+    } else {
+      console.log("Erro", result.message);
+    }
+  };
+
+  // ** Login com Google usando provider (corrige problemas com discovery/endpoint) */
+  // pedir id_token + access_token e enviar nonce
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: CLIENT_ID,
+    scopes: ["openid", "profile", "email"],
+    redirectUri: makeRedirectUri({ useProxy: true }),
+    responseType: "id_token token", // id_token + access_token
+    usePKCE: false, // implicit flow → PKCE false
+    extraParams: {
+      nonce: nonceRef.current, // >>> aqui envia o nonce exigido
+    },
+  });
+
+  useEffect(() => {
+    if (!response) return;
+    console.log("Google auth raw response:", response);
+    if (response.type === "success") {
+      const idToken = response.authentication?.idToken || response.params?.id_token;
+      const accessToken = response.authentication?.accessToken || response.params?.access_token;
+      console.log("idToken:", !!idToken, "accessToken:", !!accessToken);
+
+      if (idToken) {
+        loginComGoogleToken(idToken, accessToken)
+          .then(user => {
+            console.log("Usuário logado no Firebase:", user.email ?? user.uid);
+            // navigation.replace('AppMain') // ou sua navegação após login
+          })
+          .catch(err => {
+            console.error("Erro ao logar com Google -> Firebase:", err);
+            Alert.alert("Erro ao logar", err.message || String(err));
+          });
+      } else {
+        console.error("Nenhum id_token retornado — verifique CLIENT_ID (use Web client) e redirectUri.");
+      }
+    }
+  }, [response]);
+  // ** FIM login Google */
+
   const [fontsLoaded] = useFonts({
     "Inspiration-Regular": require("../../assets/fonts/Inspiration-Regular.ttf"),
     Inter: require("../../assets/fonts/Inter.ttf"),
   });
+
   if (!fontsLoaded) {
     return null;
   }
@@ -43,6 +118,8 @@ export default function Login() {
       <Text style={styles.frase}>
         Gerencie seu salão de forma prática e elegante!
       </Text>
+
+      <Text style={styles.message}>{message}</Text>
 
       <View style={styles.inputCima}>
         <Feather
@@ -82,12 +159,18 @@ export default function Login() {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={efetuarLogin}>
-        <Text style={styles.textButton}>Salvar</Text>
+        <Text style={styles.textButton}>Logar</Text>
       </TouchableOpacity>
 
-      <Text>Esqueci minha senha</Text>
-      <Text style={styles.textNegrito}>Criar Conta</Text>
-      <TouchableOpacity style={styles.googleButton}>
+      <TouchableOpacity onPress={handleForgotPassword}>
+        <Text style={styles.espacos}>Esqueci minha senha</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.googleButton}
+        onPress={() => promptAsync({ useProxy: true })}
+        disabled={!request}
+      >
         <Image
           source={require("../../assets/google-icon.png")}
           style={styles.googleIcon}
@@ -210,5 +293,17 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     fontWeight: 400,
     bottom: 30,
+  },
+  espacos: {
+    marginBlock: 20,
+  },
+  message: {
+    color: "#e95454ff",
+    fontFamily: "Inter",
+    fontWeight: 400,
+    textAlign: "left",
+    width: "100%",
+    paddingInline: 10,
+    paddingBlock: 4,
   },
 });
