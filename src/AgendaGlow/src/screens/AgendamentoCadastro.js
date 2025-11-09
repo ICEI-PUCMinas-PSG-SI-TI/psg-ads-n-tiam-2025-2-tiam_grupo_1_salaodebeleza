@@ -7,6 +7,7 @@ import Button from "../components/Button";
 import { theme } from "../styles/theme";
 import { listenFuncionarios } from "../services/funcionarioService";
 import { listenServicos } from "../services/servicoService";
+import { listenClientes } from "../services/clienteService";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { addAgendamento } from '../services/agendamentoService';
 
@@ -16,18 +17,14 @@ export default function AgendamentoCadastro() {
   const [profissional, setProfissional] = useState(null);
   const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedTime, setSelectedTime] = useState(new Date());
   const [valor, setValor] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const mockClientes = [
-    { label: "Selecione o Cliente", value: null },
-    { label: "Maria Silva", value: "maria" },
-    { label: "João Oliveira", value: "joao" },
-  ];
-
   const [listaFuncionarios, setListaFuncionarios] = useState([]);
-  const [listaClientes, setListaClientes] = useState(mockClientes);
+  const [listaClientes, setListaClientes] = useState([]);
   const [listaServicos, setListaServicos] = useState([]);
 
   useEffect(() => {
@@ -41,12 +38,16 @@ export default function AgendamentoCadastro() {
       setListaServicos(lista);
       setLoading(false);
     });
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    
-    return () => unsubscribe();
+    const unsubscribeClientes = listenClientes((lista) => {
+      setLoading(true);
+      setListaClientes(lista);
+      setLoading(false);
+    });
+    return () => {
+      unsubscribeFuncionarios();
+      unsubscribeServicos();
+      unsubscribeClientes();
+    };
   }, []);
 
   async function handleSalvar() {
@@ -95,6 +96,7 @@ export default function AgendamentoCadastro() {
 
   const handleConfirm = (selectedDate) => {
     const formattedDate = selectedDate.toLocaleDateString("pt-BR");
+    setSelectedDate(selectedDate);
     setData(formattedDate);
     hideDatePicker();
   };
@@ -103,6 +105,7 @@ export default function AgendamentoCadastro() {
       hour: "2-digit",
       minute: "2-digit",
     });
+    setSelectedTime(selectedTime);
     setHorario(formattedTime);
     hideTimePicker();
   };
@@ -119,12 +122,17 @@ export default function AgendamentoCadastro() {
           selectedValue={cliente}
           onValueChange={setCliente}
         >
-          {listaClientes.map((c, index) => (
+          <Picker.Item
+            color={theme.colors.textInput}
+            label="Selecione o Cliente"
+            value={null}
+          />
+          {listaClientes.map((c) => (
             <Picker.Item
-              key={index}
               color={theme.colors.textInput}
-              label={c.label}
-              value={c.value}
+              key={c.id}
+              label={c.nome ?? 'Cliente'}
+              value={c.id}
             />
           ))}
         </Picker>
@@ -180,6 +188,7 @@ export default function AgendamentoCadastro() {
         <DateTimePickerModal
           isVisible={isDatePickerVisible}
           mode="date"
+          date={selectedDate}
           onConfirm={handleConfirm}
           onCancel={hideDatePicker}
         />
@@ -198,6 +207,7 @@ export default function AgendamentoCadastro() {
         <DateTimePickerModal
           isVisible={isTimePickerVisible}
           mode="time"
+          date={selectedTime}
           onConfirm={handleTimeConfirm}
           onCancel={hideTimePicker}
         />
