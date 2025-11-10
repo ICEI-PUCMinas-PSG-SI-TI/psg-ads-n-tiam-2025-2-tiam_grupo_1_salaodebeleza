@@ -1,9 +1,11 @@
 // src/screens/ClienteCadastro.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, Alert, ScrollView, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, Alert, ScrollView, TouchableOpacity} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../components/Header';
 import Button from '../components/Button';
+import Input from '../components/Input';
+import TextArea from '../components/TextArea';
 import { theme } from '../styles/theme';
 import { addCliente, updateCliente, getClienteById } from '../services/clienteService';
 
@@ -97,40 +99,15 @@ export default function ClienteCadastro() {
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <Header userName="Usuário" />
 
-      <TouchableOpacity
-  onPress={() => navigation.goBack()}
-  style={{
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.white,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    marginHorizontal: 16,
-    marginTop: 10,
-    alignSelf: 'flex-start',
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-  }}
->
-  <Text style={{ color: theme.colors.primary, fontWeight: 'bold', fontSize: 16 }}>
-    ← Voltar
-  </Text>
-</TouchableOpacity>
-
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.container}>
-          <Text style={styles.label}>Nome</Text>
-          <TextInput style={styles.input} value={nome} onChangeText={setNome} placeholder="Nome completo *" />
+          <Input value={nome} onChangeText={setNome} placeholder="Nome*" />
 
-          <Text style={styles.label}>Telefone</Text>
-          <TextInput style={styles.input} value={telefone} onChangeText={setTelefone} placeholder="(xx) xxxxx-xxxx *" keyboardType="phone-pad" />
+          <Input value={telefone} onChangeText={setTelefone} placeholder="Telefone*" keyboardType="phone-pad" />
 
-          <Text style={styles.label}>E-mail</Text>
-          <TextInput style={styles.input} value={email} onChangeText={setEmail} placeholder="email@exemplo.com" keyboardType="email-address" />
+          <Input value={email} onChangeText={setEmail} placeholder="Email" keyboardType="email-address" />
 
-          <Text style={styles.label}>Observações</Text>
-          <TextInput style={[styles.input, { height: 100 }]} value={observacoes} onChangeText={setObservacoes} placeholder="Observações" multiline />
+          <TextArea value={observacoes} onChangeText={setObservacoes} placeholder="Observações" />
 
           <View style={{ marginTop: 20 }}>
             <Button title={editingId ? 'Salvar alterações' : 'Salvar cliente'} onPress={salvar} />
@@ -144,14 +121,4 @@ export default function ClienteCadastro() {
 const styles = StyleSheet.create({
   container: { padding: 16, paddingBottom: 40 },
   label: { fontWeight: '700', color: theme.colors.primary, marginBottom: 6 },
-  input: {
-    backgroundColor: theme.colors.white,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    color: theme.colors.text,
-  },
 });

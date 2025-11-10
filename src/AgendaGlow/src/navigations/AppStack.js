@@ -11,7 +11,6 @@ import Relatorios from '../screens/Relatorios';
 import VincularGoogle from '../screens/VincularGoogle';
 import Servicos from '../screens/Servicos';
 import ServicosCadastro from '../screens/ServicosCadastro';
-import BottomTabs from '../components/BottomTabs';
 import ClienteCadastro from '../screens/ClienteCadastro';
 import BottomTabs from './BottomTabs';
 import CadastroAgendamento from '../screens/AgendamentoCadastro';

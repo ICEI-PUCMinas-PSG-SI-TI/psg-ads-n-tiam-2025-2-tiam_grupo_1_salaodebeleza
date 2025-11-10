@@ -179,7 +179,7 @@ export default function Clientes() {
                     onPress={handleExcluir}
                     disabled={excluindo}
                     style={[
-                      styles.deleteButton,
+                      styles.primary,
                       excluindo && styles.disabledButton
                     ]}
                   />
