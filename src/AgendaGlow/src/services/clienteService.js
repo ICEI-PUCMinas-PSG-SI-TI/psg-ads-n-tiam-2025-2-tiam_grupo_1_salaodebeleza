@@ -7,7 +7,7 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 const CLIENTES_COLLECTION = 'clientes';
 
 // 🔹 FUNÇÃO DE EXCLUSÃO 
-export const deleteCliente = async (id) => {
+/* export const deleteCliente = async (id) => {
   try {
     console.log( id);
     const clienteRef = doc(db, "clientes", id);
@@ -23,7 +23,7 @@ export const deleteCliente = async (id) => {
     console.error("❌ Erro na exclusão lógica:", error);
     return { success: false, message: error.message };
   }
-};
+}; */
 
 // adicionar cliente
 export const addCliente = async (cliente) => {
