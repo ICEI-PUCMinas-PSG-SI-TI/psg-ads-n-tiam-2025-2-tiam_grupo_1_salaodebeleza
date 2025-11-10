@@ -42,55 +42,56 @@ export default function ClienteCadastro() {
     load();
   }, [idParam]);
 
-  const salvar = async () => {
-  if (!nome.trim()) return Alert.alert('Validação', 'Nome é obrigatório.');
-  setLoading(true);
+    const salvar = async () => {
+    if (!nome.trim()) return Alert.alert('Validação', 'Nome é obrigatório.');
+    setLoading(true);
+      if (!telefone.trim()) return Alert.alert('Validação', 'Telefone é obrigatório.'); 
 
-  try {
-    if (editingId) {
-      // Edição
-      const result = await updateCliente(editingId, {
-        nome: nome.trim(),
-        telefone: telefone.trim(),
-        email: email.trim(),
-        observacoes,
-      });
-
-      if (result.success !== false) {
-        Alert.alert('Sucesso', 'Cliente atualizado.', [
-    {
-      text: 'OK',
-      onPress: () => {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Clientes' }],
+    try {
+      if (editingId) {
+        // Edição
+        const result = await updateCliente(editingId, {
+          nome: nome.trim(),
+          telefone: telefone.trim(),
+          email: email.trim(),
+          observacoes,
         });
-      },
-    },
-  ]);
-      }
-    } else {
-      // Novo cadastro
-      const result = await addCliente({
-        nome: nome.trim(),
-        telefone: telefone.trim(),
-        email: email.trim(),
-        observacoes,
-      });
 
-      if (result.success) {
-        Alert.alert('Sucesso', 'Cliente criado.');
-        navigation.navigate('Clientes'); // volta pra listagem
+        if (result.success !== false) {
+          Alert.alert('Sucesso', 'Cliente atualizado.', [
+      {
+        text: 'OK',
+        onPress: () => {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Clientes' }],
+          });
+        },
+      },
+    ]);
+        }
       } else {
-        Alert.alert('Erro', result.message || 'Falha ao salvar.');
+        // Novo cadastro
+        const result = await addCliente({
+          nome: nome.trim(),
+          telefone: telefone.trim(),
+          email: email.trim(),
+          observacoes,
+        });
+
+        if (result.success) {
+          Alert.alert('Sucesso', 'Cliente criado.');
+          navigation.navigate('Clientes'); // volta pra listagem
+        } else {
+          Alert.alert('Erro', result.message || 'Falha ao salvar.');
+        }
       }
+    } catch (error) {
+      Alert.alert('Erro', error.message || 'Erro inesperado');
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    Alert.alert('Erro', error.message || 'Erro inesperado');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -120,10 +121,10 @@ export default function ClienteCadastro() {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.container}>
           <Text style={styles.label}>Nome</Text>
-          <TextInput style={styles.input} value={nome} onChangeText={setNome} placeholder="Nome completo" />
+          <TextInput style={styles.input} value={nome} onChangeText={setNome} placeholder="Nome completo *" />
 
           <Text style={styles.label}>Telefone</Text>
-          <TextInput style={styles.input} value={telefone} onChangeText={setTelefone} placeholder="(xx) xxxxx-xxxx" keyboardType="phone-pad" />
+          <TextInput style={styles.input} value={telefone} onChangeText={setTelefone} placeholder="(xx) xxxxx-xxxx *" keyboardType="phone-pad" />
 
           <Text style={styles.label}>E-mail</Text>
           <TextInput style={styles.input} value={email} onChangeText={setEmail} placeholder="email@exemplo.com" keyboardType="email-address" />
