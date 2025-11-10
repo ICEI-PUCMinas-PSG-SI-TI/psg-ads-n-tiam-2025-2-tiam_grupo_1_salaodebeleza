@@ -41,12 +41,10 @@ export default function AgendamentoCadastro() {
       setListaServicos(lista);
       setLoading(false);
     });
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    
-    return () => unsubscribe();
+    return () => {
+      unsubscribeFuncionarios();
+      unsubscribeServicos();
+    };
   }, []);
 
   async function handleSalvar() {
