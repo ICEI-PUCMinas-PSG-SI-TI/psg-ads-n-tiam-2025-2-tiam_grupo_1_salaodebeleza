@@ -6,22 +6,42 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 
 const CLIENTES_COLLECTION = 'clientes';
 
-/** Adiciona um novo cliente */
-export const addClientes = async (cliente) => {
+// 🔹 FUNÇÃO DE EXCLUSÃO 
+export const deleteCliente = async (id) => {
   try {
-    await addDoc(collection(db, CLIENTES_COLLECTION), {
-      ...cliente,
-      ativo: true,
-      criadoEm: serverTimestamp(), // mais consistente que new Date()
+    console.log( id);
+    const clienteRef = doc(db, "clientes", id);
+
+    await updateDoc(clienteRef, {
+      ativo: false,
+      atualizadoEm: new Date(),
     });
+
+    console.log("✅ Cliente marcado como inativo:", id);
     return { success: true };
   } catch (error) {
-    console.error('Erro ao adicionar cliente:', error);
+    console.error("❌ Erro na exclusão lógica:", error);
     return { success: false, message: error.message };
   }
 };
 
-/** Escuta em tempo real apenas clientes ativos */
+// adicionar cliente
+export const addCliente = async (cliente) => {
+  try {
+    const colRef = collection(db, CLIENTES_COLLECTION);
+    const docRef = doc(colRef);
+    await setDoc(docRef, {
+      ...cliente,
+      cid: docRef.id,
+      ativo: true,
+      criadoEm: serverTimestamp(), // mais consistente que new Date()
+    });
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
 export const listenClientes = (callback) => {
   const q = query(collection(db, CLIENTES_COLLECTION), where('ativo', '==', true));
 
