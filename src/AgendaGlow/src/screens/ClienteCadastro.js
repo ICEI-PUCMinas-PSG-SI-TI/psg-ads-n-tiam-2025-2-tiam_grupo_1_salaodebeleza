@@ -1,6 +1,8 @@
-// src/screens/ClienteCadastro.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, Alert, ScrollView, TouchableOpacity} from 'react-native';
+import { 
+  View, Text, StyleSheet, KeyboardAvoidingView, Platform, 
+  Modal, ScrollView 
+} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../components/Header';
 import Button from '../components/Button';
@@ -12,8 +14,7 @@ import { addCliente, updateCliente, getClienteById } from '../services/clienteSe
 export default function ClienteCadastro() {
   const navigation = useNavigation();
   const route = useRoute();
-  const idParam = route.params?.id; // passando id
-
+  const idParam = route.params?.id;
 
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
@@ -22,8 +23,18 @@ export default function ClienteCadastro() {
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
+  // Controle de Modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMensagem, setModalMensagem] = useState('');
+
+  const abrirModal = (mensagem) => {
+    setModalMensagem(mensagem);
+    setModalVisible(true);
+  };
+
+  const fecharModal = () => setModalVisible(false);
+
   useEffect(() => {
-    //  busca dados atualizados do Firestore
     const load = async () => {
       if (idParam) {
         setLoading(true);
@@ -34,9 +45,9 @@ export default function ClienteCadastro() {
           setTelefone(c.telefone || '');
           setEmail(c.email || '');
           setObservacoes(c.observacoes || '');
-          setEditingId(c.id); 
+          setEditingId(c.cid || c.id);
         } else {
-          Alert.alert('Erro', res.message || 'Não foi possível carregar cliente.');
+          abrirModal(res.message || 'Não foi possível carregar o cliente.');
         }
         setLoading(false);
       }
@@ -44,52 +55,44 @@ export default function ClienteCadastro() {
     load();
   }, [idParam]);
 
-    const salvar = async () => {
-    if (!nome.trim()) return Alert.alert('Validação', 'Nome é obrigatório.');
-    setLoading(true);
-      if (!telefone.trim()) return Alert.alert('Validação', 'Telefone é obrigatório.'); 
+  const salvar = async () => {
+    // Validação mínima
+    if (!nome.trim()) return abrirModal('O nome é obrigatório.');
+    if (!telefone.trim()) return abrirModal('O telefone é obrigatório.');
 
+    setLoading(true);
     try {
       if (editingId) {
-        // Edição
         const result = await updateCliente(editingId, {
           nome: nome.trim(),
           telefone: telefone.trim(),
           email: email.trim(),
-          observacoes,
+          observacoes: observacoes.trim(),
         });
 
-        if (result.success !== false) {
-          Alert.alert('Sucesso', 'Cliente atualizado.', [
-      {
-        text: 'OK',
-        onPress: () => {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Clientes' }],
-          });
-        },
-      },
-    ]);
+        if (result.success) {
+          abrirModal('Cliente atualizado com sucesso!');
+          setTimeout(() => navigation.navigate('Clientes'), 1000);
+        } else {
+          abrirModal(result.message || 'Falha ao atualizar cliente.');
         }
       } else {
-        // Novo cadastro
         const result = await addCliente({
           nome: nome.trim(),
           telefone: telefone.trim(),
           email: email.trim(),
-          observacoes,
+          observacoes: observacoes.trim(),
         });
 
         if (result.success) {
-          Alert.alert('Sucesso', 'Cliente criado.');
-          navigation.navigate('Clientes'); // volta pra listagem
+          abrirModal('Cliente cadastrado com sucesso!');
+          setTimeout(() => navigation.navigate('Clientes'), 1000);
         } else {
-          Alert.alert('Erro', result.message || 'Falha ao salvar.');
+          abrirModal(result.message || 'Falha ao salvar cliente.');
         }
       }
     } catch (error) {
-      Alert.alert('Erro', error.message || 'Erro inesperado');
+      abrirModal(error.message || 'Erro inesperado.');
     } finally {
       setLoading(false);
     }
@@ -99,26 +102,58 @@ export default function ClienteCadastro() {
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <Header userName="Usuário" />
 
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
         <ScrollView contentContainerStyle={styles.container}>
           <Input value={nome} onChangeText={setNome} placeholder="Nome*" />
-
           <Input value={telefone} onChangeText={setTelefone} placeholder="Telefone*" keyboardType="phone-pad" />
-
-          <Input value={email} onChangeText={setEmail} placeholder="Email" keyboardType="email-address" />
-
-          <TextArea value={observacoes} onChangeText={setObservacoes} placeholder="Observações" />
+          <Input value={email} onChangeText={setEmail} placeholder="Email (opcional)" keyboardType="email-address" />
+          <TextArea value={observacoes} onChangeText={setObservacoes} placeholder="Observações (opcional)" />
 
           <View style={{ marginTop: 20 }}>
-            <Button title={editingId ? 'Salvar alterações' : 'Salvar cliente'} onPress={salvar} />
+            <Button 
+              title={editingId ? 'Salvar alterações' : 'Salvar cliente'} 
+              onPress={salvar} 
+              loading={loading}
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* MODAL ÚNICO */}
+      <Modal visible={modalVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalText}>{modalMensagem}</Text>
+            <Button title="OK" onPress={fecharModal} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { padding: 16, paddingBottom: 40 },
-  label: { fontWeight: '700', color: theme.colors.primary, marginBottom: 6 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalBox: {
+    width: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 15,
+  },
 });

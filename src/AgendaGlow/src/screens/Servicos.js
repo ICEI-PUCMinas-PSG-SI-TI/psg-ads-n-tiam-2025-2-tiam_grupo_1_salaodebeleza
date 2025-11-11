@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { 
   View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity, 
-  ActivityIndicator, Alert 
+  ActivityIndicator 
 } from 'react-native';
 import Header from '../components/Header';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { theme } from '../styles/theme';
-import { listenServicos, deleteServico } from '../services/servicoService'; // ✅ import atualizado
+import { listenServicos, deleteServico } from '../services/servicoService';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function Servicos({ navigation }) {
   const [servicos, setServicos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalViewVisible, setModalViewVisible] = useState(false);
+  const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState(null);
 
   useEffect(() => {
@@ -34,45 +35,40 @@ export default function Servicos({ navigation }) {
     setModalViewVisible(false);
   };
 
-  // ✅ Função direta de exclusão sem alerta
+  const abrirModalConfirmacao = () => {
+    // Fecha o modal de detalhes antes de abrir o de confirmação
+    setModalViewVisible(false);
+    setModalConfirmVisible(true);
+  };
+
   const handleExcluir = async () => {
-    console.log('🧩 handleExcluir chamado');
-    console.log('servicoSelecionado:', servicoSelecionado);
-
     if (!servicoSelecionado) return;
-
     try {
       setLoading(true);
-      fecharModalView();
+      setModalConfirmVisible(false);
 
       const result = await deleteServico(servicoSelecionado.sid, servicoSelecionado.id);
-      console.log('🧾 Resultado de deleteServico:', result);
-
       if (result.success) {
-        console.log(`✅ Serviço ${servicoSelecionado.nome} excluído com sucesso.`);
         setServicos(prev => prev.filter(s => s.id !== servicoSelecionado.id));
       } else {
-        console.error('❌ Falha ao excluir serviço:', result.message);
+        console.error('Falha ao excluir serviço:', result.message);
       }
     } catch (error) {
-      console.error('❌ Erro ao excluir serviço:', error);
+      console.error('Erro ao excluir serviço:', error);
     } finally {
       setLoading(false);
     }
   };
 
-
   return (
     <View style={styles.container}>
       <Header userName="Usuario" />
 
-      {/* Cabeçalho */}
       <View style={styles.headerRow}>
         <Text style={styles.title}>Serviços</Text>
         <Button title="Adicionar +" small onPress={() => navigation.navigate('ServicosCadastro')} />
       </View>
 
-      {/* Lista */}
       {loading ? (
         <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 40 }} />
       ) : (
@@ -97,7 +93,7 @@ export default function Servicos({ navigation }) {
       {/* MODAL DE VISUALIZAÇÃO */}
       <Modal
         visible={modalViewVisible}
-        animationType="none"
+        animationType="fade"
         transparent={true}
         onRequestClose={fecharModalView}
       >
@@ -116,17 +112,49 @@ export default function Servicos({ navigation }) {
                 <Text style={styles.info}><Text style={styles.label}>Descrição:</Text> {servicoSelecionado.descricao}</Text>
                 <Text style={styles.info}><Text style={styles.label}>Observações:</Text> {servicoSelecionado.observacoes}</Text>
 
-                {/* ✅ Botão de excluir dentro do modal */}
                 <Button
                   title="Excluir Serviço"
-                  onPress={handleExcluir}
+                  onPress={abrirModalConfirmacao}
                   style={{
-                    backgroundColor: theme.colors.primary || '#FF4C4C',
+                    backgroundColor: theme.colors.primary,
                     marginTop: 20,
                   }}
                 />
               </View>
             )}
+          </View>
+        </View>
+      </Modal>
+
+      {/* MODAL DE CONFIRMAÇÃO */}
+      <Modal
+        visible={modalConfirmVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalConfirmVisible(false)}
+      >
+        <View style={styles.modalOverlayConfirm}>
+          <View style={styles.modalConfirmContainer}>
+            <Text style={styles.modalConfirmTitle}>Confirmar exclusão</Text>
+            <Text style={styles.modalConfirmText}>
+              Tem certeza de que deseja excluir este serviço?
+            </Text>
+
+            <View style={styles.modalButtonRow}>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: theme.colors.cancel }]}
+                onPress={() => setModalConfirmVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: theme.colors.primary }]}
+                onPress={handleExcluir}
+              >
+                <Text style={styles.modalButtonText}>Confirmar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -147,6 +175,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: '700', color: theme.colors.text },
   listContainer: { paddingHorizontal: theme.spacing.large, paddingBottom: 100 },
 
+  // Fundo modal padrão
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -154,6 +183,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
   },
+
+  // Fundo modal de confirmação mais claro
+  modalOverlayConfirm: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.25)', // 👈 mais suave
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+
   modalContainer: {
     backgroundColor: theme.colors.white,
     borderRadius: 16,
@@ -182,5 +221,44 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: '700',
     color: theme.colors.primary,
+  },
+
+  // Modal de confirmação
+  modalConfirmContainer: {
+    backgroundColor: theme.colors.white,
+    borderRadius: 16,
+    width: '100%',
+    maxWidth: 340,
+    padding: 20,
+    alignItems: 'center',
+    elevation: 10,
+  },
+  modalConfirmTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.colors.text,
+    marginBottom: 10,
+  },
+  modalConfirmText: {
+    fontSize: 15,
+    color: theme.colors.text,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButtonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    padding: 10,
+    marginHorizontal: 5,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: theme.colors.white,
+    fontWeight: '700',
   },
 });

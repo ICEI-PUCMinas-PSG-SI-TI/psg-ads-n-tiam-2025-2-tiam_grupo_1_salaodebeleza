@@ -4,7 +4,8 @@ export const theme = {
   colors: {
     // Cores principais
     primary: '#C38379',           // Botão principal
-    primaryPressed: '#C36859',    // Botão clicado / hover
+    primaryPressed: '#C36859',
+    cancel: '#eec7c1ff',     // Botão clicado / hover
     background: '#F9F9F9',        // Cor de fundo geral
 
     // Textos

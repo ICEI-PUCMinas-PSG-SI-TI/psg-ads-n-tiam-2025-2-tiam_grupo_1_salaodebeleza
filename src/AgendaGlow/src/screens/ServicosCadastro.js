@@ -14,8 +14,8 @@ export default function ServicosCadastro({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   const handleSalvar = async () => {
-    if (!nome || !descricao || !observacoes ) {
-      Alert.alert('Atenção', 'Preencha todos os campos antes de salvar.');
+    if (!nome || !descricao ) {
+      Alert.alert('Atenção', 'Preencha os campos obrigatórios antes de salvar.');
       return;
     }
 
@@ -37,16 +37,16 @@ export default function ServicosCadastro({ navigation }) {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Cadastrar Serviço</Text>
 
-        <Input placeholder="Nome do serviço" value={nome} onChangeText={setNome} />
+        <Input placeholder="Serviço*" value={nome} onChangeText={setNome} />
         <View style={styles.container}>
           <TextArea
             style={styles.textArea}
-            placeholder="Descrição"
+            placeholder="Descrição*"
             value={descricao}
             onChangeText={setDescricao}
             multiline
-            numberOfLines={4} // define a altura inicial
-            textAlignVertical="top" // faz o texto começar do topo
+            numberOfLines={4} 
+            textAlignVertical="top"
           />
         </View>
         <View style={styles.container}>
@@ -56,8 +56,8 @@ export default function ServicosCadastro({ navigation }) {
             value={observacoes}
             onChangeText={setObservacoes}
             multiline
-            numberOfLines={4} // define a altura inicial
-            textAlignVertical="top" // faz o texto começar do topo
+            numberOfLines={4}
+            textAlignVertical="top" 
           />
         </View>
 
