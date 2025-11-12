@@ -1,106 +1,153 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Text, Alert, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View, Text, StyleSheet, KeyboardAvoidingView, Platform,
+  Modal, ScrollView
+} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../components/Header';
-import Input from '../components/Input';
 import Button from '../components/Button';
+import Input from '../components/Input';
 import TextArea from '../components/TextArea';
 import { theme } from '../styles/theme';
-import { addServicos } from '../services/servicoService';
+import { addServico, updateServico, getServicoById } from '../services/servicoService';
 
-export default function ServicosCadastro({ navigation }) {
+export default function ServicoCadastro() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const idParam = route.params?.id;
+
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
   const [observacoes, setObservacoes] = useState('');
   const [loading, setLoading] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
-  const handleSalvar = async () => {
-    if (!nome || !descricao ) {
-      Alert.alert('Atenção', 'Preencha os campos obrigatórios antes de salvar.');
-      return;
-    }
+  // Controle de Modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMensagem, setModalMensagem] = useState('');
+
+  const abrirModal = (mensagem) => {
+    setModalMensagem(mensagem);
+    setModalVisible(true);
+  };
+
+  const fecharModal = () => setModalVisible(false);
+
+  useEffect(() => {
+    const load = async () => {
+      if (idParam) {
+        setLoading(true);
+        const res = await getServicoById(idParam);
+        if (res.success) {
+          const s = res.data;
+          setNome(s.nome || '');
+          setDescricao(s.descricao || '');
+          setObservacoes(s.observacoes || '');
+          setEditingId(s.sid || s.id);
+        } else {
+          abrirModal(res.message || 'Não foi possível carregar o serviço.');
+        }
+        setLoading(false);
+      }
+    };
+    load();
+  }, [idParam]);
+
+  const salvar = async () => {
+    if (!nome.trim()) return abrirModal('O nome é obrigatório.');
+    if (!descricao.trim()) return abrirModal('A descrição é obrigatória.');
 
     setLoading(true);
-    const result = await addServicos({ nome, descricao, observacoes });
-    setLoading(false);
+    try {
+      if (editingId) {
+        const result = await updateServico(editingId, {
+          nome: nome.trim(),
+          descricao: descricao.trim(),
+          observacoes: observacoes.trim(),
+        });
 
-    if (result.success) {
-      Alert.alert('Sucesso', 'Serviço cadastrado com sucesso!');
-      navigation.goBack();
-    } else {
-      Alert.alert('Erro', result.message || 'Falha ao cadastrar serviço.');
+        if (result.success) {
+          abrirModal('Serviço atualizado com sucesso!');
+          setTimeout(() => navigation.navigate('Servicos'), 1000);
+        } else {
+          abrirModal(result.message || 'Falha ao atualizar serviço.');
+        }
+      } else {
+        const result = await addServico({
+          nome: nome.trim(),
+          descricao: descricao.trim(),
+          observacoes: observacoes.trim(),
+        });
+
+        if (result.success) {
+          abrirModal('Serviço cadastrado com sucesso!');
+          setTimeout(() => navigation.navigate('Servicos'), 1000);
+        } else {
+          abrirModal(result.message || 'Falha ao salvar serviço.');
+        }
+      }
+    } catch (error) {
+      abrirModal(error.message || 'Erro inesperado.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Header userName="Usuario" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Cadastrar Serviço</Text>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <Header userName="Usuário" />
 
-        <Input placeholder="Serviço*" value={nome} onChangeText={setNome} />
-        <View style={styles.container}>
-          <TextArea
-            style={styles.textArea}
-            placeholder="Descrição*"
-            value={descricao}
-            onChangeText={setDescricao}
-            multiline
-            numberOfLines={4} 
-            textAlignVertical="top"
-          />
-        </View>
-        <View style={styles.container}>
-          <TextArea
-            style={styles.textArea}
-            placeholder="Observações"
-            value={observacoes}
-            onChangeText={setObservacoes}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top" 
-          />
-        </View>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.container}>
+          <Input value={nome} onChangeText={setNome} placeholder="Nome do serviço*" />
+          <Input value={descricao} onChangeText={setDescricao} placeholder="Descrição*" />
+          <TextArea value={observacoes} onChangeText={setObservacoes} placeholder="Observações (opcional)" />
 
-        <Button
-          title={loading ? 'Salvando...' : 'Salvar'}
-          onPress={handleSalvar}
-          style={styles.saveButton}
-          disabled={loading}
-        />
-      </ScrollView>
+          <View style={{ marginTop: 20 }}>
+            <Button
+              title={editingId ? 'Salvar alterações' : 'Salvar serviço'}
+              onPress={salvar}
+              loading={loading}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+
+      {/* MODAL DE CONFIRMAÇÃO */}
+      <Modal visible={modalVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalText}>{modalMensagem}</Text>
+            <Button title="OK" onPress={fecharModal} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: theme.colors.background },
-  content: { padding: theme.spacing.large },
-  title: { fontSize: 20, fontWeight: '700', color: theme.colors.text, marginBottom: theme.spacing.medium },
-  inputLike: {
-    backgroundColor: theme.colors.container3,
-    borderRadius: theme.radius.medium,
-    paddingHorizontal: theme.spacing.medium,
-    paddingVertical: 10,
-    marginVertical: theme.spacing.small,
-    color: theme.colors.textInput,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: theme.colors.container3,
+  container: { padding: 16, paddingBottom: 40 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  senhaInfo: {
-    color: theme.colors.textSecondary || '#777',
-    fontSize: 14,
-    marginTop: theme.spacing.medium,
-  },
-  bold: { fontWeight: '700', color: theme.colors.text },
-  saveButton: { marginTop: theme.spacing.large },
-  textArea: {
-    height: 120,
-    borderColor: theme?.colors?.textInput || '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 16,
+  modalBox: {
+    width: '80%',
     backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 15,
   },
 });

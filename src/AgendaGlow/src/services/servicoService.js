@@ -1,6 +1,6 @@
 import { db } from '../database/firebase';
 import { 
-  collection, addDoc, doc, setDoc, query, where, onSnapshot, updateDoc, getDocs 
+  collection, getDoc, doc, setDoc, query, where, onSnapshot, updateDoc, getDocs 
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 
@@ -29,6 +29,57 @@ export const addServicos = async (servico) => {
   }
 };
 
+/** 🔹 Altera um serviço existente */
+export async function updateServico(id, novosDados) {
+  console.log('🛠️ Iniciando atualização de serviço...', { id, novosDados });
+  try {
+    if (!id) throw new Error('ID do serviço é obrigatório.');
+    if (!novosDados || Object.keys(novosDados).length === 0)
+      throw new Error('Nenhum dado fornecido para atualização.');
+
+    const docRef = doc(db, 'servicos', id);
+
+    // Verifica se o documento existe
+    const snapshot = await getDoc(docRef);
+    if (!snapshot.exists()) {
+      throw new Error('Serviço não encontrado.');
+    }
+
+    await updateDoc(docRef, {
+      ...novosDados,
+      atualizadoEm: new Date(),
+    });
+
+    console.log(`✅ Serviço ${id} atualizado com sucesso.`);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Erro ao atualizar serviço:', error);
+    return { success: false, message: error.message };
+  }
+}
+
+/** 🔹 Busca apenas o serviço informado */
+export async function getServicoById(id) {
+  console.log('🔍 Buscando serviço por ID:', id);
+  try {
+    if (!id) throw new Error('ID do serviço é obrigatório.');
+
+    const docRef = doc(db, 'servicos', id);
+    const snapshot = await getDoc(docRef);
+
+    if (!snapshot.exists()) {
+      console.warn('⚠️ Serviço não encontrado no Firestore.');
+      return { success: false, message: 'Serviço não encontrado.' };
+    }
+
+    const data = { id: snapshot.id, ...snapshot.data() };
+    console.log('✅ Serviço encontrado:', data);
+    return { success: true, data };
+  } catch (error) {
+    console.error('❌ Erro ao buscar serviço:', error);
+    return { success: false, message: error.message };
+  }
+}
 
 /** 🔹 Escuta em tempo real apenas serviços ativos */
 export const listenServicos = (callback) => {

@@ -41,6 +41,13 @@ export default function Servicos({ navigation }) {
     setModalConfirmVisible(true);
   };
 
+  const handleEditar = () => {
+    if (servicoSelecionado) {
+      fecharModalView();
+      navigation.navigate('ServicosCadastro', { id: servicoSelecionado.sid });
+    }
+  };
+
   const handleExcluir = async () => {
     if (!servicoSelecionado) return;
     try {
@@ -111,7 +118,14 @@ export default function Servicos({ navigation }) {
                 <Text style={styles.info}><Text style={styles.label}>Nome:</Text> {servicoSelecionado.nome}</Text>
                 <Text style={styles.info}><Text style={styles.label}>Descrição:</Text> {servicoSelecionado.descricao}</Text>
                 <Text style={styles.info}><Text style={styles.label}>Observações:</Text> {servicoSelecionado.observacoes}</Text>
-
+                <Button
+                  title="Editar Serviço"
+                  onPress={handleEditar}
+                  style={{
+                    backgroundColor: theme.colors.primary,
+                    marginTop: 20,
+                  }}
+                />
                 <Button
                   title="Excluir Serviço"
                   onPress={abrirModalConfirmacao}
