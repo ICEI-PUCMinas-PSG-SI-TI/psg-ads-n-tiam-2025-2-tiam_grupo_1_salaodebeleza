@@ -138,7 +138,6 @@ export default function AgendamentoCadastro() {
           ))}
         </Picker>
 
-        <Text style={styles.label}>Serviços</Text>
         <MultiSelect
           placeholder="Selecione serviços"
           items={listaServicos}
@@ -156,7 +155,6 @@ export default function AgendamentoCadastro() {
           searchableField="nome"
         />
 
-        <Text style={styles.label}>Profissionais</Text>
         <MultiSelect
           placeholder="Selecione profissionais"
           items={listaFuncionarios}

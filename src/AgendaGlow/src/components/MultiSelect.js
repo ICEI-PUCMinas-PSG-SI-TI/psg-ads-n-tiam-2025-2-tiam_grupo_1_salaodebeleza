@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   Text,
-  FlatList,
   ScrollView,
-  Pressable,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { theme } from "../styles/theme";
 
 export default function MultiSelect({
@@ -18,33 +16,22 @@ export default function MultiSelect({
   onSelectItem = () => {},
   onRemoveItem = () => {},
   renderItemLabel = (item) => item.nome || item.label,
-  searchableField = "nome",
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [filteredItems, setFilteredItems] = useState(items);
-  const containerRef = useRef(null);
+  const [selectedValue, setSelectedValue] = useState(null);
 
-  // Atualizar itens filtrados quando o texto de busca mudar
-  useEffect(() => {
-    if (searchText.trim() === "") {
-      setFilteredItems(items);
-    } else {
-      const filtered = items.filter(
-        (item) =>
-          item[searchableField]
-            ?.toLowerCase()
-            .includes(searchText.toLowerCase()) &&
-          !selectedItems.some((selected) => selected.id === item.id)
-      );
-      setFilteredItems(filtered);
+  // Itens disponíveis (não selecionados)
+  const availableItems = items.filter(
+    (item) => !selectedItems.some((selected) => selected.id === item.id)
+  );
+
+  const handleSelectItem = (itemId) => {
+    if (itemId !== null) {
+      const item = items.find((i) => i.id === itemId);
+      if (item) {
+        onSelectItem(item);
+        setSelectedValue(null);
+      }
     }
-  }, [searchText, items, selectedItems]);
-
-  const handleSelectItem = (item) => {
-    onSelectItem(item);
-    setSearchText("");
-    setFilteredItems(items);
   };
 
   const handleRemoveItem = (itemId) => {
@@ -52,113 +39,82 @@ export default function MultiSelect({
   };
 
   return (
-    <Pressable
-      style={styles.outsidePress}
-      onPress={() => setIsOpen(false)}
-    >
-      <View style={styles.container} ref={containerRef}>
-      {/* Campo de input/seleção */}
-      <TouchableOpacity
-        style={styles.inputContainer}
-        onPress={() => setIsOpen(!isOpen)}
-        activeOpacity={0.7}
+    <View style={styles.container}>
+      {/* Picker com estilo similar ao componente cliente */}
+      <Picker
+        style={styles.picker}
+        dropdownIconColor={theme.colors.textInput}
+        selectedValue={selectedValue}
+        onValueChange={handleSelectItem}
       >
+        <Picker.Item
+          color={theme.colors.textInput}
+          label={placeholder}
+          value={null}
+        />
+        {availableItems.map((item) => (
+          <Picker.Item
+            color={theme.colors.textInput}
+            key={item.id}
+            label={renderItemLabel(item)}
+            value={item.id}
+          />
+        ))}
+      </Picker>
+
+      {/* Tags dos itens selecionados */}
+      {selectedItems.length > 0 && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.tagScrollContainer}
         >
           <View style={styles.tagsWrapper}>
-            {selectedItems.length > 0 ? (
-              selectedItems.map((item) => (
-                <View key={item.id} style={styles.tag}>
-                  <Text style={styles.tagText} numberOfLines={1}>
-                    {renderItemLabel(item)}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => handleRemoveItem(item.id)}
-                    style={styles.removeButton}
-                  >
-                    <Text style={styles.removeText}>×</Text>
-                  </TouchableOpacity>
-                </View>
-              ))
-            ) : (
-              <Text style={styles.placeholder}>{placeholder}</Text>
-            )}
-          </View>
-        </ScrollView>
-        <Text style={styles.dropdown}>{isOpen ? "▲" : "▼"}</Text>
-      </TouchableOpacity>
-
-      {/* Lista de opções */}
-      {isOpen && (
-        <View style={styles.dropdownContainer}>
-          {/* Campo de busca */}
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Pesquisar..."
-            placeholderTextColor={theme.colors.textInput}
-            value={searchText}
-            onChangeText={setSearchText}
-            autoFocus
-          />
-
-          {/* Itens disponíveis */}
-          <FlatList
-            data={filteredItems}
-            keyExtractor={(item) => item.id}
-            scrollEnabled={false}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.optionItem}
-                onPress={() => handleSelectItem(item)}
-              >
-                <Text style={styles.optionText}>
+            {selectedItems.map((item) => (
+              <View key={item.id} style={styles.tag}>
+                <Text style={styles.tagText} numberOfLines={1}>
                   {renderItemLabel(item)}
                 </Text>
-              </TouchableOpacity>
-            )}
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>Nenhum item encontrado</Text>
-            }
-          />
-        </View>
+                <TouchableOpacity
+                  onPress={() => handleRemoveItem(item.id)}
+                  style={styles.removeButton}
+                >
+                  <Text style={styles.removeText}>×</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       )}
-      </View>
-    </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  outsidePress: {
-    flex: 1,
-    width: "100%",
-  },
   container: {
     width: "100%",
     marginVertical: theme.spacing.small,
   },
-  inputContainer: {
+  picker: {
     backgroundColor: theme.colors.container3,
     borderRadius: theme.radius.medium,
+    paddingHorizontal: theme.spacing.medium,
+    paddingVertical: 10,
+    marginVertical: theme.spacing.small,
+    color: theme.colors.textInput,
+    fontSize: 16,
     borderWidth: 1,
     borderColor: theme.colors.container3,
-    paddingHorizontal: theme.spacing.medium,
-    paddingVertical: theme.spacing.small,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    minHeight: 50,
   },
   tagScrollContainer: {
-    flex: 1,
+    marginTop: theme.spacing.small,
   },
   tagsWrapper: {
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
     gap: 6,
+    paddingHorizontal: theme.spacing.small,
   },
   tag: {
     backgroundColor: theme.colors.primary,
@@ -182,52 +138,5 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
-  },
-  placeholder: {
-    color: theme.colors.textInput,
-    fontSize: 15,
-  },
-  dropdown: {
-    color: theme.colors.textInput,
-    fontSize: 12,
-    fontWeight: "bold",
-    marginLeft: 8,
-  },
-  dropdownContainer: {
-    backgroundColor: theme.colors.container3,
-    borderRadius: theme.radius.medium,
-    borderWidth: 1,
-    borderColor: theme.colors.container3,
-    marginTop: 8,
-    maxHeight: 300,
-    paddingVertical: 8,
-  },
-  searchInput: {
-    backgroundColor: theme.colors.container2,
-    borderRadius: theme.radius.small,
-    marginHorizontal: 8,
-    marginBottom: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    color: theme.colors.text,
-    fontSize: 14,
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-  },
-  optionItem: {
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.container2,
-  },
-  optionText: {
-    color: theme.colors.text,
-    fontSize: 14,
-  },
-  emptyText: {
-    textAlign: "center",
-    color: theme.colors.textInput,
-    paddingVertical: 12,
-    fontSize: 14,
   },
 });
