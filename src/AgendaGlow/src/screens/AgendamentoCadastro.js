@@ -4,6 +4,7 @@ import { Picker } from "@react-native-picker/picker";
 import Header from "../components/Header";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import MultiSelect from "../components/MultiSelect";
 import { theme } from "../styles/theme";
 import { listenFuncionarios } from "../services/funcionarioService";
 import { listenServicos } from "../services/servicoService";
@@ -13,8 +14,8 @@ import { addAgendamento } from '../services/agendamentoService';
 
 export default function AgendamentoCadastro() {
   const [cliente, setCliente] = useState(null);
-  const [servico, setServico] = useState(null);
-  const [profissional, setProfissional] = useState(null);
+  const [servicosSelecionados, setServicosSelecionados] = useState([]);
+  const [profissionaisSelecionados, setProfissionaisSelecionados] = useState([]);
   const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -53,8 +54,8 @@ export default function AgendamentoCadastro() {
   async function handleSalvar() {
     const novoAgendamento = {
       cliente,
-      servico,
-      profissional,
+      servicos: servicosSelecionados.map(s => s.id),
+      profissionais: profissionaisSelecionados.map(p => p.id),
       data,
       horario,
       valor,
@@ -69,8 +70,8 @@ export default function AgendamentoCadastro() {
         Alert.alert("Sucesso", "Agendamento salvo com sucesso!");
         // limpa os campos
         setCliente(null);
-        setServico(null);
-        setProfissional(null);
+        setServicosSelecionados([]);
+        setProfissionaisSelecionados([]);
         setData("");
         setHorario("");
         setValor("");
@@ -137,42 +138,44 @@ export default function AgendamentoCadastro() {
           ))}
         </Picker>
 
-        <Picker
-          style={styles.inputLike}
-          dropdownIconColor={theme.colors.textInput}
-          selectedValue={servico}
-          onValueChange={setServico}
-        >
-          <Picker.Item
-            color={theme.colors.textInput}
-            label="Selecione o Serviço"
-            value={null}
-          />
-          {listaServicos.map((s) => (
-            <Picker.Item
-              color={theme.colors.textInput}
-              key={s.id}
-              label={s.nome}
-              value={s.id}
-            />
-          ))}
-        </Picker>
+        <Text style={styles.label}>Serviços</Text>
+        <MultiSelect
+          placeholder="Selecione serviços"
+          items={listaServicos}
+          selectedItems={servicosSelecionados}
+          onSelectItem={(item) => {
+            if (!servicosSelecionados.find((s) => s.id === item.id)) {
+              setServicosSelecionados([...servicosSelecionados, item]);
+            }
+          }}
+          onRemoveItem={(itemId) => {
+            setServicosSelecionados(
+              servicosSelecionados.filter((s) => s.id !== itemId)
+            );
+          }}
+          searchableField="nome"
+        />
 
-        <Picker
-          style={styles.inputLike}
-          dropdownIconColor={theme.colors.textInput}
-          selectedValue={profissional}
-          onValueChange={setProfissional}
-        >
-          {listaFuncionarios.map((f) => (
-            <Picker.Item
-              color={theme.colors.textInput}
-              key={f.id}
-              label={f.nome}
-              value={f.id}
-            />
-          ))}
-        </Picker>
+        <Text style={styles.label}>Profissionais</Text>
+        <MultiSelect
+          placeholder="Selecione profissionais"
+          items={listaFuncionarios}
+          selectedItems={profissionaisSelecionados}
+          onSelectItem={(item) => {
+            if (!profissionaisSelecionados.find((p) => p.id === item.id)) {
+              setProfissionaisSelecionados([
+                ...profissionaisSelecionados,
+                item,
+              ]);
+            }
+          }}
+          onRemoveItem={(itemId) => {
+            setProfissionaisSelecionados(
+              profissionaisSelecionados.filter((p) => p.id !== itemId)
+            );
+          }}
+          searchableField="nome"
+        />
 
         {/* Campo de Data como Input */}
         <TouchableOpacity onPress={showDatePicker} activeOpacity={0.7}>
@@ -251,6 +254,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: theme.colors.container3,
+  },
+  label: {
+    fontWeight: "600",
+    marginTop: theme.spacing.medium,
+    marginBottom: theme.spacing.small,
+    color: theme.colors.text,
+    fontSize: 16,
   },
   saveButton: { marginTop: theme.spacing.large },
 });
