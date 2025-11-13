@@ -31,17 +31,34 @@ export default function Agenda() {
     return hoje.toLocaleDateString('pt-BR');
   };
 
-  // Função para obter informações do funcionário
-  const getFuncionarioNome = (funcionarioId) => {
-    const funcionario = funcionarios.find(f => f.id === funcionarioId);
-    return funcionario ? funcionario.nome : 'Não informado';
-  };
+  const getFuncionarioNome = (ids) => {
+  if (!ids) return 'Não informado';
+  if (Array.isArray(ids)) {
+    return ids
+      .map(id => {
+        const f = funcionarios.find(f => f.id === id);
+        return f ? f.nome : 'Desconhecido';
+      })
+      .join(', ');
+  }
+  const funcionario = funcionarios.find(f => f.id === ids);
+  return funcionario ? funcionario.nome : 'Não informado';
+};
 
-  // Função para obter informações do serviço
-  const getServicoNome = (servicoId) => {
-    const servico = servicos.find(s => s.id === servicoId);
-    return servico ? servico.nome : 'Não informado';
-  };
+const getServicoNome = (ids) => {
+  if (!ids) return 'Não informado';
+  if (Array.isArray(ids)) {
+    return ids
+      .map(id => {
+        const s = servicos.find(s => s.id === id);
+        return s ? s.nome : 'Desconhecido';
+      })
+      .join(', ');
+  }
+  const servico = servicos.find(s => s.id === ids);
+  return servico ? servico.nome : 'Não informado';
+};
+
 
   // Converte string 'dd/mm/yyyy' para objeto Date (local)
   const parseDatePtBr = (dateStr) => {
@@ -216,7 +233,7 @@ export default function Agenda() {
                         key={a.id}
                         icon="calendar-outline"
                         title={`${getClienteNome(a.cliente)} - ${a.horario || 'Sem horário'}`}
-                        subtitle={`${getServicoNome(a.servico)} · ${getFuncionarioNome(a.profissional)}`}
+                        subtitle={`${getServicoNome(a.servicos)} · ${getFuncionarioNome(a.profissionais)}`}
                         onView={() => abrirModalView(a)}
                       />
                     ))}
