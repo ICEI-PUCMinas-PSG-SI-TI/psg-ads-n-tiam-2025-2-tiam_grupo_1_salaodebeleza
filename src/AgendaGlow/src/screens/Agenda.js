@@ -23,6 +23,7 @@ import { listenServicos } from "../services/servicoService";
 import { listenClientes } from "../services/clienteService";
 import { Ionicons } from "@expo/vector-icons";
 import Filter from "../components/Filter";
+import FilterDate from "../components/FilterDate";
 
 export default function Agenda() {
   const navigation = useNavigation();
@@ -34,6 +35,11 @@ export default function Agenda() {
   const [loading, setLoading] = useState(true);
   const [modalViewVisible, setModalViewVisible] = useState(false);
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null);
+  const [filters, setFilters] = useState({ date: null, profissional: null, servico: null });
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedService, setSelectedService] = useState(null);
+  const [selectedProfessional, setSelectedProfessional] = useState(null);
+  const [filteredAgendamentos, setFilteredAgendamentos] = useState([]);
 
   // Função para formatar data no formato pt-BR
   const formatarDataHoje = () => {
@@ -187,6 +193,30 @@ export default function Agenda() {
     );
   };
 
+  useEffect(() => {
+  let lista = agendamentosDoDia;
+
+  if (filters.date) {
+    lista = lista.filter(a => a.data === filters.date);
+  }
+
+  if (filters.servico) {
+    lista = lista.filter(a =>
+      a.servicos?.includes(filters.servico)
+    );
+  }
+
+  if (filters.profissional) {
+    lista = lista.filter(a =>
+      a.profissionais?.includes(filters.profissional)
+    );
+  }
+  console.log(lista)
+  setFilteredAgendamentos(lista);
+
+}, [agendamentosDoDia, filters]);
+
+
   return (
     <View style={styles.container}>
       <Header userName="Usuario" />
@@ -201,8 +231,15 @@ export default function Agenda() {
         />
       </View>
       <View style={styles.containerFiltros}>
-        <Filter placeholder="Clientes" listItem={clientes}></Filter>
-        <Filter></Filter>
+        <FilterDate onSelect={(date) => {
+          setFilters((prev) => ({ ...prev, date }));
+        }}></FilterDate>
+        <Filter label="Profissionais" listItem={funcionarios} onSelect={(prof) => {
+          setFilters((prev) => ({ ...prev, profissional: prof}))
+        }}></Filter>
+        <Filter label="Serviços" listItem={servicos} onSelect={(servico) => {
+          setFilters((prev) => ({ ...prev, servico: servico}))
+        }}></Filter>
       </View>
 
       {/* Lista */}
@@ -214,16 +251,15 @@ export default function Agenda() {
         />
       ) : (
         <ScrollView contentContainerStyle={styles.listContainer}>
-          {agendamentosDoDia.length === 0 ? (
+          {filteredAgendamentos.length === 0 ? (
             <Text
-              style={{ textAlign: "center", color: theme.colors.textInput }}
-            >
+              style={{ textAlign: "center", color: theme.colors.textInput }}>
               Nenhum agendamento para hoje.
             </Text>
           ) : (
             (() => {
               // Agrupa por data (a.data) e ordena as datas e os agendamentos por horário
-              const groups = agendamentosDoDia.reduce((acc, a) => {
+              const groups = filteredAgendamentos.reduce((acc, a) => {
                 const key = a.data || "Sem data";
                 if (!acc[key]) acc[key] = [];
                 acc[key].push(a);
@@ -260,9 +296,8 @@ export default function Agenda() {
                       <Card
                         key={a.id}
                         icon="calendar-outline"
-                        title={`${getClienteNome(a.cliente)} - ${
-                          a.horario || "Sem horário"
-                        }`}
+                        title={`${getClienteNome(a.cliente)} - ${a.horario || "Sem horário"
+                          }`}
                         subtitle={`${getServicoNome(
                           a.servicos
                         )} · ${getFuncionarioNome(a.profissionais)}`}
@@ -349,11 +384,11 @@ export default function Agenda() {
 // --- ESTILOS ---
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background, gap: 10 },
-  containerFiltros: { 
+  containerFiltros: {
     flexDirection: 'row',
-    flexWrap: "nowrap", 
-    paddingLeft: theme.spacing.large ,
-    gap: 10
+    flexWrap: "nowrap",
+    paddingLeft: theme.spacing.large,
+    gap: 0,
   },
   headerRow: {
     flexDirection: "row",
