@@ -35,10 +35,7 @@ export default function Agenda() {
   const [loading, setLoading] = useState(true);
   const [modalViewVisible, setModalViewVisible] = useState(false);
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null);
-  const [filters, setFilters] = useState({ date: null, profissional: null, servico: null });
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedService, setSelectedService] = useState(null);
-  const [selectedProfessional, setSelectedProfessional] = useState(null);
+  const [filters, setFilters] = useState({ date: null, profissional: [], servico: [] });
   const [filteredAgendamentos, setFilteredAgendamentos] = useState([]);
 
   // Função para formatar data no formato pt-BR
@@ -194,27 +191,30 @@ export default function Agenda() {
   };
 
   useEffect(() => {
-  let lista = agendamentosDoDia;
+    let lista = agendamentosDoDia;
 
-  if (filters.date) {
-    lista = lista.filter(a => a.data === filters.date);
-  }
+    if (filters.date) {
+      lista = lista.filter(a => a.data === filters.date);
+    }
 
-  if (filters.servico) {
-    lista = lista.filter(a =>
-      a.servicos?.includes(filters.servico)
-    );
-  }
+    if (filters.servico && filters.servico.length > 0) {
+      lista = lista.filter(a => {
+        if (!a.servicos) return false;
+        const servicosArray = Array.isArray(a.servicos) ? a.servicos : [a.servicos];
+        return filters.servico.some(selectedId => servicosArray.includes(selectedId));
+      });
+    }
 
-  if (filters.profissional) {
-    lista = lista.filter(a =>
-      a.profissionais?.includes(filters.profissional)
-    );
-  }
-  console.log(lista)
-  setFilteredAgendamentos(lista);
+    if (filters.profissional && filters.profissional.length > 0) {
+      lista = lista.filter(a => {
+        if (!a.profissionais) return false;
+        const profissionaisArray = Array.isArray(a.profissionais) ? a.profissionais : [a.profissionais];
+        return filters.profissional.some(selectedId => profissionaisArray.includes(selectedId));
+      });
+    }
 
-}, [agendamentosDoDia, filters]);
+    setFilteredAgendamentos(lista);
+  }, [agendamentosDoDia, filters]);
 
 
   return (
@@ -234,11 +234,11 @@ export default function Agenda() {
         <FilterDate onSelect={(date) => {
           setFilters((prev) => ({ ...prev, date }));
         }}></FilterDate>
-        <Filter label="Profissionais" listItem={funcionarios} onSelect={(prof) => {
-          setFilters((prev) => ({ ...prev, profissional: prof}))
+        <Filter label="Profissionais" listItem={funcionarios} onSelect={(profissionais) => {
+          setFilters((prev) => ({ ...prev, profissional: profissionais || []}))
         }}></Filter>
-        <Filter label="Serviços" listItem={servicos} onSelect={(servico) => {
-          setFilters((prev) => ({ ...prev, servico: servico}))
+        <Filter label="Serviços" listItem={servicos} onSelect={(servicos) => {
+          setFilters((prev) => ({ ...prev, servico: servicos || []}))
         }}></Filter>
       </View>
 
