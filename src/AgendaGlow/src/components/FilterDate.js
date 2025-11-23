@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 20,
         backgroundColor: "white",
-        marginRight: theme.spacing.small,
     },
   chipText: {
     marginRight: 6,

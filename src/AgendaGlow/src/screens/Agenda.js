@@ -386,9 +386,10 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background, gap: 10 },
   containerFiltros: {
     flexDirection: 'row',
-    flexWrap: "nowrap",
+    flexWrap: "wrap",
     paddingLeft: theme.spacing.large,
-    gap: 0,
+    gap: 7,
+    marginRight: theme.spacing.large,
   },
   headerRow: {
     flexDirection: "row",
