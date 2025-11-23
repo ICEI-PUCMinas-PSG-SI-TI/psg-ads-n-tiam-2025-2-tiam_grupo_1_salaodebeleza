@@ -1,9 +1,10 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Home from "../screens/Home";
-import Agenda from '../screens/Agenda'
-import Mais from "../screens/Mais";
 import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet, View } from "react-native";
+import Home from "../screens/Home";
+import Agenda from "../screens/Agenda";
 import Clientes from "../screens/Clientes";
+import Mais from "../screens/Mais";
 import { theme } from "../styles/theme";
 
 const Tab = createBottomTabNavigator();
@@ -13,30 +14,25 @@ export default function BottomTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
-          let iconName;
+          const icons = {
+            Inicio: "home-outline",
+            Agenda: "calendar-outline",
+            Clientes: "people-outline",
+            Mais: "ellipsis-horizontal-outline",
+          };
 
-          if (route.name === "Inicio") iconName = "home-outline";
-          else if (route.name === "Agenda") iconName = "calendar-outline";
-          else if (route.name === "Clientes") iconName = "people-outline";
-          else if (route.name === "Mais") iconName = "ellipsis-horizontal-outline";
-
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <Ionicons name={icons[route.name]} size={24} color={color} />;
         },
-         // cor do ícone/label (usa theme.colors.text)
+
         tabBarActiveTintColor: theme.colors.text,
-        tabBarInactiveTintColor: theme.colors.text,
+        tabBarInactiveTintColor: "#B9B9B9",
 
-        // >>> ADIÇÕES: fundo rosado na aba ativa e estilos do tabBar
-        tabBarActiveBackgroundColor: "#FBEAE6", // ajuste a cor se quiser outra tonalidade
-        tabBarStyle: {
-          height: 72,
-          backgroundColor: theme.colors.white, // cor padrão do tab bar
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          marginTop: 4,
-        },
-        headerShown: false
+        headerShown: false,
+
+        // ---- CONFIGS PARA BARRA FLUTUANTE ----
+        tabBarStyle: styles.tabBar,
+        tabBarItemStyle: styles.tabBarItem,
+        tabBarLabelStyle: styles.label,
       })}
     >
       <Tab.Screen name="Inicio" component={Home} />
@@ -46,3 +42,36 @@ export default function BottomTabs() {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  // Barra flutuante moderna
+  tabBar: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+    height: 68,
+    borderRadius: 999,
+    backgroundColor: theme.colors.white,
+    marginHorizontal: theme.spacing.large,
+    paddingBottom: 6,
+    paddingTop: 6,
+
+    // sombra moderna (iOS + Android)
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+
+  // Ajusta posição interna dos botões
+  tabBarItem: {
+    
+  },
+
+  // Label mais clean
+  label: {
+    fontSize: 11,
+    marginTop: 0,
+  },
+});
