@@ -29,7 +29,7 @@ export default function BottomTabs() {
                 borderRadius: 50,
                 justifyContent: "center",
                 alignItems: "center",
-                marginTop: focused ? 18:0,
+                marginTop: focused ? 16:0,
               }}
             >
               <Ionicons name={icons[route.name]} size={25} color={color}   />
@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
     paddingBottom: 6,
     paddingTop: 6,
     borderTopWidth: 0,
+    height: 65,
 
     // sombra moderna (iOS + Android)
     shadowColor: "#000",
