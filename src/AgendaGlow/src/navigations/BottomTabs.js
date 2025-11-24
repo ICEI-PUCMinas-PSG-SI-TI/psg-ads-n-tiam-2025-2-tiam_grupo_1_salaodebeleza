@@ -29,7 +29,7 @@ export default function BottomTabs() {
                 borderRadius: 50,
                 justifyContent: "center",
                 alignItems: "center",
-                marginTop: focused ? 15:0,
+                marginTop: focused ? 18:0,
               }}
             >
               <Ionicons name={icons[route.name]} size={25} color={color}   />
@@ -42,10 +42,7 @@ export default function BottomTabs() {
         },
         tabBarActiveTintColor: '#ffffffff',
         tabBarInactiveTintColor: "#000000ff",
-
         headerShown: false,
-
-
         tabBarStyle: styles.tabBar,
         tabBarItemStyle: styles.tabBarItem,
         tabBarLabelStyle: styles.label,
