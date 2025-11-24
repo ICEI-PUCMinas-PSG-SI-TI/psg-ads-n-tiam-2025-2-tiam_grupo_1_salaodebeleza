@@ -22,6 +22,8 @@ import { listenFuncionarios } from "../services/funcionarioService";
 import { listenServicos } from "../services/servicoService";
 import { listenClientes } from "../services/clienteService";
 import { Ionicons } from "@expo/vector-icons";
+import Filter from "../components/Filter";
+import FilterDate from "../components/FilterDate";
 
 export default function Agenda() {
   const navigation = useNavigation();
@@ -33,6 +35,8 @@ export default function Agenda() {
   const [loading, setLoading] = useState(true);
   const [modalViewVisible, setModalViewVisible] = useState(false);
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null);
+  const [filters, setFilters] = useState({ date: null, profissional: [], servico: [] });
+  const [filteredAgendamentos, setFilteredAgendamentos] = useState([]);
 
   // Função para formatar data no formato pt-BR
   const formatarDataHoje = () => {
@@ -186,6 +190,33 @@ export default function Agenda() {
     );
   };
 
+  useEffect(() => {
+    let lista = agendamentosDoDia;
+
+    if (filters.date) {
+      lista = lista.filter(a => a.data === filters.date);
+    }
+
+    if (filters.servico && filters.servico.length > 0) {
+      lista = lista.filter(a => {
+        if (!a.servicos) return false;
+        const servicosArray = Array.isArray(a.servicos) ? a.servicos : [a.servicos];
+        return filters.servico.some(selectedId => servicosArray.includes(selectedId));
+      });
+    }
+
+    if (filters.profissional && filters.profissional.length > 0) {
+      lista = lista.filter(a => {
+        if (!a.profissionais) return false;
+        const profissionaisArray = Array.isArray(a.profissionais) ? a.profissionais : [a.profissionais];
+        return filters.profissional.some(selectedId => profissionaisArray.includes(selectedId));
+      });
+    }
+
+    setFilteredAgendamentos(lista);
+  }, [agendamentosDoDia, filters]);
+
+
   return (
     <View style={styles.container}>
       <Header userName="Usuario" />
@@ -199,6 +230,17 @@ export default function Agenda() {
           onPress={() => navigation.navigate("AgendamentoCadastro")}
         />
       </View>
+      <View style={styles.containerFiltros}>
+        <FilterDate onSelect={(date) => {
+          setFilters((prev) => ({ ...prev, date }));
+        }}></FilterDate>
+        <Filter label="Profissionais" listItem={funcionarios} onSelect={(profissionais) => {
+          setFilters((prev) => ({ ...prev, profissional: profissionais || []}))
+        }}></Filter>
+        <Filter label="Serviços" listItem={servicos} onSelect={(servicos) => {
+          setFilters((prev) => ({ ...prev, servico: servicos || []}))
+        }}></Filter>
+      </View>
 
       {/* Lista */}
       {loading ? (
@@ -209,16 +251,15 @@ export default function Agenda() {
         />
       ) : (
         <ScrollView contentContainerStyle={styles.listContainer}>
-          {agendamentosDoDia.length === 0 ? (
+          {filteredAgendamentos.length === 0 ? (
             <Text
-              style={{ textAlign: "center", color: theme.colors.textInput }}
-            >
+              style={{ textAlign: "center", color: theme.colors.textInput }}>
               Nenhum agendamento para hoje.
             </Text>
           ) : (
             (() => {
               // Agrupa por data (a.data) e ordena as datas e os agendamentos por horário
-              const groups = agendamentosDoDia.reduce((acc, a) => {
+              const groups = filteredAgendamentos.reduce((acc, a) => {
                 const key = a.data || "Sem data";
                 if (!acc[key]) acc[key] = [];
                 acc[key].push(a);
@@ -255,9 +296,8 @@ export default function Agenda() {
                       <Card
                         key={a.id}
                         icon="calendar-outline"
-                        title={`${getClienteNome(a.cliente)} - ${
-                          a.horario || "Sem horário"
-                        }`}
+                        title={`${getClienteNome(a.cliente)} - ${a.horario || "Sem horário"
+                          }`}
                         subtitle={`${getServicoNome(
                           a.servicos
                         )} · ${getFuncionarioNome(a.profissionais)}`}
@@ -425,13 +465,20 @@ export default function Agenda() {
 
 // --- ESTILOS ---
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: theme.colors.background },
+  container: { flex: 1, backgroundColor: theme.colors.background, gap: 10 },
+  containerFiltros: {
+    flexDirection: 'row',
+    flexWrap: "wrap",
+    paddingLeft: theme.spacing.large,
+    gap: 7,
+    marginRight: theme.spacing.large,
+  },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: theme.spacing.large,
-    paddingVertical: theme.spacing.medium,
+    paddingTop: theme.spacing.medium,
   },
   title: { fontSize: 20, fontWeight: "700", color: theme.colors.text },
   dateContainer: {
