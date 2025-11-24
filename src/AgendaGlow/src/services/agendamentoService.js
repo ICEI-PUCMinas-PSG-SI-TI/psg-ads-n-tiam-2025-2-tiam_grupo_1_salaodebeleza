@@ -38,9 +38,9 @@ export const listenAgendamentos = (callback) => {
 
 export const deleteAgendamento = async (id) => {
   try {
-    // Fazer delete lógico: marcar o agendamento como inativo
     const ref = doc(db, AGENDAMENTOS_COLLECTION, id);
-    await updateDoc(ref, { ativo: false, atualizadoEm: new Date() });
+    await deleteDoc(ref);
+    console.log('Agendamento excluído com sucesso.');
     return { success: true };
   } catch (error) {
     console.error('Erro ao excluir agendamento:', error);

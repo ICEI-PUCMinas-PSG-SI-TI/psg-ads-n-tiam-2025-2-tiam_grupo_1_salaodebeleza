@@ -1,8 +1,7 @@
 {
   "expo": {
     "name": "AgendaGlow",
-    "slug": "agendaglow",
-    "scheme" : "agendaglow",
+    "slug": "AgendaGlow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
