@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     paddingHorizontal: theme.spacing.large,
     paddingVertical: theme.spacing.medium,
+    marginBlockStart: theme.spacing.large,
   },
   left: {
     flexDirection: "row",

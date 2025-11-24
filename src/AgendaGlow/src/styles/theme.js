@@ -7,6 +7,7 @@ export const theme = {
     primaryPressed: '#C36859',
     cancel: '#eec7c1ff',     // Botão clicado / hover
     background: '#F9F9F9',        // Cor de fundo geral
+    remove: '#FF4C4C',            // Botão de remoção / exclusão
 
     // Textos
     text: '#333333',              // Texto principal
@@ -16,6 +17,7 @@ export const theme = {
     container1: '#FADED7',        // Cards e seções claras
     container2: '#FFE8DB',        // Alternativa suave
     container3: '#FCEDED',        // Destaques sutis
+    container4: '#f3f3f3ff',        // Fundo de modais e pop-ups
 
     // Outros
     border: '#E0E0E0',
