@@ -1,18 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity, 
-  ActivityIndicator, Alert 
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import Header from '../components/Header';
-import Card from '../components/Card';
-import Button from '../components/Button';
-import { theme } from '../styles/theme';
-import { listenAgendamentos, deleteAgendamento } from '../services/agendamentoService';
-import { listenFuncionarios } from '../services/funcionarioService';
-import { listenServicos } from '../services/servicoService';
-import { listenClientes } from '../services/clienteService';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Modal,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import Header from "../components/Header";
+import Card from "../components/Card";
+import Button from "../components/Button";
+import { theme } from "../styles/theme";
+import {
+  listenAgendamentos,
+  deleteAgendamento,
+} from "../services/agendamentoService";
+import { listenFuncionarios } from "../services/funcionarioService";
+import { listenServicos } from "../services/servicoService";
+import { listenClientes } from "../services/clienteService";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Agenda() {
   const navigation = useNavigation();
@@ -28,58 +37,58 @@ export default function Agenda() {
   // Função para formatar data no formato pt-BR
   const formatarDataHoje = () => {
     const hoje = new Date();
-    return hoje.toLocaleDateString('pt-BR');
+    return hoje.toLocaleDateString("pt-BR");
   };
 
   const getFuncionarioNome = (ids) => {
-  if (!ids) return 'Não informado';
-  if (Array.isArray(ids)) {
-    return ids
-      .map(id => {
-        const f = funcionarios.find(f => f.id === id);
-        return f ? f.nome : 'Desconhecido';
-      })
-      .join(', ');
-  }
-  const funcionario = funcionarios.find(f => f.id === ids);
-  return funcionario ? funcionario.nome : 'Não informado';
-};
+    if (!ids) return "Não informado";
+    if (Array.isArray(ids)) {
+      return ids
+        .map((id) => {
+          const f = funcionarios.find((f) => f.id === id);
+          return f ? f.nome : "Desconhecido";
+        })
+        .join(", ");
+    }
+    const funcionario = funcionarios.find((f) => f.id === ids);
+    return funcionario ? funcionario.nome : "Não informado";
+  };
 
-const getServicoNome = (ids) => {
-  if (!ids) return 'Não informado';
-  if (Array.isArray(ids)) {
-    return ids
-      .map(id => {
-        const s = servicos.find(s => s.id === id);
-        return s ? s.nome : 'Desconhecido';
-      })
-      .join(', ');
-  }
-  const servico = servicos.find(s => s.id === ids);
-  return servico ? servico.nome : 'Não informado';
-};
-
+  const getServicoNome = (ids) => {
+    if (!ids) return "Não informado";
+    if (Array.isArray(ids)) {
+      return ids
+        .map((id) => {
+          const s = servicos.find((s) => s.id === id);
+          return s ? s.nome : "Desconhecido";
+        })
+        .join(", ");
+    }
+    const servico = servicos.find((s) => s.id === ids);
+    return servico ? servico.nome : "Não informado";
+  };
 
   // Converte string 'dd/mm/yyyy' para objeto Date (local)
   const parseDatePtBr = (dateStr) => {
-    if (!dateStr || typeof dateStr !== 'string') return null;
-    const parts = dateStr.split('/');
+    if (!dateStr || typeof dateStr !== "string") return null;
+    const parts = dateStr.split("/");
     if (parts.length !== 3) return null;
-    const [day, month, year] = parts.map(p => parseInt(p, 10));
-    if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year)) return null;
+    const [day, month, year] = parts.map((p) => parseInt(p, 10));
+    if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year))
+      return null;
     return new Date(year, month - 1, day);
   };
 
   // Função para obter nome do cliente (mock por enquanto)
   const getClienteNome = (clienteId) => {
-    if (!clienteId) return 'Não informado';
-    const cliente = clientes.find(c => c.cid === clienteId);
-    return cliente ? cliente.nome : (clienteId || 'Não informado');
+    if (!clienteId) return "Não informado";
+    const cliente = clientes.find((c) => c.cid === clienteId);
+    return cliente ? cliente.nome : clienteId || "Não informado";
   };
 
   // Formata cabeçalho de data: mostra 'Hoje - dd/mm/yyyy' quando aplicável
   const formatDateHeader = (dateStr) => {
-    if (!dateStr) return 'Sem data';
+    if (!dateStr) return "Sem data";
     const dt = parseDatePtBr(dateStr);
     if (!dt) return dateStr;
     const hoje = new Date();
@@ -142,29 +151,32 @@ const getServicoNome = (ids) => {
     if (!agendamentoSelecionado) return;
 
     Alert.alert(
-      'Excluir agendamento',
+      "Excluir agendamento",
       `Tem certeza que deseja excluir este agendamento?`,
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: "Cancelar", style: "cancel" },
         {
-          text: 'Excluir',
-          style: 'destructive',
+          text: "Excluir",
+          style: "destructive",
           onPress: async () => {
             try {
               setLoading(true);
               const result = await deleteAgendamento(agendamentoSelecionado.id);
 
               if (result.success) {
-                Alert.alert('Sucesso', 'Agendamento excluído com sucesso!');
+                Alert.alert("Sucesso", "Agendamento excluído com sucesso!");
                 setAgendamentosDoDia((prev) =>
                   prev.filter((a) => a.id !== agendamentoSelecionado.id)
                 );
                 fecharModalView();
               } else {
-                Alert.alert('Erro', result.message || 'Falha ao excluir agendamento.');
+                Alert.alert(
+                  "Erro",
+                  result.message || "Falha ao excluir agendamento."
+                );
               }
             } catch (error) {
-              Alert.alert('Erro', error.message);
+              Alert.alert("Erro", error.message);
             } finally {
               setLoading(false);
             }
@@ -181,24 +193,33 @@ const getServicoNome = (ids) => {
       {/* Cabeçalho */}
       <View style={styles.headerRow}>
         <Text style={styles.title}>Agenda</Text>
-        <Button title="Adicionar +" small onPress={() => navigation.navigate('AgendamentoCadastro')} />
+        <Button
+          title="Adicionar +"
+          small
+          onPress={() => navigation.navigate("AgendamentoCadastro")}
+        />
       </View>
 
       {/* Lista */}
       {loading ? (
-        <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 40 }} />
+        <ActivityIndicator
+          size="large"
+          color={theme.colors.primary}
+          style={{ marginTop: 40 }}
+        />
       ) : (
         <ScrollView contentContainerStyle={styles.listContainer}>
-          
           {agendamentosDoDia.length === 0 ? (
-            <Text style={{ textAlign: 'center', color: theme.colors.textInput }}>
+            <Text
+              style={{ textAlign: "center", color: theme.colors.textInput }}
+            >
               Nenhum agendamento para hoje.
             </Text>
           ) : (
             (() => {
               // Agrupa por data (a.data) e ordena as datas e os agendamentos por horário
               const groups = agendamentosDoDia.reduce((acc, a) => {
-                const key = a.data || 'Sem data';
+                const key = a.data || "Sem data";
                 if (!acc[key]) acc[key] = [];
                 acc[key].push(a);
                 return acc;
@@ -215,8 +236,8 @@ const getServicoNome = (ids) => {
                 const items = groups[dateKey].slice();
                 // ordenar por horário quando disponível ('HH:MM')
                 items.sort((x, y) => {
-                  const t1 = x.horario || '';
-                  const t2 = y.horario || '';
+                  const t1 = x.horario || "";
+                  const t2 = y.horario || "";
                   if (!t1 && !t2) return 0;
                   if (!t1) return 1;
                   if (!t2) return -1;
@@ -226,14 +247,20 @@ const getServicoNome = (ids) => {
                 return (
                   <View key={dateKey}>
                     <View style={styles.dateContainer}>
-                      <Text style={styles.dateText}>{formatDateHeader(dateKey)}</Text>
+                      <Text style={styles.dateText}>
+                        {formatDateHeader(dateKey)}
+                      </Text>
                     </View>
                     {items.map((a) => (
                       <Card
                         key={a.id}
                         icon="calendar-outline"
-                        title={`${getClienteNome(a.cliente)} - ${a.horario || 'Sem horário'}`}
-                        subtitle={`${getServicoNome(a.servicos)} · ${getFuncionarioNome(a.profissionais)}`}
+                        title={`${getClienteNome(a.cliente)} - ${
+                          a.horario || "Sem horário"
+                        }`}
+                        subtitle={`${getServicoNome(
+                          a.servicos
+                        )} · ${getFuncionarioNome(a.profissionais)}`}
                         onView={() => abrirModalView(a)}
                       />
                     ))}
@@ -254,48 +281,139 @@ const getServicoNome = (ids) => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Detalhes do Agendamento</Text>
+            <View style={styles.modalHeaderRight}>
+              <View>
+                <Text style={styles.modalTitle}>Detalhes do Agendamento</Text>
+                <Text style={styles.modalSubtitle}>
+                  Informações rápidas e ações
+                </Text>
+              </View>
+
               <TouchableOpacity onPress={fecharModalView}>
                 <Ionicons name="close" size={26} color={theme.colors.text} />
               </TouchableOpacity>
             </View>
 
             {agendamentoSelecionado && (
-              <View style={styles.modalContent}>
-                <Text style={styles.info}>
-                  <Text style={styles.label}>Cliente:</Text> {getClienteNome(agendamentoSelecionado.cliente)}
-                </Text>
-                <Text style={styles.info}>
-                  <Text style={styles.label}>Serviço:</Text> {getServicoNome(agendamentoSelecionado.servico)}
-                </Text>
-                <Text style={styles.info}>
-                  <Text style={styles.label}>Profissional:</Text> {getFuncionarioNome(agendamentoSelecionado.profissional)}
-                </Text>
-                <Text style={styles.info}>
-                  <Text style={styles.label}>Data:</Text> {agendamentoSelecionado.data}
-                </Text>
-                <Text style={styles.info}>
-                  <Text style={styles.label}>Horário:</Text> {agendamentoSelecionado.horario || 'Não informado'}
-                </Text>
-                <Text style={styles.info}>
-                  <Text style={styles.label}>Valor:</Text> {agendamentoSelecionado.valor ? `R$ ${agendamentoSelecionado.valor}` : 'Não informado'}
-                </Text>
-                {agendamentoSelecionado.observacoes && (
-                  <Text style={styles.info}>
-                    <Text style={styles.label}>Observações:</Text> {agendamentoSelecionado.observacoes}
-                  </Text>
-                )}
+              <View style={styles.modalInner}>
+                {/* resumo curto no topo (cartão claro) */}
+                <View style={styles.topCard}>
+                  <View style={styles.topCardLeft}>
+                    <View style={styles.topCardIcon}>
+                      <Ionicons
+                        name="calendar-outline"
+                        size={18}
+                        color={theme.colors.white}
+                      />
+                    </View>
 
-                {/* Botão de excluir dentro do modal */}
-                <Button
-                  title="Excluir Agendamento"
-                  onPress={handleExcluir}
-                  style={{
-                    backgroundColor: theme.colors.primary || '#FF4C4C',
-                    marginTop: 20,
-                  }}
-                />
+                    <View style={styles.topCardTextWrap}>
+                      <Text style={styles.topCardTitle} numberOfLines={1}>
+                        {getClienteNome(agendamentoSelecionado.cliente)}{" "}
+                        {agendamentoSelecionado.horario
+                          ? `· ${agendamentoSelecionado.horario}`
+                          : ""}
+                      </Text>
+                      <Text style={styles.topCardSubtitle} numberOfLines={1}>
+                        {getServicoNome(
+                          agendamentoSelecionado.servicos ||
+                            agendamentoSelecionado.servico
+                        )}{" "}
+                        ·{" "}
+                        {getFuncionarioNome(
+                          agendamentoSelecionado.profissionais ||
+                            agendamentoSelecionado.profissional
+                        )}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* cartão branco com detalhes em duas colunas */}
+                <View style={styles.detailsCard}>
+                  <View style={styles.detailRow}>
+                    <View style={styles.detailCol}>
+                      <Text style={styles.detailLabel}>Cliente</Text>
+                      <Text style={styles.detailValue}>
+                        {getClienteNome(agendamentoSelecionado.cliente)}
+                      </Text>
+
+                      <Text style={[styles.detailLabel, { marginTop: 12 }]}>
+                        Profissional
+                      </Text>
+                      <Text style={styles.detailValue}>
+                        {getFuncionarioNome(
+                          agendamentoSelecionado.profissionais ||
+                            agendamentoSelecionado.profissional
+                        )}
+                      </Text>
+
+                      <Text style={[styles.detailLabel, { marginTop: 12 }]}>
+                        Data
+                      </Text>
+                      <Text style={styles.detailValue}>
+                        {agendamentoSelecionado.data}
+                      </Text>
+                    </View>
+
+                    <View style={styles.detailCol}>
+                      <Text style={styles.detailLabel}>Serviço</Text>
+                      <Text style={styles.detailValue}>
+                        {getServicoNome(
+                          agendamentoSelecionado.servicos ||
+                            agendamentoSelecionado.servico
+                        )}
+                      </Text>
+
+                      <Text style={[styles.detailLabel, { marginTop: 12 }]}>
+                        Valor
+                      </Text>
+                      <Text style={styles.detailValue}>
+                        {agendamentoSelecionado.valor
+                          ? `R$ ${agendamentoSelecionado.valor}`
+                          : "Não informado"}
+                      </Text>
+
+                      <Text style={[styles.detailLabel, { marginTop: 12 }]}>
+                        Horário
+                      </Text>
+                      <Text style={styles.detailValue}>
+                        {agendamentoSelecionado.horario || "Não informado"}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {agendamentoSelecionado.observacoes ? (
+                    <View style={{ marginTop: 12 }}>
+                      <Text style={styles.detailLabel}>Observações</Text>
+                      <Text style={styles.detailValue}>
+                        {agendamentoSelecionado.observacoes}
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
+
+                {/* botões: editar (outline) e excluir (cheio) */}
+                <View style={styles.actionsRow}>
+                  <Button
+                    title="Editar"
+                    onPress={() => {
+                      fecharModalView();
+                      navigation.navigate('AgendamentoEditar', {
+                        agendamento: agendamentoSelecionado,
+                      });
+                    }}
+                    style={styles.editButton}
+                    textStyle={styles.editButtonText}
+                  />
+
+                  <Button
+                    title="Excluir"
+                    onPress={handleExcluir}
+                    style={styles.deleteButton}
+                    textStyle={styles.deleteButtonText}
+                  />
+                </View>
               </View>
             )}
           </View>
@@ -309,60 +427,157 @@ const getServicoNome = (ids) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: theme.spacing.large,
     paddingVertical: theme.spacing.medium,
   },
-  title: { fontSize: 20, fontWeight: '700', color: theme.colors.text },
+  title: { fontSize: 20, fontWeight: "700", color: theme.colors.text },
   dateContainer: {
     paddingHorizontal: theme.spacing.large,
     paddingBottom: theme.spacing.small,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   dateText: {
     fontSize: 14,
     color: theme.colors.textInput,
-    fontWeight: '500',
-    textAlign: 'left',
+    fontWeight: "500",
+    textAlign: "left",
   },
   listContainer: { paddingHorizontal: theme.spacing.large, paddingBottom: 100 },
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 20,
   },
   modalContainer: {
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.container4,
     borderRadius: 16,
-    width: '100%',
-    maxWidth: 400,
-    padding: 20,
-    elevation: 10,
+    width: "100%",
+    maxWidth: 420,
+    padding: 18,
+    elevation: 12,
   },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
+  modalHeaderRight: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     color: theme.colors.text,
   },
-  modalContent: { marginTop: 10 },
-  info: {
+  modalSubtitle: {
+    fontSize: 13,
+    color: theme.colors.textInput,
+    marginTop: 4,
+  },
+  modalInner: {
+    marginTop: 6,
+  },
+  topCard: {
+    borderRadius: 10,
+    marginBottom: 12,
+    borderColor: theme.colors.border,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  topCardLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  topCardIcon: {
+    marginBottom: 0,
+    backgroundColor: theme.colors.primary,
+    padding: 10,
+    borderRadius: theme.radius.medium,
+    borderColor: theme.colors.border,
+    width: 44,
+    height: 44,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  topCardTextWrap: {
+    flex: 1,
+  },
+  topCardTitle: {
     fontSize: 16,
+    fontWeight: "700",
     color: theme.colors.text,
-    marginBottom: 8,
   },
-  label: {
-    fontWeight: '700',
+  topCardSubtitle: {
+    fontSize: 13,
+    color: theme.colors.textInput,
+    marginTop: 6,
+  },
+
+  topCardViewButton: {
+    backgroundColor: theme.colors.white,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  detailsCard: {
+    backgroundColor: theme.colors.background,
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    marginBottom: 12,
+  },
+  detailRow: {
+    flexDirection: "row",
+  },
+  detailCol: {
+    flex: 1,
+    paddingRight: 8,
+  },
+  detailLabel: {
+    fontWeight: "700",
     color: theme.colors.primary,
+    fontSize: 13,
+  },
+  detailValue: {
+    color: theme.colors.text,
+    fontSize: 15,
+    marginTop: 4,
+  },
+  actionsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 6,
+  },
+  editButton: {
+    backgroundColor: theme.colors.white,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    width: "48%",
+    marginTop: 8,
+  },
+  editButtonText: {
+    color: theme.colors.primary,
+    fontWeight: "700",
+  },
+  deleteButton: {
+    backgroundColor: theme.colors.primary,
+    width: "48%",
+    marginTop: 8,
+  },
+  deleteButtonText: {
+    color: theme.colors.white,
+    fontWeight: "700",
   },
 });
