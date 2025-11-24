@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import Home from "../screens/Home";
 import Agenda from "../screens/Agenda";
 import Clientes from "../screens/Clientes";
@@ -13,23 +13,39 @@ export default function BottomTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
+        tabBarIcon: ({ color, size, focused }) => {
           const icons = {
-            Inicio: "home-outline",
-            Agenda: "calendar-outline",
-            Clientes: "people-outline",
-            Mais: "ellipsis-horizontal-outline",
+            Inicio: focused ? "home" : "home-outline",
+            Agenda: focused ? "calendar" : "calendar-outline",
+            Clientes: focused ? "people" : "people-outline",
+            Mais: focused ? "ellipsis-horizontal" : "ellipsis-horizontal-outline",
           };
 
-          return <Ionicons name={icons[route.name]} size={24} color={color} />;
+          return (
+            <View
+              style={{
+                backgroundColor: focused ? theme.colors.primary : "transparent",
+                padding: focused ? 10 : 0,
+                borderRadius: 50,
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: focused ? 15:0,
+              }}
+            >
+              <Ionicons name={icons[route.name]} size={25} color={color}   />
+            </View>
+          );
         },
-
-        tabBarActiveTintColor: theme.colors.text,
-        tabBarInactiveTintColor: "#B9B9B9",
+        tabBarLabel: ({ focused, color }) => {
+          if (focused) return null;
+          return <Text style={{ color, fontSize: 11 }}>{route.name}</Text>;
+        },
+        tabBarActiveTintColor: '#ffffffff',
+        tabBarInactiveTintColor: "#000000ff",
 
         headerShown: false,
 
-        // ---- CONFIGS PARA BARRA FLUTUANTE ----
+
         tabBarStyle: styles.tabBar,
         tabBarItemStyle: styles.tabBarItem,
         tabBarLabelStyle: styles.label,
@@ -48,25 +64,28 @@ const styles = StyleSheet.create({
   tabBar: {
     position: "absolute",
     bottom: 20,
-    left: 20,
-    right: 20,
+    left: 10,
+    right: 10,
     height: 68,
     borderRadius: 999,
     backgroundColor: theme.colors.white,
     marginHorizontal: theme.spacing.large,
     paddingBottom: 6,
     paddingTop: 6,
+    borderTopWidth: 0,
 
     // sombra moderna (iOS + Android)
     shadowColor: "#000",
     shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 10 },
     shadowRadius: 10,
-    elevation: 8,
+    elevation: 5,
   },
 
   // Ajusta posição interna dos botões
   tabBarItem: {
-    
+justifyContent: "center",
+  alignItems: "center",
   },
 
   // Label mais clean
