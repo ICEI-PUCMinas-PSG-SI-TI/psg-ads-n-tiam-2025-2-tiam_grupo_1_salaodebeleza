@@ -1,14 +1,16 @@
 import { db } from '../database/firebase';
-import {
-  collection, addDoc, query, where, onSnapshot, deleteDoc, doc, getDocs, updateDoc
+import { 
+  collection, addDoc, query, where, onSnapshot, deleteDoc, doc, getDocs, updateDoc 
 } from 'firebase/firestore';
 
 const AGENDAMENTOS_COLLECTION = 'agendamentos';
 
+// --- Funções CRUD Originais ---
+
 export const addAgendamento = async (agendamento) => {
   try {
     const colRef = collection(db, AGENDAMENTOS_COLLECTION);
-    const docRef = doc(colRef);
+    const docRef = doc(colRef); // Gera ID manualmente antes de salvar
 
     await addDoc(collection(db, AGENDAMENTOS_COLLECTION), {
       ...agendamento,
@@ -38,9 +40,9 @@ export const listenAgendamentos = (callback) => {
 
 export const deleteAgendamento = async (id) => {
   try {
-    // Fazer delete lógico: marcar o agendamento como inativo
     const ref = doc(db, AGENDAMENTOS_COLLECTION, id);
-    await updateDoc(ref, { ativo: false, atualizadoEm: new Date() });
+    await deleteDoc(ref);
+    console.log('Agendamento excluído com sucesso.');
     return { success: true };
   } catch (error) {
     console.error('Erro ao excluir agendamento:', error);
@@ -71,4 +73,20 @@ export const updateAgendamento = async (id, dados) => {
     console.error('Erro ao atualizar agendamento:', error);
     return { success: false, message: error.message };
   }
+};
+
+// --- NOVA FUNÇÃO: Relatórios ---
+/**
+ * Busca todos os ativos para processar status (passado/concluído) no front.
+ */
+export const listenRelatorios = (callback) => {
+  const q = query(
+    collection(db, AGENDAMENTOS_COLLECTION),
+    where('ativo', '==', true) 
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const lista = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    callback(lista);
+  }, (error) => console.error('Erro ao ouvir relatórios:', error));
 };

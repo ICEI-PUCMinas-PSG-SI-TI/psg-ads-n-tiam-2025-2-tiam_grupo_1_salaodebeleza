@@ -296,8 +296,9 @@ export default function Agenda() {
                       <Card
                         key={a.id}
                         icon="calendar-outline"
-                        title={`${getClienteNome(a.cliente)} - ${a.horario || "Sem horário"
-                          }`}
+                        title={`${getClienteNome(a.cliente)} - ${
+                          a.horario || "Sem horário"
+                        }`}
                         subtitle={`${getServicoNome(
                           a.servicos
                         )} · ${getFuncionarioNome(a.profissionais)}`}
@@ -465,14 +466,7 @@ export default function Agenda() {
 
 // --- ESTILOS ---
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: theme.colors.background, gap: 10 },
-  containerFiltros: {
-    flexDirection: 'row',
-    flexWrap: "wrap",
-    paddingLeft: theme.spacing.large,
-    gap: 7,
-    marginRight: theme.spacing.large,
-  },
+  container: { flex: 1, backgroundColor: theme.colors.background },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
