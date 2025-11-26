@@ -6,7 +6,6 @@ import Agenda from "../screens/Agenda";
 import Clientes from "../screens/Clientes";
 import Mais from "../screens/Mais";
 import { theme } from "../styles/theme";
-import AnimatedTabIcon from "./AnimatedTabIcon";
 
 const Tab = createBottomTabNavigator();
 
