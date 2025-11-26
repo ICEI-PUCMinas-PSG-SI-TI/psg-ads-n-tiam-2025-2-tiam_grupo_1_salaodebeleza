@@ -6,6 +6,7 @@ import Agenda from "../screens/Agenda";
 import Clientes from "../screens/Clientes";
 import Mais from "../screens/Mais";
 import { theme } from "../styles/theme";
+import AnimatedTabIcon from "./AnimatedTabIcon";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,6 +25,8 @@ export default function BottomTabs() {
           return (
             <View
               style={{
+                width: focused ? 50 : size,
+                height: focused ? 50 : size,
                 backgroundColor: focused ? theme.colors.primary : "transparent",
                 padding: focused ? 10 : 0,
                 borderRadius: 50,
@@ -40,7 +43,7 @@ export default function BottomTabs() {
           if (focused) return null;
           return <Text style={{ color, fontSize: 11 }}>{route.name}</Text>;
         },
-        tabBarActiveTintColor: '#ffffffff',
+        tabBarActiveTintColor: '#ffffff',
         tabBarInactiveTintColor: "#000000ff",
         headerShown: false,
         tabBarStyle: styles.tabBar,
