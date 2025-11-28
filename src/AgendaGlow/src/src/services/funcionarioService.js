@@ -56,6 +56,23 @@ export const listenFuncionarios = (callback) => {
   return unsubscribe;
 };
 
+// Função para ouvir todos os funcionários por email
+export const getFuncionarioByEmail = async (email) => {
+  try {
+    const q = query(collection(db, FUNCIONARIOS_COLLECTION), where("email", "==", email));
+    const snap = await getDocs(q);
+
+    if (!snap.empty) {
+      const docData = snap.docs[0];
+      return { success: true, data: { id: docData.id, ...docData.data() } };
+    } else {
+      return { success: false, message: 'Profissional não encontrado.' };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
 // Função para buscar um funcionário pelo seu UID
 export const getFuncionarioByUid = async (uid) => {
   try {

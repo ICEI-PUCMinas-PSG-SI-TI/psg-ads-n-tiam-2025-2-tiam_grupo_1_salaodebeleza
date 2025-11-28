@@ -111,7 +111,7 @@ export default function Servicos({ navigation }) {
                 title={s.nome}
                 subtitle={s.descricao}
                 onView={() => abrirModalView(s)}
-                icon="clipboard-outline"
+                icon="logo-firebase"
               />
             ))
           )}

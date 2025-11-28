@@ -99,10 +99,10 @@ export default function Clientes() {
 
   return (
     <View style={styles.container}>
-      <Header userName="Usuário" />
+      <Header pageTitle={"CLIENTES"}/>
 
       <View style={styles.headerRow}>
-        <Text style={styles.title}>Clientes</Text>
+        <Text style={styles.title}>Lista de clientes</Text>
         <Button
           title="Adicionar +"
           small

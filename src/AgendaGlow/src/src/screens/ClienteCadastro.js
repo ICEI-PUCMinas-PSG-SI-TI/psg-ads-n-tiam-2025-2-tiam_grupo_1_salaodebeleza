@@ -100,7 +100,7 @@ export default function ClienteCadastro() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <Header userName="Usuário" />
+      <Header pageTitle={"CADASTRAR CLIENTE"}/>
 
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 

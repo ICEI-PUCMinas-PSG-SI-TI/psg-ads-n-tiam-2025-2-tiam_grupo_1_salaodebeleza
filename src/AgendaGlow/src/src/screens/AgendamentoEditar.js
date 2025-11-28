@@ -23,7 +23,7 @@ export default function AgendamentoEditar({ navigation, route }) {
   if (!agendamento) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Header userName="Usuário" />
+        <Header pageTitle={"AGENDA"} />
         <Text style={{ color: theme.colors.text, fontSize: 16 }}>
           Nenhum agendamento selecionado para edição.
         </Text>
@@ -193,9 +193,9 @@ export default function AgendamentoEditar({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Header userName={"Usuario"} />
+      <Header pageTitle={"EDITAR AGENDAMENTO"} />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Editar Agendamento</Text>
+        <Text style={styles.title}>Preencha os campos abaixo</Text>
 
         <Picker
           style={styles.inputLike}

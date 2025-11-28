@@ -20,7 +20,7 @@ export default function FuncionarioEditar({ navigation, route }) {
   if (!funcionario) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Header userName="Usuário" />
+        <Header pageTitle={"EDITAR PROFISSIONAL"} />
         <Text style={{ color: theme.colors.text, fontSize: 16 }}>
           Nenhum profissional selecionado para edição.
         </Text>
@@ -165,7 +165,7 @@ export default function FuncionarioEditar({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Header userName={nome.split(' ')[0]} />
+      <Header pageTitle={"EDITAR PROFISSIONAL"}/>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Alterar meus dados</Text>
 
