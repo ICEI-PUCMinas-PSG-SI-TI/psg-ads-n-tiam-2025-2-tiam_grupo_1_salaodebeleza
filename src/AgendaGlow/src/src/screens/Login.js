@@ -188,8 +188,8 @@ export default function Login() {
   // ** FIM login Google */
 
   const [fontsLoaded] = useFonts({
-    "Inspiration-Regular": require("../../assets/fonts/Inspiration-Regular.ttf"),
-    Inter: require("../../assets/fonts/Inter.ttf"),
+    "Inspiration-Regular": require("../../../assets/fonts/Inspiration-Regular.ttf"),
+    Inter: require("../../../assets/fonts/Inter.ttf"),
   });
 
   if (!fontsLoaded) {
@@ -200,7 +200,7 @@ export default function Login() {
     <View style={styles.container}>
       <Image
         style={styles.imagemLogo}
-        source={require("../../assets/logo.png")}
+        source={require("../../../assets/logo.png")}
       ></Image>
       <Text style={styles.textLogo}>AgendaGlow</Text>
       <Text style={styles.titulo}>Bem vindo(a) de volta!</Text>
@@ -274,7 +274,7 @@ export default function Login() {
         disabled={!request}
       >
         <Image
-          source={require("../../assets/google-icon.png")}
+          source={require("../../../assets/google-icon.png")}
           style={styles.googleIcon}
         ></Image>
       </TouchableOpacity>
