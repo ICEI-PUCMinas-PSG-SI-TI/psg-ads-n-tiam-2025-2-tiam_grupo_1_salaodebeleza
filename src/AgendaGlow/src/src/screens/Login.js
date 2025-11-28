@@ -14,6 +14,10 @@ import {
   login,
   loginComGoogleToken,
   forgotPassword,
+  loginComBiometria,
+  isBiometricAvailable,
+  saveBiometricCredentials,
+  getBiometricCredentials
 } from "../services/loginService";
 
 import * as WebBrowser from "expo-web-browser";
@@ -34,14 +38,99 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [message, setMessage] = useState("");
+  const [biometriaDisponivel, setBiometriaDisponivel] = useState(false);
+  const [biometriaCadastrada, setBiometriaCadastrada] = useState(false);
+  const [usandoBiometria, setUsandoBiometria] = useState(false);
 
   const nonceRef = useRef(makeNonce());
+
+  // Verifica se biometria está disponível, se há credenciais salvas
+  // e tenta login automático com biometria ao montar a tela
+  useEffect(() => {
+    const verificarBiometriaEAutoLogin = async () => {
+      try {
+        const disponivel = await isBiometricAvailable();
+        setBiometriaDisponivel(disponivel);
+
+        if (!disponivel) return;
+
+        // Verifica se há credenciais biométricas salvas
+        const credentials = await getBiometricCredentials();
+        const cadastrado = !!credentials?.email && !!credentials?.senha;
+        setBiometriaCadastrada(cadastrado);
+
+        // Se há credenciais, tenta autenticar automaticamente
+        if (cadastrado) {
+          setUsandoBiometria(true);
+          const result = await loginComBiometria();
+          setUsandoBiometria(false);
+
+          if (result.success) {
+            setMessage("Login automático por biometria bem-sucedido!");
+            // Navegue para a tela principal aqui (ex: navigation.replace('AppMain'))
+            // Se você usa React Navigation, injete `navigation` como prop e substitua a linha acima.
+          } else {
+            // falha no auto-login — manter na tela de login
+            console.log('Auto-login biometria falhou:', result.message);
+          }
+        }
+      } catch (err) {
+        setUsandoBiometria(false);
+        console.error('Erro no auto-login biometria:', err);
+      }
+    };
+
+    verificarBiometriaEAutoLogin();
+  }, []);
 
   const efetuarLogin = async () => {
     try {
       const user = await login(email, senha);
+      
+      // Pergunta se deseja habilitar biometria
+      if (biometriaDisponivel && email && senha) {
+        Alert.alert(
+          "Habilitar biometria?",
+          "Deseja usar biometria para fazer login mais rápido?",
+          [
+            {
+              text: "Não",
+              onPress: () => console.log("Biometria não habilitada"),
+            },
+            {
+              text: "Sim",
+              onPress: async () => {
+                const resultado = await saveBiometricCredentials(email, senha);
+                if (resultado.success) {
+                  setMessage("Biometria habilitada com sucesso!");
+                }
+              },
+            },
+          ]
+        );
+      }
     } catch (error) {
       console.log(error.message);
+      setMessage(error.message);
+    }
+  };
+
+  const handleLoginBiometria = async () => {
+    setUsandoBiometria(true);
+    try {
+      const result = await loginComBiometria();
+      
+      if (result.success) {
+        setMessage("Login com biometria bem-sucedido!");
+        // Navegar para a próxima tela aqui
+      } else {
+        setMessage(result.message || "Erro ao fazer login com biometria");
+      }
+    } catch (error) {
+      setMessage("Erro ao fazer login com biometria");
+      console.error(error);
+    } finally {
+      setUsandoBiometria(false);
     }
   };
 
@@ -99,8 +188,8 @@ export default function Login() {
   // ** FIM login Google */
 
   const [fontsLoaded] = useFonts({
-    "Inspiration-Regular": require("../../assets/fonts/Inspiration-Regular.ttf"),
-    Inter: require("../../assets/fonts/Inter.ttf"),
+    "Inspiration-Regular": require("../../../assets/fonts/Inspiration-Regular.ttf"),
+    Inter: require("../../../assets/fonts/Inter.ttf"),
   });
 
   if (!fontsLoaded) {
@@ -111,7 +200,7 @@ export default function Login() {
     <View style={styles.container}>
       <Image
         style={styles.imagemLogo}
-        source={require("../../assets/logo.png")}
+        source={require("../../../assets/logo.png")}
       ></Image>
       <Text style={styles.textLogo}>AgendaGlow</Text>
       <Text style={styles.titulo}>Bem vindo(a) de volta!</Text>
@@ -162,6 +251,19 @@ export default function Login() {
         <Text style={styles.textButton}>Logar</Text>
       </TouchableOpacity>
 
+      { biometriaCadastrada && (
+        <TouchableOpacity 
+          style={styles.biometriaButton} 
+          onPress={handleLoginBiometria}
+          disabled={usandoBiometria}
+        >
+          <Feather name="lock" size={24} color="black" />
+          <Text style={styles.textBiometria}>
+            {usandoBiometria ? "Autenticando..." : "Login com Biometria"}
+          </Text>
+        </TouchableOpacity>
+      )}
+
       <TouchableOpacity onPress={handleForgotPassword}>
         <Text style={styles.espacos}>Esqueci minha senha</Text>
       </TouchableOpacity>
@@ -172,7 +274,7 @@ export default function Login() {
         disabled={!request}
       >
         <Image
-          source={require("../../assets/google-icon.png")}
+          source={require("../../../assets/google-icon.png")}
           style={styles.googleIcon}
         ></Image>
       </TouchableOpacity>
@@ -305,5 +407,22 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingInline: 10,
     paddingBlock: 4,
+  },
+  biometriaButton: {
+    flexDirection: "row",
+    backgroundColor: "#FFF6ED",
+    width: "100%",
+    borderRadius: 15,
+    padding: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBlock: 15,
+    gap: 10,
+  },
+  textBiometria: {
+    color: "black",
+    fontFamily: "Inter",
+    fontSize: 16,
+    fontWeight: 600,
   },
 });

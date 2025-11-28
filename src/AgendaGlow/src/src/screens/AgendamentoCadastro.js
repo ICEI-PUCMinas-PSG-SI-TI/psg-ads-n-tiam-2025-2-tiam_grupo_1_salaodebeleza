@@ -4,30 +4,28 @@ import { Picker } from "@react-native-picker/picker";
 import Header from "../components/Header";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import MultiSelect from "../components/MultiSelect";
 import { theme } from "../styles/theme";
 import { listenFuncionarios } from "../services/funcionarioService";
 import { listenServicos } from "../services/servicoService";
+import { listenClientes } from "../services/clienteService";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { addAgendamento } from '../services/agendamentoService';
 
 export default function AgendamentoCadastro() {
   const [cliente, setCliente] = useState(null);
-  const [servico, setServico] = useState(null);
-  const [profissional, setProfissional] = useState(null);
+  const [servicosSelecionados, setServicosSelecionados] = useState([]);
+  const [profissionaisSelecionados, setProfissionaisSelecionados] = useState([]);
   const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedTime, setSelectedTime] = useState(new Date());
   const [valor, setValor] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const mockClientes = [
-    { label: "Selecione o Cliente", value: null },
-    { label: "Maria Silva", value: "maria" },
-    { label: "João Oliveira", value: "joao" },
-  ];
-
   const [listaFuncionarios, setListaFuncionarios] = useState([]);
-  const [listaClientes, setListaClientes] = useState(mockClientes);
+  const [listaClientes, setListaClientes] = useState([]);
   const [listaServicos, setListaServicos] = useState([]);
 
   useEffect(() => {
@@ -41,17 +39,23 @@ export default function AgendamentoCadastro() {
       setListaServicos(lista);
       setLoading(false);
     });
+    const unsubscribeClientes = listenClientes((lista) => {
+      setLoading(true);
+      setListaClientes(lista);
+      setLoading(false);
+    });
     return () => {
       unsubscribeFuncionarios();
       unsubscribeServicos();
+      unsubscribeClientes();
     };
   }, []);
 
   async function handleSalvar() {
     const novoAgendamento = {
       cliente,
-      servico,
-      profissional,
+      servicos: servicosSelecionados.map(s => s.id),
+      profissionais: profissionaisSelecionados.map(p => p.id),
       data,
       horario,
       valor,
@@ -66,8 +70,8 @@ export default function AgendamentoCadastro() {
         Alert.alert("Sucesso", "Agendamento salvo com sucesso!");
         // limpa os campos
         setCliente(null);
-        setServico(null);
-        setProfissional(null);
+        setServicosSelecionados([]);
+        setProfissionaisSelecionados([]);
         setData("");
         setHorario("");
         setValor("");
@@ -93,6 +97,7 @@ export default function AgendamentoCadastro() {
 
   const handleConfirm = (selectedDate) => {
     const formattedDate = selectedDate.toLocaleDateString("pt-BR");
+    setSelectedDate(selectedDate);
     setData(formattedDate);
     hideDatePicker();
   };
@@ -101,6 +106,7 @@ export default function AgendamentoCadastro() {
       hour: "2-digit",
       minute: "2-digit",
     });
+    setSelectedTime(selectedTime);
     setHorario(formattedTime);
     hideTimePicker();
   };
@@ -117,52 +123,57 @@ export default function AgendamentoCadastro() {
           selectedValue={cliente}
           onValueChange={setCliente}
         >
-          {listaClientes.map((c, index) => (
-            <Picker.Item
-              key={index}
-              color={theme.colors.textInput}
-              label={c.label}
-              value={c.value}
-            />
-          ))}
-        </Picker>
-
-        <Picker
-          style={styles.inputLike}
-          dropdownIconColor={theme.colors.textInput}
-          selectedValue={servico}
-          onValueChange={setServico}
-        >
           <Picker.Item
             color={theme.colors.textInput}
-            label="Selecione o Serviço"
+            label="Selecione o Cliente"
             value={null}
           />
-          {listaServicos.map((s) => (
+          {listaClientes.map((c) => (
             <Picker.Item
               color={theme.colors.textInput}
-              key={s.id}
-              label={s.nome}
-              value={s.id}
+              key={c.id}
+              label={c.nome ?? 'Cliente'}
+              value={c.id}
             />
           ))}
         </Picker>
 
-        <Picker
-          style={styles.inputLike}
-          dropdownIconColor={theme.colors.textInput}
-          selectedValue={profissional}
-          onValueChange={setProfissional}
-        >
-          {listaFuncionarios.map((f) => (
-            <Picker.Item
-              color={theme.colors.textInput}
-              key={f.id}
-              label={f.nome}
-              value={f.id}
-            />
-          ))}
-        </Picker>
+        <MultiSelect
+          placeholder="Selecione serviços"
+          items={listaServicos}
+          selectedItems={servicosSelecionados}
+          onSelectItem={(item) => {
+            if (!servicosSelecionados.find((s) => s.id === item.id)) {
+              setServicosSelecionados([...servicosSelecionados, item]);
+            }
+          }}
+          onRemoveItem={(itemId) => {
+            setServicosSelecionados(
+              servicosSelecionados.filter((s) => s.id !== itemId)
+            );
+          }}
+          searchableField="nome"
+        />
+
+        <MultiSelect
+          placeholder="Selecione profissionais"
+          items={listaFuncionarios}
+          selectedItems={profissionaisSelecionados}
+          onSelectItem={(item) => {
+            if (!profissionaisSelecionados.find((p) => p.id === item.id)) {
+              setProfissionaisSelecionados([
+                ...profissionaisSelecionados,
+                item,
+              ]);
+            }
+          }}
+          onRemoveItem={(itemId) => {
+            setProfissionaisSelecionados(
+              profissionaisSelecionados.filter((p) => p.id !== itemId)
+            );
+          }}
+          searchableField="nome"
+        />
 
         {/* Campo de Data como Input */}
         <TouchableOpacity onPress={showDatePicker} activeOpacity={0.7}>
@@ -178,6 +189,7 @@ export default function AgendamentoCadastro() {
         <DateTimePickerModal
           isVisible={isDatePickerVisible}
           mode="date"
+          date={selectedDate}
           onConfirm={handleConfirm}
           onCancel={hideDatePicker}
         />
@@ -196,6 +208,7 @@ export default function AgendamentoCadastro() {
         <DateTimePickerModal
           isVisible={isTimePickerVisible}
           mode="time"
+          date={selectedTime}
           onConfirm={handleTimeConfirm}
           onCancel={hideTimePicker}
         />
@@ -239,6 +252,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: theme.colors.container3,
+  },
+  label: {
+    fontWeight: "600",
+    marginTop: theme.spacing.medium,
+    marginBottom: theme.spacing.small,
+    color: theme.colors.text,
+    fontSize: 16,
   },
   saveButton: { marginTop: theme.spacing.large },
 });

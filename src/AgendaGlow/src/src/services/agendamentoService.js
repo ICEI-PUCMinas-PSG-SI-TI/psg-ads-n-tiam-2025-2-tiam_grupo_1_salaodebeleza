@@ -5,10 +5,16 @@ import {
 
 const AGENDAMENTOS_COLLECTION = 'agendamentos';
 
+// --- Funções CRUD Originais ---
+
 export const addAgendamento = async (agendamento) => {
   try {
+    const colRef = collection(db, AGENDAMENTOS_COLLECTION);
+    const docRef = doc(colRef); // Gera ID manualmente antes de salvar
+
     await addDoc(collection(db, AGENDAMENTOS_COLLECTION), {
       ...agendamento,
+      uid: docRef.id,
       ativo: true,
       criadoEm: new Date(),
     });
@@ -67,4 +73,20 @@ export const updateAgendamento = async (id, dados) => {
     console.error('Erro ao atualizar agendamento:', error);
     return { success: false, message: error.message };
   }
+};
+
+// --- NOVA FUNÇÃO: Relatórios ---
+/**
+ * Busca todos os ativos para processar status (passado/concluído) no front.
+ */
+export const listenRelatorios = (callback) => {
+  const q = query(
+    collection(db, AGENDAMENTOS_COLLECTION),
+    where('ativo', '==', true) 
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const lista = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    callback(lista);
+  }, (error) => console.error('Erro ao ouvir relatórios:', error));
 };
