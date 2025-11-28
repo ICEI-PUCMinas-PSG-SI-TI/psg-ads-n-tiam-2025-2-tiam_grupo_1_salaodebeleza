@@ -56,9 +56,9 @@ export default function FuncionarioCadastro({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header userName={nome.split(' ')[0]} />
+      <Header pageTitle={"CADASTRAR PROFISSIONAL"} />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Cadastrar Profissional</Text>
+        <Text style={styles.title}>Preencha os campos abaixo</Text>
 
         <Input placeholder="Nome*" value={nome} onChangeText={setNome} />
         <View>

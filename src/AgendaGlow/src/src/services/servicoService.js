@@ -89,7 +89,7 @@ export const listenServicos = (callback) => {
     q,
     (snapshot) => {
       const lista = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      console.log('📡 Atualização de serviços recebida:', lista.length);
+      //console.log('📡 Atualização de serviços recebida:', lista.length);
       callback(lista);
     },
     (error) => console.error('Erro ao ouvir serviços:', error)

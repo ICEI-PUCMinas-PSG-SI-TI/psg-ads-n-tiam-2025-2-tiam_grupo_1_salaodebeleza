@@ -9,9 +9,9 @@ import Logout from "./Logout";
 const BOTTOM_TABS_ROUTES = ['home', 'agenda', 'clientes', 'mais'];
 
 export default function Header({
-  userName = "UserName",
   onNotificationPress,
   onProfilePress,
+  pageTitle,
 }) {
   const navigation = useNavigation();
   const route = useRoute();
@@ -47,7 +47,10 @@ export default function Header({
             />
           </TouchableOpacity>
         )}
-        <Text style={styles.userName}>Olá, {userName}</Text>
+      </View>
+
+      <View style={styles.centerNamePage} pointerEvents="none">
+        <Text style={styles.pageTitle}>{pageTitle || "AGENDA GLOW"}</Text>
       </View>
 
       <View style={styles.right}>
@@ -60,16 +63,6 @@ export default function Header({
             style={styles.icon}
           />
         </TouchableOpacity>
-
-        <TouchableOpacity onPress={onProfilePress} style={styles.avatar}>
-          <Ionicons
-            name="person-circle-outline"
-            size={36}
-            color={theme.colors.primary}
-          />
-        </TouchableOpacity>
-
-        <Logout/>
       </View>
     </View>
   );
@@ -80,15 +73,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: theme.colors.background,
+    backgroundColor: "transparent",
+    paddingTop: 50,
     paddingHorizontal: theme.spacing.large,
     paddingVertical: theme.spacing.medium,
-    marginBlockStart: theme.spacing.large,
   },
   left: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1,
+    width: 48,
   },
   backButton: {
     marginRight: theme.spacing.medium,
@@ -100,17 +93,26 @@ const styles = StyleSheet.create({
     minWidth: 40,
     minHeight: 40,
   },
-  userName: {
+  pageTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '700',
     color: theme.colors.text,
   },
+  centerNamePage: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
   right: {
+    width: 48,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: 'flex-end',
   },
   icon: {
     marginRight: theme.spacing.medium,
+    color: theme.colors.text,
   },
   avatar: {
     borderRadius: 50,

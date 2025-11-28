@@ -113,9 +113,9 @@ export default function AgendamentoCadastro() {
 
   return (
     <View style={styles.container}>
-      <Header userName="Usuário" />
+      <Header pageTitle={"CADASTRAR AGENDAMENTO"} />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Cadastrar Agendamento</Text>
+        <Text style={styles.title}>Preencha os campos abaixo</Text>
 
         <Picker
           style={styles.inputLike}

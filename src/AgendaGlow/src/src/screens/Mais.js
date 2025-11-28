@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import { getFuncionarioByUid } from '../services/funcionarioService';
 import { logout } from '../services/loginService'; 
+import Logout from '../components/Logout';
 
 export default function Mais() {
   const navigation = useNavigation();
@@ -43,9 +44,9 @@ export default function Mais() {
   
   return (
     <View style={styles.container}>
-      <Header userName="Usuario" />
+      <Header pageTitle={"MAIS"} />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.sectionTitle}>Mais</Text>
+        <Text style={styles.sectionTitle}>Mais opções</Text>
 
         <Button
           title="Serviços"
@@ -71,6 +72,12 @@ export default function Mais() {
         <Button
           title="Vincular conta Google"
           onPress={() => navigation.navigate("VincularGoogle")}
+          style={{ width: "100%" }}
+        />
+        <Button
+          title="Sair"
+          icon={"log-out-outline"}
+          onPress={logout}
           style={{ width: "100%" }}
         />
       </ScrollView>

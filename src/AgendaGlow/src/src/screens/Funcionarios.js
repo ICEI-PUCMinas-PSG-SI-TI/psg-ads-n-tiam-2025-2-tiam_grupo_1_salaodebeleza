@@ -83,11 +83,11 @@ export default function Funcionarios({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header userName="Usuário" />
+      <Header pageTitle={"EQUIPE"}/>
 
       {/* Cabeçalho */}
       <View style={styles.headerRow}>
-        <Text style={styles.title}>Equipe</Text>
+        <Text style={styles.title}>Profissionais</Text>
         <Button
           title="Adicionar +"
           small

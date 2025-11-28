@@ -230,11 +230,11 @@ export default function Agenda() {
 
   return (
     <View style={styles.container}>
-      <Header userName="Usuario" />
+      <Header pageTitle={"AGENDA"} />
 
       {/* Cabeçalho */}
       <View style={styles.headerRow}>
-        <Text style={styles.title}>Agenda</Text>
+        <Text style={styles.title}>Agendamentos</Text>
         <Button
           title="Adicionar +"
           small
