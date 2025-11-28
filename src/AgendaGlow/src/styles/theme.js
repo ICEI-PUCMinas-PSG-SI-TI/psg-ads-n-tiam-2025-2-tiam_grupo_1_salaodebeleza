@@ -54,3 +54,139 @@ export const theme = {
     },
   },
 };
+
+export const modalStyle = {
+ modalOverlay: {
+     flex: 1,
+     backgroundColor: "rgba(0,0,0,0.5)",
+     justifyContent: "center",
+     alignItems: "center",
+     paddingHorizontal: 20,
+   },
+   modalContainer: {
+     backgroundColor: theme.colors.container4,
+     borderRadius: 16,
+     width: "100%",
+     maxWidth: 420,
+     padding: 18,
+     elevation: 12,
+   },
+   modalHeaderRight: {
+     flexDirection: "row",
+     justifyContent: "space-between",
+     alignItems: "center",
+     marginBottom: 8,
+   },
+   modalTitle: {
+     fontSize: 18,
+     fontWeight: "700",
+     color: theme.colors.text,
+   },
+   modalSubtitle: {
+     fontSize: 13,
+     color: theme.colors.textInput,
+     marginTop: 4,
+   },
+   modalInner: {
+     marginTop: 6,
+   },
+   topCard: {
+     borderRadius: 10,
+     marginBottom: 12,
+     borderColor: theme.colors.border,
+     flexDirection: "row",
+     alignItems: "center",
+     justifyContent: "space-between",
+   },
+   topCardLeft: {
+     flexDirection: "row",
+     alignItems: "center",
+     flex: 1,
+   },
+   topCardIcon: {
+     marginBottom: 0,
+     backgroundColor: theme.colors.primary,
+     padding: 10,
+     borderRadius: theme.radius.medium,
+     borderColor: theme.colors.border,
+     width: 44,
+     height: 44,
+     justifyContent: "center",
+     alignItems: "center",
+     marginRight: 12,
+   },
+   topCardTextWrap: {
+     flex: 1,
+   },
+   topCardTitle: {
+     fontSize: 16,
+     fontWeight: "700",
+     color: theme.colors.text,
+   },
+   topCardSubtitle: {
+     fontSize: 13,
+     color: theme.colors.textInput,
+     marginTop: 6,
+   },
+ 
+   topCardViewButton: {
+     backgroundColor: theme.colors.white,
+     width: 40,
+     height: 40,
+     borderRadius: 10,
+     justifyContent: "center",
+     alignItems: "center",
+     borderWidth: 1,
+     borderColor: theme.colors.border,
+   },
+   detailsCard: {
+     backgroundColor: theme.colors.background,
+     borderRadius: 12,
+     padding: 12,
+     borderWidth: 1,
+     borderColor: theme.colors.border,
+     marginBottom: 12,
+   },
+   detailRow: {
+     flexDirection: "row",
+   },
+   detailCol: {
+     flex: 1,
+     paddingRight: 8,
+   },
+   detailLabel: {
+     fontWeight: "700",
+     color: theme.colors.primary,
+     fontSize: 13,
+   },
+   detailValue: {
+     color: theme.colors.text,
+     fontSize: 15,
+     marginTop: 4,
+   },
+   actionsRow: {
+     flexDirection: "row",
+     justifyContent: "space-between",
+     marginTop: 6,
+   },
+   editButton: {
+     backgroundColor: theme.colors.white,
+     borderWidth: 1,
+     borderColor: theme.colors.primary,
+     width: "48%",
+     marginTop: 8,
+   },
+   editButtonText: {
+     color: theme.colors.primary,
+     fontWeight: "700",
+   },
+   deleteButton: {
+     backgroundColor: theme.colors.primary,
+     width: "48%",
+     marginTop: 8,
+   },
+   deleteButtonText: {
+     color: theme.colors.white,
+     fontWeight: "700",
+   },
+};

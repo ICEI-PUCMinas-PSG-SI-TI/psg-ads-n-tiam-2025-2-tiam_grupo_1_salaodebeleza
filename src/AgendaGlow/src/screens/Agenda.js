@@ -13,7 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import Header from "../components/Header";
 import Card from "../components/Card";
 import Button from "../components/Button";
-import { theme } from "../styles/theme";
+import { theme, modalStyle } from "../styles/theme";
 import {
   listenAgendamentos,
   deleteAgendamento,
@@ -35,7 +35,11 @@ export default function Agenda() {
   const [loading, setLoading] = useState(true);
   const [modalViewVisible, setModalViewVisible] = useState(false);
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null);
-  const [filters, setFilters] = useState({ date: null, profissional: [], servico: [] });
+  const [filters, setFilters] = useState({
+    date: null,
+    profissional: [],
+    servico: [],
+  });
   const [filteredAgendamentos, setFilteredAgendamentos] = useState([]);
 
   // Função para formatar data no formato pt-BR
@@ -194,28 +198,35 @@ export default function Agenda() {
     let lista = agendamentosDoDia;
 
     if (filters.date) {
-      lista = lista.filter(a => a.data === filters.date);
+      lista = lista.filter((a) => a.data === filters.date);
     }
 
     if (filters.servico && filters.servico.length > 0) {
-      lista = lista.filter(a => {
+      lista = lista.filter((a) => {
         if (!a.servicos) return false;
-        const servicosArray = Array.isArray(a.servicos) ? a.servicos : [a.servicos];
-        return filters.servico.some(selectedId => servicosArray.includes(selectedId));
+        const servicosArray = Array.isArray(a.servicos)
+          ? a.servicos
+          : [a.servicos];
+        return filters.servico.some((selectedId) =>
+          servicosArray.includes(selectedId)
+        );
       });
     }
 
     if (filters.profissional && filters.profissional.length > 0) {
-      lista = lista.filter(a => {
+      lista = lista.filter((a) => {
         if (!a.profissionais) return false;
-        const profissionaisArray = Array.isArray(a.profissionais) ? a.profissionais : [a.profissionais];
-        return filters.profissional.some(selectedId => profissionaisArray.includes(selectedId));
+        const profissionaisArray = Array.isArray(a.profissionais)
+          ? a.profissionais
+          : [a.profissionais];
+        return filters.profissional.some((selectedId) =>
+          profissionaisArray.includes(selectedId)
+        );
       });
     }
 
     setFilteredAgendamentos(lista);
   }, [agendamentosDoDia, filters]);
-
 
   return (
     <View style={styles.container}>
@@ -231,15 +242,28 @@ export default function Agenda() {
         />
       </View>
       <View style={styles.containerFiltros}>
-        <FilterDate onSelect={(date) => {
-          setFilters((prev) => ({ ...prev, date }));
-        }}></FilterDate>
-        <Filter label="Profissionais" listItem={funcionarios} onSelect={(profissionais) => {
-          setFilters((prev) => ({ ...prev, profissional: profissionais || []}))
-        }}></Filter>
-        <Filter label="Serviços" listItem={servicos} onSelect={(servicos) => {
-          setFilters((prev) => ({ ...prev, servico: servicos || []}))
-        }}></Filter>
+        <FilterDate
+          onSelect={(date) => {
+            setFilters((prev) => ({ ...prev, date }));
+          }}
+        ></FilterDate>
+        <Filter
+          label="Profissionais"
+          listItem={funcionarios}
+          onSelect={(profissionais) => {
+            setFilters((prev) => ({
+              ...prev,
+              profissional: profissionais || [],
+            }));
+          }}
+        ></Filter>
+        <Filter
+          label="Serviços"
+          listItem={servicos}
+          onSelect={(servicos) => {
+            setFilters((prev) => ({ ...prev, servico: servicos || [] }));
+          }}
+        ></Filter>
       </View>
 
       {/* Lista */}
@@ -253,7 +277,8 @@ export default function Agenda() {
         <ScrollView contentContainerStyle={styles.listContainer}>
           {filteredAgendamentos.length === 0 ? (
             <Text
-              style={{ textAlign: "center", color: theme.colors.textInput }}>
+              style={{ textAlign: "center", color: theme.colors.textInput }}
+            >
               Nenhum agendamento para hoje.
             </Text>
           ) : (
@@ -296,8 +321,9 @@ export default function Agenda() {
                       <Card
                         key={a.id}
                         icon="calendar-outline"
-                        title={`${getClienteNome(a.cliente)} - ${a.horario || "Sem horário"
-                          }`}
+                        title={`${getClienteNome(a.cliente)} - ${
+                          a.horario || "Sem horário"
+                        }`}
                         subtitle={`${getServicoNome(
                           a.servicos
                         )} · ${getFuncionarioNome(a.profissionais)}`}
@@ -319,12 +345,14 @@ export default function Agenda() {
         transparent={true}
         onRequestClose={fecharModalView}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeaderRight}>
+        <View style={modalStyle.modalOverlay}>
+          <View style={modalStyle.modalContainer}>
+            <View style={modalStyle.modalHeaderRight}>
               <View>
-                <Text style={styles.modalTitle}>Detalhes do Agendamento</Text>
-                <Text style={styles.modalSubtitle}>
+                <Text style={modalStyle.modalTitle}>
+                  Detalhes do Agendamento
+                </Text>
+                <Text style={modalStyle.modalSubtitle}>
                   Informações rápidas e ações
                 </Text>
               </View>
@@ -335,11 +363,11 @@ export default function Agenda() {
             </View>
 
             {agendamentoSelecionado && (
-              <View style={styles.modalInner}>
+              <View style={modalStyle.modalInner}>
                 {/* resumo curto no topo (cartão claro) */}
-                <View style={styles.topCard}>
-                  <View style={styles.topCardLeft}>
-                    <View style={styles.topCardIcon}>
+                <View style={modalStyle.topCard}>
+                  <View style={modalStyle.topCardLeft}>
+                    <View style={modalStyle.topCardIcon}>
                       <Ionicons
                         name="calendar-outline"
                         size={18}
@@ -347,77 +375,79 @@ export default function Agenda() {
                       />
                     </View>
 
-                    <View style={styles.topCardTextWrap}>
-                      <Text style={styles.topCardTitle} numberOfLines={1}>
+                    <View style={modalStyle.topCardTextWrap}>
+                      <Text style={modalStyle.topCardTitle} numberOfLines={1}>
                         {getClienteNome(agendamentoSelecionado.cliente)}{" "}
                         {agendamentoSelecionado.horario
                           ? `· ${agendamentoSelecionado.horario}`
                           : ""}
                       </Text>
-                      <Text style={styles.topCardSubtitle} numberOfLines={1}>
-                        {getServicoNome(
-                          agendamentoSelecionado.servicos ||
-                            agendamentoSelecionado.servico
-                        )}{" "}
-                        ·{" "}
-                        {getFuncionarioNome(
-                          agendamentoSelecionado.profissionais ||
-                            agendamentoSelecionado.profissional
-                        )}
+                      <Text
+                        style={modalStyle.topCardSubtitle}
+                        numberOfLines={1}
+                      >
+                        {"Criado em "}
+                        {agendamentoSelecionado.criadoEm
+                          ? new Date(
+                              agendamentoSelecionado.criadoEm.seconds * 1000
+                            ).toLocaleDateString()
+                          : "Data não disponível"}
                       </Text>
                     </View>
                   </View>
                 </View>
 
                 {/* cartão branco com detalhes em duas colunas */}
-                <View style={styles.detailsCard}>
-                  <View style={styles.detailRow}>
-                    <View style={styles.detailCol}>
-                      <Text style={styles.detailLabel}>Cliente</Text>
-                      <Text style={styles.detailValue}>
+                <View style={modalStyle.detailsCard}>
+                  <View style={modalStyle.detailRow}>
+                    <View style={modalStyle.detailCol}>
+                      <Text style={modalStyle.detailLabel}>Cliente</Text>
+                      <Text style={modalStyle.detailValue}>
                         {getClienteNome(agendamentoSelecionado.cliente)}
                       </Text>
 
-                      <Text style={[styles.detailLabel, { marginTop: 12 }]}>
+                      <Text style={[modalStyle.detailLabel, { marginTop: 12 }]}>
                         Profissional
                       </Text>
-                      <Text style={styles.detailValue}>
+                      <Text style={modalStyle.detailValue}>
                         {getFuncionarioNome(
                           agendamentoSelecionado.profissionais ||
                             agendamentoSelecionado.profissional
                         )}
                       </Text>
 
-                      <Text style={[styles.detailLabel, { marginTop: 12 }]}>
+                      <Text style={[modalStyle.detailLabel, { marginTop: 12 }]}>
                         Data
                       </Text>
-                      <Text style={styles.detailValue}>
+                      <Text style={modalStyle.detailValue}>
                         {agendamentoSelecionado.data}
                       </Text>
                     </View>
 
-                    <View style={styles.detailCol}>
-                      <Text style={styles.detailLabel}>Serviço</Text>
-                      <Text style={styles.detailValue}>
+                    <View style={modalStyle.detailCol}>
+                      <Text style={modalStyle.detailLabel}>Serviço</Text>
+                      <Text style={modalStyle.detailValue}>
                         {getServicoNome(
                           agendamentoSelecionado.servicos ||
                             agendamentoSelecionado.servico
                         )}
                       </Text>
 
-                      <Text style={[styles.detailLabel, { marginTop: 12 }]}>
+                      <Text style={[modalStyle.detailLabel, { marginTop: 12 }]}>
                         Valor
                       </Text>
-                      <Text style={styles.detailValue}>
-                        {agendamentoSelecionado.valor
-                          ? `R$ ${agendamentoSelecionado.valor}`
+                      <Text style={modalStyle.detailValue}>
+                        {agendamentoSelecionado?.valor
+                          ? `R$ ${Number(agendamentoSelecionado.valor).toFixed(
+                              2
+                            )}`
                           : "Não informado"}
                       </Text>
 
-                      <Text style={[styles.detailLabel, { marginTop: 12 }]}>
+                      <Text style={[modalStyle.detailLabel, { marginTop: 12 }]}>
                         Horário
                       </Text>
-                      <Text style={styles.detailValue}>
+                      <Text style={modalStyle.detailValue}>
                         {agendamentoSelecionado.horario || "Não informado"}
                       </Text>
                     </View>
@@ -425,8 +455,8 @@ export default function Agenda() {
 
                   {agendamentoSelecionado.observacoes ? (
                     <View style={{ marginTop: 12 }}>
-                      <Text style={styles.detailLabel}>Observações</Text>
-                      <Text style={styles.detailValue}>
+                      <Text style={modalStyle.detailLabel}>Observações</Text>
+                      <Text style={modalStyle.detailValue}>
                         {agendamentoSelecionado.observacoes}
                       </Text>
                     </View>
@@ -434,24 +464,24 @@ export default function Agenda() {
                 </View>
 
                 {/* botões: editar (outline) e excluir (cheio) */}
-                <View style={styles.actionsRow}>
+                <View style={modalStyle.actionsRow}>
                   <Button
                     title="Editar"
                     onPress={() => {
                       fecharModalView();
-                      navigation.navigate('AgendamentoEditar', {
+                      navigation.navigate("AgendamentoEditar", {
                         agendamento: agendamentoSelecionado,
                       });
                     }}
-                    style={styles.editButton}
-                    textStyle={styles.editButtonText}
+                    style={modalStyle.editButton}
+                    textStyle={modalStyle.editButtonText}
                   />
 
                   <Button
                     title="Excluir"
                     onPress={handleExcluir}
-                    style={styles.deleteButton}
-                    textStyle={styles.deleteButtonText}
+                    style={modalStyle.deleteButton}
+                    textStyle={modalStyle.deleteButtonText}
                   />
                 </View>
               </View>
@@ -467,7 +497,7 @@ export default function Agenda() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background, gap: 10 },
   containerFiltros: {
-    flexDirection: 'row',
+    flexDirection: "row",
     flexWrap: "wrap",
     paddingLeft: theme.spacing.large,
     gap: 7,
