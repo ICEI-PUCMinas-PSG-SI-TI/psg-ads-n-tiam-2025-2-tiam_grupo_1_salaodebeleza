@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity, 
-  ActivityIndicator 
-} from 'react-native';
-import Header from '../components/Header';
-import Card from '../components/Card';
-import Button from '../components/Button';
-import { theme } from '../styles/theme';
-import { listenServicos, deleteServico } from '../services/servicoService';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Modal,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import Header from "../components/Header";
+import Card from "../components/Card";
+import Button from "../components/Button";
+import { theme, modalStyle } from "../styles/theme";
+import { listenServicos, deleteServico } from "../services/servicoService";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Servicos({ navigation }) {
   const [servicos, setServicos] = useState([]);
@@ -44,7 +49,7 @@ export default function Servicos({ navigation }) {
   const handleEditar = () => {
     if (servicoSelecionado) {
       fecharModalView();
-      navigation.navigate('ServicosCadastro', { id: servicoSelecionado.sid });
+      navigation.navigate("ServicosCadastro", { id: servicoSelecionado.sid });
     }
   };
 
@@ -54,14 +59,19 @@ export default function Servicos({ navigation }) {
       setLoading(true);
       setModalConfirmVisible(false);
 
-      const result = await deleteServico(servicoSelecionado.sid, servicoSelecionado.id);
+      const result = await deleteServico(
+        servicoSelecionado.sid,
+        servicoSelecionado.id
+      );
       if (result.success) {
-        setServicos(prev => prev.filter(s => s.id !== servicoSelecionado.id));
+        setServicos((prev) =>
+          prev.filter((s) => s.id !== servicoSelecionado.id)
+        );
       } else {
-        console.error('Falha ao excluir serviço:', result.message);
+        console.error("Falha ao excluir serviço:", result.message);
       }
     } catch (error) {
-      console.error('Erro ao excluir serviço:', error);
+      console.error("Erro ao excluir serviço:", error);
     } finally {
       setLoading(false);
     }
@@ -73,15 +83,25 @@ export default function Servicos({ navigation }) {
 
       <View style={styles.headerRow}>
         <Text style={styles.title}>Serviços</Text>
-        <Button title="Adicionar +" small onPress={() => navigation.navigate('ServicosCadastro')} />
+        <Button
+          title="Adicionar +"
+          small
+          onPress={() => navigation.navigate("ServicosCadastro")}
+        />
       </View>
 
       {loading ? (
-        <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 40 }} />
+        <ActivityIndicator
+          size="large"
+          color={theme.colors.primary}
+          style={{ marginTop: 40 }}
+        />
       ) : (
         <ScrollView contentContainerStyle={styles.listContainer}>
           {servicos.length === 0 ? (
-            <Text style={{ textAlign: 'center', color: theme.colors.textInput }}>
+            <Text
+              style={{ textAlign: "center", color: theme.colors.textInput }}
+            >
               Nenhum serviço cadastrado.
             </Text>
           ) : (
@@ -91,49 +111,109 @@ export default function Servicos({ navigation }) {
                 title={s.nome}
                 subtitle={s.descricao}
                 onView={() => abrirModalView(s)}
+                icon="clipboard-outline"
               />
             ))
           )}
         </ScrollView>
       )}
 
-      {/* MODAL DE VISUALIZAÇÃO */}
+      {/* MODAL DE DETALHES */}
       <Modal
         visible={modalViewVisible}
-        animationType="fade"
+        animationType="none"
         transparent={true}
         onRequestClose={fecharModalView}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Detalhes do Serviço</Text>
+        <View style={modalStyle.modalOverlay}>
+          <View style={modalStyle.modalContainer}>
+            <View style={modalStyle.modalHeaderRight}>
+              <View>
+                <Text style={modalStyle.modalTitle}>Detalhes do Serviço</Text>
+                <Text style={modalStyle.modalSubtitle}>
+                  Informações rápidas e ações
+                </Text>
+              </View>
+
               <TouchableOpacity onPress={fecharModalView}>
                 <Ionicons name="close" size={26} color={theme.colors.text} />
               </TouchableOpacity>
             </View>
 
             {servicoSelecionado && (
-              <View style={styles.modalContent}>
-                <Text style={styles.info}><Text style={styles.label}>Nome:</Text> {servicoSelecionado.nome}</Text>
-                <Text style={styles.info}><Text style={styles.label}>Descrição:</Text> {servicoSelecionado.descricao}</Text>
-                <Text style={styles.info}><Text style={styles.label}>Observações:</Text> {servicoSelecionado.observacoes}</Text>
-                <Button
-                  title="Editar Serviço"
-                  onPress={handleEditar}
-                  style={{
-                    backgroundColor: theme.colors.primary,
-                    marginTop: 20,
-                  }}
-                />
-                <Button
-                  title="Excluir Serviço"
-                  onPress={abrirModalConfirmacao}
-                  style={{
-                    backgroundColor: theme.colors.primary,
-                    marginTop: 20,
-                  }}
-                />
+              <View style={modalStyle.modalInner}>
+                {/* resumo curto no topo (cartão claro) */}
+                <View style={modalStyle.topCard}>
+                  <View style={modalStyle.topCardLeft}>
+                    <View style={modalStyle.topCardIcon}>
+                      <Ionicons
+                        name="clipboard-outline"
+                        size={18}
+                        color={theme.colors.white}
+                      />
+                    </View>
+
+                    <View style={modalStyle.topCardTextWrap}>
+                      <Text style={modalStyle.topCardTitle} numberOfLines={1}>
+                        {servicoSelecionado.nome}{" "}
+                      </Text>
+                      <Text
+                        style={modalStyle.topCardSubtitle}
+                        numberOfLines={1}
+                      >
+                        {"Criado em "}
+                        {servicoSelecionado.criadoEm
+                          ? new Date(
+                              servicoSelecionado.criadoEm.seconds * 1000
+                            ).toLocaleDateString()
+                          : "Data não disponível"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* cartão branco com detalhes em duas colunas */}
+                <View style={modalStyle.detailsCard}>
+                  <View style={modalStyle.detailRow}>
+                    <View style={modalStyle.detailCol}>
+                      <Text style={modalStyle.detailLabel}>Serviço</Text>
+                      <Text style={modalStyle.detailValue}>
+                        {servicoSelecionado.nome}
+                      </Text>
+
+                      <Text style={[modalStyle.detailLabel, { marginTop: 12 }]}>
+                        Descrição
+                      </Text>
+                      <Text style={modalStyle.detailValue}>
+                        {servicoSelecionado.descricao || "Não cadastrado"}
+                      </Text>
+                    </View>
+
+                    <View style={modalStyle.detailCol}>
+                      <Text style={modalStyle.detailLabel}>Observações</Text>
+                      <Text style={modalStyle.detailValue}>
+                        {servicoSelecionado.observacoes || "Não cadastrado"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* botões: editar (outline) e excluir (cheio) */}
+                <View style={modalStyle.actionsRow}>
+                  <Button
+                    title="Editar"
+                    onPress={handleEditar}
+                    style={modalStyle.editButton}
+                    textStyle={modalStyle.editButtonText}
+                  />
+
+                  <Button
+                    title="Excluir"
+                    onPress={abrirModalConfirmacao}
+                    style={modalStyle.deleteButton}
+                    textStyle={modalStyle.deleteButtonText}
+                  />
+                </View>
               </View>
             )}
           </View>
@@ -156,14 +236,20 @@ export default function Servicos({ navigation }) {
 
             <View style={styles.modalButtonRow}>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: theme.colors.cancel }]}
+                style={[
+                  styles.modalButton,
+                  { backgroundColor: theme.colors.cancel },
+                ]}
                 onPress={() => setModalConfirmVisible(false)}
               >
                 <Text style={styles.modalButtonText}>Cancelar</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: theme.colors.primary }]}
+                style={[
+                  styles.modalButton,
+                  { backgroundColor: theme.colors.primary },
+                ]}
                 onPress={handleExcluir}
               >
                 <Text style={styles.modalButtonText}>Confirmar</Text>
@@ -180,50 +266,50 @@ export default function Servicos({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: theme.spacing.large,
     paddingVertical: theme.spacing.medium,
   },
-  title: { fontSize: 20, fontWeight: '700', color: theme.colors.text },
+  title: { fontSize: 20, fontWeight: "700", color: theme.colors.text },
   listContainer: { paddingHorizontal: theme.spacing.large, paddingBottom: 100 },
 
   // Fundo modal padrão
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 20,
   },
 
   // Fundo modal de confirmação mais claro
   modalOverlayConfirm: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.25)', // 👈 mais suave
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.25)", // 👈 mais suave
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 20,
   },
 
   modalContainer: {
     backgroundColor: theme.colors.white,
     borderRadius: 16,
-    width: '100%',
+    width: "100%",
     maxWidth: 400,
     padding: 20,
     elevation: 10,
   },
   modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     color: theme.colors.text,
   },
   modalContent: { marginTop: 10 },
@@ -233,7 +319,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   label: {
-    fontWeight: '700',
+    fontWeight: "700",
     color: theme.colors.primary,
   },
 
@@ -241,38 +327,38 @@ const styles = StyleSheet.create({
   modalConfirmContainer: {
     backgroundColor: theme.colors.white,
     borderRadius: 16,
-    width: '100%',
+    width: "100%",
     maxWidth: 340,
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
     elevation: 10,
   },
   modalConfirmTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     color: theme.colors.text,
     marginBottom: 10,
   },
   modalConfirmText: {
     fontSize: 15,
     color: theme.colors.text,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 20,
   },
   modalButtonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
   modalButton: {
     flex: 1,
     padding: 10,
     marginHorizontal: 5,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalButtonText: {
     color: theme.colors.white,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 });
