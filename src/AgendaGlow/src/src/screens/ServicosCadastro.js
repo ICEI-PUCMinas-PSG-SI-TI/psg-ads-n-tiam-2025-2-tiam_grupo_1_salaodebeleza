@@ -9,7 +9,7 @@ import Button from '../components/Button';
 import Input from '../components/Input';
 import TextArea from '../components/TextArea';
 import { theme } from '../styles/theme';
-import { addServico, updateServico, getServicoById } from '../services/servicoService';
+import { addServicos, updateServico, getServicoById } from '../services/servicoService';
 
 export default function ServicoCadastro() {
   const navigation = useNavigation();
@@ -73,7 +73,7 @@ export default function ServicoCadastro() {
           abrirModal(result.message || 'Falha ao atualizar serviço.');
         }
       } else {
-        const result = await addServico({
+        const result = await addServicos({
           nome: nome.trim(),
           descricao: descricao.trim(),
           observacoes: observacoes.trim(),
