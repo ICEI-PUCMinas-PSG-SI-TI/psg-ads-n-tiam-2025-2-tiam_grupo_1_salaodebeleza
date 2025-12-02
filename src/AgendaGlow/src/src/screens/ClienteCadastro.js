@@ -108,7 +108,7 @@ export default function ClienteCadastro() {
       >
         <ScrollView contentContainerStyle={styles.container}>
           <Input value={nome} onChangeText={setNome} placeholder="Nome*" />
-          <Input value={telefone} onChangeText={setTelefone} placeholder="Telefone*" keyboardType="phone-pad" />
+          <Input value={telefone} onChangeText={setTelefone} placeholder="Telefone*" keyboardType="phone-pad" maxLength={17}/>
           <Input value={email} onChangeText={setEmail} placeholder="Email (opcional)" keyboardType="email-address" />
           <TextArea value={observacoes} onChangeText={setObservacoes} placeholder="Observações (opcional)" />
 

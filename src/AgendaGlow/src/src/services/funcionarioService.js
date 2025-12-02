@@ -161,6 +161,27 @@ export const updateFuncionarioPassword = async (senhaAtual, novaSenha) => {
   }
 };
 
+/* Atualiza foto do funcionário */
+export const updateFotoFuncionario = async (uid, fotoUrl) => {
+  try {
+    const q = query(collection(db, FUNCIONARIOS_COLLECTION), where("uid", "==", uid));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      return { success: false, message: "Funcionário não encontrado." };
+    }
+
+    const ref = doc(db, FUNCIONARIOS_COLLECTION, snap.docs[0].id);
+
+    await updateDoc(ref, { fotoUrl });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao atualizar foto do funcionário:", error);
+    return { success: false, message: error.message };
+  }
+};
+
 /* export const updateFuncionario = async (id, dados) => {
   try {
     const ref = doc(db, FUNCIONARIOS_COLLECTION, id);

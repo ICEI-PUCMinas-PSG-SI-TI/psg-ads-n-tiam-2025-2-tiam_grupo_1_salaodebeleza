@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../styles/theme';
 import Button from './Button';
@@ -12,12 +12,20 @@ export default function Card({
   subtitle,
   onEdit,
   onView,
+  image,
   style,
 }) {
   return (
     <View style={[styles.card, style]}>
       <View style={styles.left}>
-        <Ionicons name={icon} size={36} color={theme.colors.primary} style={styles.icon} />
+        {image ? (
+          <Image
+            source={{ uri: image }}
+            style={styles.avatar}
+          />
+        ) : (
+          <Ionicons name={icon} size={36} color={theme.colors.primary} style={styles.icon} />
+        )}
         <View>
           <Text style={styles.title}>{title}</Text>
           {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
@@ -82,5 +90,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.small,
-  }
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#eee',
+    marginRight: theme.spacing.small,
+  },
 });

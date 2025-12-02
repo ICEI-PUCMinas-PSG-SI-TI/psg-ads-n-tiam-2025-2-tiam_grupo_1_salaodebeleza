@@ -75,10 +75,10 @@ const styles = StyleSheet.create({
     height: 65,
 
     // sombra moderna (iOS + Android)
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 10 },
-    shadowRadius: 10,
+    boxShadowColor: "#000",
+    boxShadowOpacity: 0.08,
+    boxShadowOffset: { width: 0, height: 10 },
+    boxShadowRadius: 10,
     elevation: 5,
   },
 

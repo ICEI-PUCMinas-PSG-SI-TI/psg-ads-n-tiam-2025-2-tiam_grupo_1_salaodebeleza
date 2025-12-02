@@ -73,7 +73,7 @@ export default function FuncionarioCadastro({ navigation }) {
             <Picker.Item label="Funcionário" value="Funcionário" />
           </Picker>
         </View>
-        <Input placeholder="Telefone*" value={telefone} onChangeText={setTelefone} />
+        <Input placeholder="Telefone*" value={telefone} onChangeText={setTelefone} maxLength={17}/>
         <Input placeholder="E-mail*" value={email} onChangeText={setEmail} />
 
         <Text style={styles.senhaInfo}>

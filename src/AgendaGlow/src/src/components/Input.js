@@ -6,7 +6,7 @@ import { theme } from '../styles/theme';
 // Input padrão que será útilizado no App
 // Obs: O ícone é opcional (pode ser usado para barra de pesquisa)
 // No caso de formulário a ser preenchido, deixar sem o ícone
-export default function Input({ icon, placeholder, value, onChangeText, secureTextEntry }) {
+export default function Input({ icon, placeholder, value, onChangeText, secureTextEntry, maxLength=35 }) {
   return (
     <View style={styles.container}>
       {icon && <Ionicons name={icon} size={20} color={theme.colors.textInput} style={styles.icon} />}
@@ -17,6 +17,7 @@ export default function Input({ icon, placeholder, value, onChangeText, secureTe
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
+        maxLength={maxLength}
       />
     </View>
   );

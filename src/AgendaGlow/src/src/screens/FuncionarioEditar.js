@@ -175,6 +175,7 @@ export default function FuncionarioEditar({ navigation, route }) {
           value={telefone}
           onChangeText={setTelefone}
           keyboardType="phone-pad"
+          maxLength={17}
         />
         <Input
           placeholder="E-mail"

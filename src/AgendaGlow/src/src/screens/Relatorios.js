@@ -13,7 +13,9 @@ import Card from "../components/Card";
 import Filter from "../components/Filter";
 import FilterDate from "../components/FilterDate";
 import { theme } from "../styles/theme";
+import Button from "../components/Button";
 import { Ionicons } from "@expo/vector-icons";
+import { generateRelatoriosPDF } from "../services/relatorioPdfService";
 
 // Serviços
 import { listenRelatorios } from "../services/agendamentoService";
@@ -203,13 +205,35 @@ export default function Relatorios() {
     setModalViewVisible(false);
   };
 
+  const gerarPDF = async () => {
+    try {
+      await generateRelatoriosPDF(
+        filteredRelatorios,
+        filters,
+        {
+          getClienteNome,
+          getServicoNome,
+          getFuncionarioNome
+        }
+      );
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <Header title="Relatórios" />
       <View style={styles.container}>
         
         <View style={styles.headerRow}>
-             <Text style={styles.title}>Relatórios Concluídos</Text>
+          <Text style={styles.title}>Relatórios</Text>
+
+          <Button
+            title="Gerar PDF"
+            small
+            onPress={() => gerarPDF()}
+          />
         </View>
 
         <View style={styles.extraFilters}>
@@ -327,7 +351,12 @@ export default function Relatorios() {
 
 const styles = StyleSheet.create({
   container: { padding: 16, flex: 1, backgroundColor: theme.colors.background },
-  headerRow: { marginBottom: 10 },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
   title: { fontSize: 20, fontWeight: "700", color: theme.colors.text },
   extraFilters: { flexDirection: "row", gap: 8, flexWrap: 'wrap' },
   dateContainer: { paddingVertical: 8 },

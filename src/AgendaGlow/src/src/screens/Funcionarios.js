@@ -118,6 +118,7 @@ export default function Funcionarios({ navigation }) {
                 title={f.nome}
                 subtitle={f.cargo}
                 onView={() => abrirModalView(f)}
+                image={f.fotoUrl}
               />
             ))
           )}
