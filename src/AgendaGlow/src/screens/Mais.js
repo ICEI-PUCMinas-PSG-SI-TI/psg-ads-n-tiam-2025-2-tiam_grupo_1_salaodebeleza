@@ -148,6 +148,7 @@ export default function Mais() {
             width: "100%",
           }}
           seta="true"
+          spaceBetween={true}
         />
         <Button
           icon="bar-chart-outline"
@@ -157,6 +158,7 @@ export default function Mais() {
             width: "100%",
           }}
           seta="true"
+          spaceBetween={true}
         />
         <Button
           icon="people-outline"
@@ -164,6 +166,7 @@ export default function Mais() {
           onPress={() => navigation.navigate("Funcionarios")}
           style={{ width: "100%" }}
           seta="true"
+          spaceBetween={true}
         />
         <Button
           icon="person-outline"
@@ -172,6 +175,7 @@ export default function Mais() {
           style={{ width: "100%" }}
           disabled={loadingMeusDados}
           seta="true"
+          spaceBetween={true}
         />
         <Button
           icon="logo-google"
@@ -179,6 +183,7 @@ export default function Mais() {
           onPress={() => navigation.navigate("VincularGoogle")}
           style={{ width: "100%", width: "100%" }}
           seta="true"
+          spaceBetween={true}
         />
         <Button
           icon="log-out-outline"
@@ -186,6 +191,7 @@ export default function Mais() {
           onPress={logout}
           style={{ width: "100%", width: "100%" }}
           seta="true"
+          spaceBetween={true}
         />
       </ScrollView>
     </View>

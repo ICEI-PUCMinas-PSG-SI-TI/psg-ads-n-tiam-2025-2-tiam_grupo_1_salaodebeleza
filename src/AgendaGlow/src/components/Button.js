@@ -19,7 +19,8 @@ export default function Button({
   textStyle,
   small = false,
   variant = "primary", // 'primary' | 'ghost'
-  seta = false
+  seta = false,
+  spaceBetween = false // true para usar 'space-between', false para 'center'
 }) {
   const isIconOnly = !!icon && !title;
 
@@ -47,7 +48,7 @@ export default function Button({
         styles.button,
         small && styles.small,
         isIconOnly && styles.iconOnly,
-        { backgroundColor: variantStyles.backgroundColor },
+        { backgroundColor: variantStyles.backgroundColor, justifyContent: spaceBetween ? 'space-between' : 'center' },
         disabled && styles.disabled,
         style,
       ]}
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     paddingVertical: theme.spacing.medium,
     paddingHorizontal: theme.spacing.large,
     marginVertical: theme.spacing.small,
