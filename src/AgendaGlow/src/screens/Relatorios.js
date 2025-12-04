@@ -223,7 +223,7 @@ export default function Relatorios() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Header title="Relatórios" />
+      <Header pageTitle="RELATÓRIOS" />
       <View style={styles.container}>
         
         <View style={styles.headerRow}>

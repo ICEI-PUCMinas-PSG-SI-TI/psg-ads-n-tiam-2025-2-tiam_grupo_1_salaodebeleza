@@ -95,7 +95,7 @@ export default function ServicoCadastro() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <Header userName="Usuário" />
+      <Header pageTitle={"CADASTRAR SERVIÇOS"} />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}

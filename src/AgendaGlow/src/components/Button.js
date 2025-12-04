@@ -1,7 +1,7 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { theme } from '../styles/theme';
+import React from "react";
+import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { theme } from "../styles/theme";
 import { auth } from "../database/firebase";
 import {
   updateEmail,
@@ -18,7 +18,8 @@ export default function Button({
   style,
   textStyle,
   small = false,
-  variant = 'primary', // 'primary' | 'ghost'
+  variant = "primary", // 'primary' | 'ghost'
+  seta = false
 }) {
   const isIconOnly = !!icon && !title;
 
@@ -30,7 +31,7 @@ export default function Button({
       textColor: theme.colors.white,
     },
     ghost: {
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
       iconColor: theme.colors.primary,
       textColor: theme.colors.text,
     },
@@ -51,19 +52,32 @@ export default function Button({
         style,
       ]}
     >
-      {icon && (
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {icon && (
+          <Ionicons
+            name={icon}
+            size={small ? 16 : 20}
+            color={variantStyles.iconColor}
+            style={title ? styles.iconWithText : null}
+            paddingHorizontal={6}
+          />
+        )}
+
+        {title ? (
+          <Text
+            style={[styles.text, { color: variantStyles.textColor }, textStyle]}
+          >
+            {title}
+          </Text>
+        ) : null}
+      </View>
+      {seta ? (
         <Ionicons
-          name={icon}
+          name="chevron-forward-outline"
           size={small ? 16 : 20}
           color={variantStyles.iconColor}
           style={title ? styles.iconWithText : null}
         />
-      )}
-
-      {title ? (
-        <Text style={[styles.text, { color: variantStyles.textColor }, textStyle]}>
-          {title}
-        </Text>
       ) : null}
     </TouchableOpacity>
   );
@@ -73,13 +87,13 @@ export default function Button({
 const styles = StyleSheet.create({
   // Botão padrão do App
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: theme.spacing.small,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: theme.spacing.medium,
     paddingHorizontal: theme.spacing.large,
     marginVertical: theme.spacing.small,
-    borderRadius: theme.radius.large,
+    borderRadius: theme.radius.small,
   },
   // Botão para usar no "Add+" das telas de Clientes, Serviços, etc...
   small: {
@@ -95,7 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.full,
   },
   text: {
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 16,
   },
   disabled: {

@@ -109,7 +109,10 @@ export default function Mais() {
   return (
     <View style={styles.container}>
       <Header pageTitle={"MEUS DADOS"} />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView 
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={true}
+      >
 
         {/* CARD DO USUÁRIO COM FOTO */}
         {funcionario && (
@@ -132,17 +135,19 @@ export default function Mais() {
 
         <Text style={styles.sectionTitle}>Mais opções</Text>
 
-        <Button title="Serviços" onPress={() => navigation.navigate("Servicos")} style={{ width: "100%" }} />
-        <Button title="Relatórios" onPress={() => navigation.navigate("Relatorios")} style={{ width: "100%" }} />
-        <Button title="Equipe" onPress={() => navigation.navigate("Funcionarios")} style={{ width: "100%" }} />
+        <Button icon="briefcase-outline" title="Serviço" onPress={() => navigation.navigate("Servicos")} style={{ width: "100%", marginVertical: 8 }} seta='true'/>
+        <Button icon="bar-chart-outline" title="Relatórios" onPress={() => navigation.navigate("Relatorios")} style={{ width: "100%", marginVertical: 8 }} seta='true'/>
+        <Button icon="people-outline" title="Equipe" onPress={() => navigation.navigate("Funcionarios")} style={{ width: "100%", marginVertical: 8 }} seta='true'/>
         <Button
+          icon="person-outline"
           title={loadingMeusDados ? "Carregando..." : "Alterar meus dados"}
           onPress={handleMeusDados}
-          style={{ width: "100%" }}
+          style={{ width: "100%", marginVertical: 8 }}
           disabled={loadingMeusDados}
+          seta='true'
         />
-        <Button title="Vincular conta Google" onPress={() => navigation.navigate("VincularGoogle")} style={{ width: "100%" }} />
-        <Button title=" Sair" icon={"log-out-outline"} onPress={logout} style={{ width: "100%" }} />
+        <Button icon="logo-google" title="Vincular conta Google" onPress={() => navigation.navigate("VincularGoogle")} style={{ width: "100%", marginVertical: 8 }} seta='true'/>
+        <Button icon="log-out-outline" title="Sair" onPress={logout} style={{ width: "100%", marginVertical: 8 }} seta='true' />
       </ScrollView>
     </View>
   );
@@ -156,6 +161,7 @@ const styles = StyleSheet.create({
   content: {
     padding: theme.spacing.large,
     alignItems: "center",
+    paddingBottom: 100,
   },
 
   userCard: {
