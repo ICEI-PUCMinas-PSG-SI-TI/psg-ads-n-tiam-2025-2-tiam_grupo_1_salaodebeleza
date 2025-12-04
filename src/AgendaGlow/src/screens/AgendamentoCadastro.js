@@ -11,6 +11,7 @@ import { listenServicos } from "../services/servicoService";
 import { listenClientes } from "../services/clienteService";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { addAgendamento } from '../services/agendamentoService';
+import { useNavigation } from '@react-navigation/native';
 
 export default function AgendamentoCadastro() {
   const [cliente, setCliente] = useState(null);
@@ -27,6 +28,7 @@ export default function AgendamentoCadastro() {
   const [listaFuncionarios, setListaFuncionarios] = useState([]);
   const [listaClientes, setListaClientes] = useState([]);
   const [listaServicos, setListaServicos] = useState([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const unsubscribeFuncionarios = listenFuncionarios((lista) => {
@@ -76,6 +78,7 @@ export default function AgendamentoCadastro() {
         setHorario("");
         setValor("");
         setObservacoes("");
+        setTimeout(() => navigation.navigate('Agenda'), 1000);
       } else {
         Alert.alert("Erro", result.message || "Falha ao salvar agendamento.");
       }
