@@ -59,7 +59,7 @@ export default function Button({
             size={small ? 16 : 20}
             color={variantStyles.iconColor}
             style={title ? styles.iconWithText : null}
-            paddingHorizontal={6}
+            paddingHorizontal={seta ? 6 : 0}
           />
         )}
 

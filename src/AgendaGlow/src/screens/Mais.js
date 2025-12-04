@@ -1,15 +1,24 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { 
-  View, Text, StyleSheet, ScrollView, Alert, Image, TouchableOpacity 
-} from 'react-native';
-import Header from '../components/Header';
-import Button from '../components/Button';
-import { theme } from '../styles/theme';
-import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../context/AuthContext';
-import { getFuncionarioByUid, updateFotoFuncionario } from '../services/funcionarioService';
-import { logout } from '../services/loginService';
-import { useImage } from '../hooks/useImage';
+import React, { useContext, useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  Image,
+  TouchableOpacity,
+} from "react-native";
+import Header from "../components/Header";
+import Button from "../components/Button";
+import { theme } from "../styles/theme";
+import { useNavigation } from "@react-navigation/native";
+import { AuthContext } from "../context/AuthContext";
+import {
+  getFuncionarioByUid,
+  updateFotoFuncionario,
+} from "../services/funcionarioService";
+import { logout } from "../services/loginService";
+import { useImage } from "../hooks/useImage";
 
 export default function Mais() {
   const navigation = useNavigation();
@@ -32,15 +41,11 @@ export default function Mais() {
 
   // Escolher foto
   const handleTrocarFoto = () => {
-    Alert.alert(
-      "Alterar foto",
-      "Escolha uma opção",
-      [
-        { text: "Galeria", onPress: escolherGaleria },
-        { text: "Câmera", onPress: abrirCamera },
-        { text: "Cancelar", style: "cancel" }
-      ]
-    );
+    Alert.alert("Alterar foto", "Escolha uma opção", [
+      { text: "Galeria", onPress: escolherGaleria },
+      { text: "Câmera", onPress: abrirCamera },
+      { text: "Cancelar", style: "cancel" },
+    ]);
   };
 
   const escolherGaleria = async () => {
@@ -73,7 +78,7 @@ export default function Mais() {
 
       await updateFotoFuncionario(user.uid, imageUrl);
 
-      setFuncionario(prev => ({ ...prev, fotoUrl: imageUrl }));
+      setFuncionario((prev) => ({ ...prev, fotoUrl: imageUrl }));
 
       Alert.alert("Sucesso", "Foto atualizada!");
     } catch (error) {
@@ -86,11 +91,9 @@ export default function Mais() {
   const handleMeusDados = async () => {
     if (!user) {
       Alert.alert(
-        'Sessão expirada',
-        'Sua sessão expirou. Por favor, faça o login novamente.',
-        [
-          { text: 'OK', onPress: () => logout() }
-        ]
+        "Sessão expirada",
+        "Sua sessão expirou. Por favor, faça o login novamente.",
+        [{ text: "OK", onPress: () => logout() }]
       );
       return;
     }
@@ -100,28 +103,30 @@ export default function Mais() {
     setLoadingMeusDados(false);
 
     if (result.success) {
-      navigation.navigate('FuncionarioEditar', { funcionario: result.data });
+      navigation.navigate("FuncionarioEditar", { funcionario: result.data });
     } else {
-      Alert.alert('Erro', result.message || 'Não foi possível buscar seus dados.');
+      Alert.alert(
+        "Erro",
+        result.message || "Não foi possível buscar seus dados."
+      );
     }
   };
 
   return (
     <View style={styles.container}>
       <Header pageTitle={"MEUS DADOS"} />
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={true}
       >
-
         {/* CARD DO USUÁRIO COM FOTO */}
         {funcionario && (
           <View style={styles.userCard}>
-
             <TouchableOpacity onPress={handleTrocarFoto}>
               <Image
                 source={{
-                  uri: funcionario.fotoUrl ||
+                  uri:
+                    funcionario.fotoUrl ||
                     "https://cdn-icons-png.flaticon.com/512/847/847969.png",
                 }}
                 style={styles.avatar}
@@ -135,19 +140,53 @@ export default function Mais() {
 
         <Text style={styles.sectionTitle}>Mais opções</Text>
 
-        <Button icon="briefcase-outline" title="Serviço" onPress={() => navigation.navigate("Servicos")} style={{ width: "100%", marginVertical: 8 }} seta='true'/>
-        <Button icon="bar-chart-outline" title="Relatórios" onPress={() => navigation.navigate("Relatorios")} style={{ width: "100%", marginVertical: 8 }} seta='true'/>
-        <Button icon="people-outline" title="Equipe" onPress={() => navigation.navigate("Funcionarios")} style={{ width: "100%", marginVertical: 8 }} seta='true'/>
+        <Button
+          icon="briefcase-outline"
+          title="Serviços"
+          onPress={() => navigation.navigate("Servicos")}
+          style={{
+            width: "100%",
+          }}
+          seta="true"
+        />
+        <Button
+          icon="bar-chart-outline"
+          title="Relatórios"
+          onPress={() => navigation.navigate("Relatorios")}
+          style={{
+            width: "100%",
+          }}
+          seta="true"
+        />
+        <Button
+          icon="people-outline"
+          title="Equipe"
+          onPress={() => navigation.navigate("Funcionarios")}
+          style={{ width: "100%" }}
+          seta="true"
+        />
         <Button
           icon="person-outline"
           title={loadingMeusDados ? "Carregando..." : "Alterar meus dados"}
           onPress={handleMeusDados}
-          style={{ width: "100%", marginVertical: 8 }}
+          style={{ width: "100%" }}
           disabled={loadingMeusDados}
-          seta='true'
+          seta="true"
         />
-        <Button icon="logo-google" title="Vincular conta Google" onPress={() => navigation.navigate("VincularGoogle")} style={{ width: "100%", marginVertical: 8 }} seta='true'/>
-        <Button icon="log-out-outline" title="Sair" onPress={logout} style={{ width: "100%", marginVertical: 8 }} seta='true' />
+        <Button
+          icon="logo-google"
+          title="Vincular conta Google"
+          onPress={() => navigation.navigate("VincularGoogle")}
+          style={{ width: "100%", width: "100%" }}
+          seta="true"
+        />
+        <Button
+          icon="log-out-outline"
+          title="Sair"
+          onPress={logout}
+          style={{ width: "100%", width: "100%" }}
+          seta="true"
+        />
       </ScrollView>
     </View>
   );

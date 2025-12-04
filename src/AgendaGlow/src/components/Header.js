@@ -6,7 +6,7 @@ import { theme } from "../styles/theme";
 import Logout from "./Logout";
 
 // Rotas que estão dentro do BottomTabs
-const BOTTOM_TABS_ROUTES = ['home', 'agenda', 'clientes', 'mais'];
+const BOTTOM_TABS_ROUTES = ['agenda', 'clientes', 'mais'];
 
 export default function Header({
   onNotificationPress,
