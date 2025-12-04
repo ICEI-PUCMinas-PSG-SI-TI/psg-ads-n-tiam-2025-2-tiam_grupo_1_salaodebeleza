@@ -76,6 +76,24 @@ export default function Agenda() {
     return servico ? servico.nome : "Não informado";
   };
 
+  const getJustOneService = (ids) => {
+    if (!ids) return "Não informado";
+    // Se for array, mostra apenas o primeiro e o número de adicionais: "Manicure +2"
+    if (Array.isArray(ids)) {
+      if (ids.length === 0) return "Não informado";
+      // suporta arrays de objetos ({ id }) ou de ids simples
+      const first = ids[0];
+      const firstId = first.id || first;
+      const servico = servicos.find((s) => s.id === firstId || s.sid === firstId);
+      const servicoNome = servico ? servico.nome : "Desconhecido";
+      const additional = ids.length - 1;
+      return additional > 0 ? `${servicoNome} +${additional}` : servicoNome;
+    }
+
+    const servico = servicos.find((s) => s.id === ids || s.sid === ids);
+    return servico ? servico.nome : "Não informado";
+  };
+
   // Converte string 'dd/mm/yyyy' para objeto Date (local)
   const parseDatePtBr = (dateStr) => {
     if (!dateStr || typeof dateStr !== "string") return null;
@@ -324,7 +342,7 @@ export default function Agenda() {
                         title={`${getClienteNome(a.cliente)} - ${
                           a.horario || "Sem horário"
                         }`}
-                        subtitle={`${getServicoNome(
+                        subtitle={`${getJustOneService(
                           a.servicos
                         )} · ${getFuncionarioNome(a.profissionais)}`}
                         onView={() => abrirModalView(a)}
