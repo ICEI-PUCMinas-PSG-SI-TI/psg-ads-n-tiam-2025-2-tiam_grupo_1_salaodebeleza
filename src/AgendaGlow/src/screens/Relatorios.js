@@ -7,32 +7,37 @@ import {
   ActivityIndicator,
   Modal,
   TouchableOpacity,
+  Platform,
+  Pressable,
+  Alert,
 } from "react-native";
 import Header from "../components/Header";
 import Card from "../components/Card";
-import Filter from "../components/Filter";
-import FilterDate from "../components/FilterDate";
-import { theme } from "../styles/theme";
 import Button from "../components/Button";
+import Filter from "../components/Filter";
+import DateTimePicker from "@react-native-community/datetimepicker"; 
+import { theme } from "../styles/theme";
 import { Ionicons } from "@expo/vector-icons";
-import { generateRelatoriosPDF } from "../services/relatorioPdfService";
 
-// Serviços
 import { listenRelatorios } from "../services/agendamentoService";
 import { listenServicos } from "../services/servicoService";
 import { listenClientes } from "../services/clienteService";
 import { listenFuncionarios } from "../services/funcionarioService";
+import { generateRelatoriosPDF } from "../services/relatorioPdfService";
 
 export default function Relatorios() {
   const [atendimentos, setAtendimentos] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Filtros
   const [filters, setFilters] = useState({
-    date: null,
+    dataInicio: null,
+    dataFim: null,
     servico: [],
     profissional: [],
   });
+
+  const [showPicker, setShowPicker] = useState(false);
+  const [pickerMode, setPickerMode] = useState('dataInicio'); 
 
   const [servicosList, setServicosList] = useState([]);
   const [clientesList, setClientesList] = useState([]);
@@ -42,114 +47,133 @@ export default function Relatorios() {
   const [modalViewVisible, setModalViewVisible] = useState(false);
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null);
 
-  // --- Carregamento Inicial ---
-  useEffect(() => {
-    setLoading(true);
-    
-    const unsubA = listenRelatorios((lista) => {
-      setAtendimentos(lista || []);
-      setLoading(false);
-    });
-
-    const unsubS = listenServicos((lista) => {
-      setServicosList((lista || []).map((s) => ({ id: s.id || s.sid, nome: s.nome || s })));
-    });
-
-    const unsubC = listenClientes((lista) => {
-      setClientesList((lista || []).map((c) => ({ id: c.id || c.cid, nome: c.nome || c })));
-    });
-
-    const unsubF = listenFuncionarios((lista) => {
-      // Guardamos o objeto completo para ter acesso ao 'id' (doc) e 'uid' (auth)
-      setFuncionariosList(lista);
-    });
-
-    return () => {
-      if (unsubA) unsubA();
-      if (unsubS) unsubS();
-      if (unsubC) unsubC();
-      if (unsubF) unsubF();
-    };
-  }, []);
-
-  // --- Helpers de Busca Robusta ---
-  const getFuncionarioNome = (ids) => {
-    if (!ids) return "Não informado";
-    
-    // Garante que é array
-    const idsArray = Array.isArray(ids) ? ids : [ids];
-    
-    return idsArray.map(targetId => {
-        // 1. Se o ID já for um objeto com nome, usa-o
-        if (typeof targetId === 'object' && targetId.nome) return targetId.nome;
-        
-        // 2. Busca na lista comparando tanto 'id' como 'uid'
-        const f = funcionariosList.find(item => 
-            item.id === targetId || item.uid === targetId
-        );
-        
-        return f ? f.nome : "Desconhecido";
-    }).join(", ");
-  };
-
-  const getClienteNome = (clienteId) => {
-    if (!clienteId) return "Não informado";
-    if (typeof clienteId === 'object' && clienteId.nome) return clienteId.nome;
-    
-    const cliente = clientesList.find((c) => c.id === clienteId);
-    return cliente ? cliente.nome : (typeof clienteId === 'string' ? clienteId : "Cliente");
-  };
-
-  const getServicoNome = (ids) => {
-    if (!ids) return "Não informado";
-    const idsArray = Array.isArray(ids) ? ids : [ids];
-    return idsArray.map(id => {
-        if (typeof id === 'object' && id.nome) return id.nome;
-        
-        const s = servicosList.find(item => item.id === id);
-        return s ? s.nome : "Desconhecido";
-    }).join(", ");
-  };
-
-  // --- Resto da Lógica (Filtros, Datas, Modal) ---
-  
   const parseDatePtBr = (dateStr) => {
     if (!dateStr) return null;
     const parts = dateStr.split("/");
     if (parts.length !== 3) return null;
     return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
   };
-  
-  // Verifica data passada
-  const isPast = (dateStr, timeStr) => {
-    if (!dateStr) return false;
-    const schedDate = parseDatePtBr(dateStr);
-    if (!schedDate) return false;
-    if (timeStr) {
-      const [hh, mm] = timeStr.split(':').map(Number);
-      schedDate.setHours(hh || 0, mm || 0);
-    } else {
-      schedDate.setHours(23, 59, 59);
-    }
-    return schedDate < new Date();
+
+  const formatDatePtBr = (date) => {
+    if (!date) return null;
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
-  // Filtragem
+  const abrirDatePicker = (campo) => {
+    setPickerMode(campo);
+    setShowPicker(true);
+  };
+
+  const onChangeDate = (event, selectedDate) => {
+    if (Platform.OS === 'android') setShowPicker(false);
+    if (event.type === 'dismissed') { setShowPicker(false); return; }
+
+    if (selectedDate) {
+        const formatted = formatDatePtBr(selectedDate);
+        
+        const hoje = new Date();
+        hoje.setHours(23, 59, 59, 999);
+
+        if (selectedDate > hoje) {
+            Alert.alert("Data Inválida", "O relatório não pode filtrar datas futuras.");
+            return;
+        }
+
+        if (pickerMode === 'dataInicio' && filters.dataFim) {
+            const fim = parseDatePtBr(filters.dataFim);
+            selectedDate.setHours(0,0,0,0);
+            fim.setHours(0,0,0,0);
+            if (selectedDate > fim) {
+                Alert.alert("Período Inválido", "A data de início não pode ser depois da data de fim.");
+                return;
+            }
+        }
+
+        if (pickerMode === 'dataFim' && filters.dataInicio) {
+            const inicio = parseDatePtBr(filters.dataInicio);
+            selectedDate.setHours(0,0,0,0);
+            inicio.setHours(0,0,0,0);
+            if (selectedDate < inicio) {
+                Alert.alert("Período Inválido", "A data de fim não pode ser antes da data de início.");
+                return;
+            }
+        }
+
+        setFilters(prev => ({ ...prev, [pickerMode]: formatted }));
+    }
+    if (Platform.OS !== 'android') setShowPicker(false);
+  };
+
+  const limparData = (campo) => {
+      setFilters(prev => ({ ...prev, [campo]: null }));
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    const unsubA = listenRelatorios((lista) => {
+      setAtendimentos(lista || []);
+      setLoading(false);
+    });
+    const unsubS = listenServicos((lista) => {
+      setServicosList((lista || []).map((s) => ({ id: s.id || s.sid, nome: s.nome || s })));
+    });
+    const unsubC = listenClientes((lista) => {
+      setClientesList((lista || []).map((c) => ({ id: c.id || c.cid, nome: c.nome || c })));
+    });
+    const unsubF = listenFuncionarios((lista) => {
+      setFuncionariosList((lista || []).map((f) => ({ id: f.uid || f.id, nome: f.nome || f })));
+    });
+
+    return () => {
+      if (unsubA) unsubA(); if (unsubS) unsubS(); if (unsubC) unsubC(); if (unsubF) unsubF();
+    };
+  }, []);
+
   useEffect(() => {
     let lista = atendimentos;
 
-    // Status "Concluído" ou Data Passada
     lista = lista.filter(a => {
         const status = a.status || 'Pendente';
-        const passado = isPast(a.data, a.horario);
-        return status === 'Concluido' || status === 'Concluído' || passado;
+        const isPast = (d, h) => {
+            if (!d) return false;
+            const dt = parseDatePtBr(d);
+            if (!dt) return false;
+            if (h) {
+                const [hh, mm] = h.split(':').map(Number);
+                dt.setHours(hh||0, mm||0);
+            } else { dt.setHours(23,59,59); }
+            return dt < new Date();
+        };
+        return status === 'Concluido' || status === 'Concluído' || isPast(a.data, a.horario);
     });
 
-    if (filters.date) {
-      lista = lista.filter(a => a.data === filters.date);
+    if (filters.dataInicio) {
+      const dtInicio = parseDatePtBr(filters.dataInicio);
+      if (dtInicio) {
+          dtInicio.setHours(0, 0, 0, 0);
+          lista = lista.filter(a => {
+            const dtAgenda = parseDatePtBr(a.data);
+            return dtAgenda && dtAgenda >= dtInicio;
+          });
+      }
     }
 
-    if (filters.servico && filters.servico.length > 0) {
+    if (filters.dataFim) {
+      const dtFim = parseDatePtBr(filters.dataFim);
+      if (dtFim) {
+          dtFim.setHours(23, 59, 59, 999);
+          lista = lista.filter(a => {
+            const dtAgenda = parseDatePtBr(a.data);
+            return dtAgenda && dtAgenda <= dtFim;
+          });
+      }
+    }
+
+    if (filters.servico.length > 0) {
       lista = lista.filter(a => {
         const s = a.servicos || a.servico || [];
         const items = Array.isArray(s) ? s : [s];
@@ -158,12 +182,11 @@ export default function Relatorios() {
       });
     }
 
-    if (filters.profissional && filters.profissional.length > 0) {
+    if (filters.profissional.length > 0) {
       lista = lista.filter(a => {
         const p = a.profissionais || a.profissional || [];
         const items = Array.isArray(p) ? p : [p];
         const itemIds = items.map(i => (typeof i === 'object' && i !== null) ? (i.id || i.uid) : i);
-        // Compara com ID ou UID
         return filters.profissional.some(fid => itemIds.includes(fid));
       });
     }
@@ -171,12 +194,36 @@ export default function Relatorios() {
     setFilteredRelatorios(lista);
   }, [atendimentos, filters]);
 
+  const getClienteNome = (clienteId) => {
+    if (!clienteId) return "Não informado";
+    if (typeof clienteId === 'object') return clienteId.nome || "Cliente";
+    const c = clientesList.find((i) => i.id === clienteId);
+    return c ? c.nome : clienteId;
+  };
+  const getFuncionarioNome = (ids) => {
+    if (!ids) return "Não informado";
+    const arr = Array.isArray(ids) ? ids : [ids];
+    return arr.map(targetId => {
+        if (typeof targetId === 'object') return targetId.nome;
+        const f = funcionariosList.find(i => i.id === targetId || i.uid === targetId);
+        return f ? f.nome : "Desconhecido";
+    }).join(", ");
+  };
+  const getServicoNome = (ids) => {
+    if (!ids) return "Não informado";
+    const arr = Array.isArray(ids) ? ids : [ids];
+    return arr.map(id => {
+        if (typeof id === 'object') return id.nome;
+        const s = servicosList.find(i => i.id === id);
+        return s ? s.nome : "Desconhecido";
+    }).join(", ");
+  };
+
   const formatDateHeader = (dateStr) => {
     const dt = parseDatePtBr(dateStr);
-    if (!dt) return dateStr;
+    if (!dt) return dateStr || "Sem Data";
     const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    dt.setHours(0, 0, 0, 0);
+    hoje.setHours(0,0,0,0);
     if (dt.getTime() === hoje.getTime()) return `Hoje - ${dateStr}`;
     return dateStr;
   };
@@ -195,15 +242,8 @@ export default function Relatorios() {
     return dt2.getTime() - dt1.getTime();
   });
 
-  const abrirModalView = (agendamento) => {
-    setAgendamentoSelecionado(agendamento);
-    setModalViewVisible(true);
-  };
-
-  const fecharModalView = () => {
-    setAgendamentoSelecionado(null);
-    setModalViewVisible(false);
-  };
+  const abrirModal = (item) => { setAgendamentoSelecionado(item); setModalViewVisible(true); };
+  const fecharModal = () => { setAgendamentoSelecionado(null); setModalViewVisible(false); };
 
   const gerarPDF = async () => {
     try {
@@ -218,6 +258,7 @@ export default function Relatorios() {
       );
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
+      Alert.alert("Erro", "Não foi possível gerar o PDF.");
     }
   };
 
@@ -225,35 +266,38 @@ export default function Relatorios() {
     <View style={{ flex: 1 }}>
       <Header pageTitle="RELATÓRIOS" />
       <View style={styles.container}>
-        
         <View style={styles.headerRow}>
-          <Text style={styles.title}>Relatórios</Text>
-
-          <Button
-            title="Gerar PDF"
-            small
-            onPress={() => gerarPDF()}
-          />
+             <Text style={styles.title}>Relatórios Concluídos</Text>
+             <Button
+                title="Gerar PDF"
+                small
+                onPress={() => gerarPDF()}
+                style={styles.pdfButton}
+             />
         </View>
 
         <View style={styles.extraFilters}>
-          <FilterDate onSelect={(d) => setFilters(p => ({ ...p, date: d }))} />
-          <Filter
-            label="Profissionais"
-            listItem={funcionariosList}
-            onSelect={(p) => setFilters((prev) => ({ ...prev, profissional: p || [] }))}
-          />
-          <Filter
-            label="Serviços"
-            listItem={servicosList}
-            onSelect={(s) => setFilters((prev) => ({ ...prev, servico: s || [] }))}
-          />
+            <View style={styles.dateRow}>
+                <Pressable style={styles.dateChip} onPress={() => abrirDatePicker('dataInicio')}>
+                    <Text style={styles.dateChipText}>{filters.dataInicio ? `De: ${filters.dataInicio}` : "De"}</Text>
+                    {filters.dataInicio && (<TouchableOpacity onPress={() => limparData('dataInicio')} style={{marginRight: 4}}><Ionicons name="close-circle" size={16} color={theme.colors.textInput} /></TouchableOpacity>)}
+                    <Ionicons name="calendar" size={16} color={theme.colors.textInput} />
+                </Pressable>
+                <Pressable style={styles.dateChip} onPress={() => abrirDatePicker('dataFim')}>
+                    <Text style={styles.dateChipText}>{filters.dataFim ? `Até: ${filters.dataFim}` : "Até"}</Text>
+                    {filters.dataFim && (<TouchableOpacity onPress={() => limparData('dataFim')} style={{marginRight: 4}}><Ionicons name="close-circle" size={16} color={theme.colors.textInput} /></TouchableOpacity>)}
+                    <Ionicons name="calendar" size={16} color={theme.colors.textInput} />
+                </Pressable>
+            </View>
+
+            <View style={styles.listFilters}>
+                <Filter label="Profissionais" listItem={funcionariosList} onSelect={(p) => setFilters(prev => ({ ...prev, profissional: p || [] }))} />
+                <Filter label="Serviços" listItem={servicosList} onSelect={(s) => setFilters(prev => ({ ...prev, servico: s || [] }))} />
+            </View>
         </View>
 
         <View style={{ marginTop: 12, marginBottom: 8 }}>
-          <Text style={{ color: theme.colors.text }}>
-            Total Concluídos: {filteredRelatorios.length}
-          </Text>
+          <Text style={{ color: theme.colors.text }}>Total: {filteredRelatorios.length}</Text>
         </View>
 
         {loading ? (
@@ -261,7 +305,7 @@ export default function Relatorios() {
         ) : (
           <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
             {sortedDates.length === 0 ? (
-              <Text style={styles.emptyMessage}>Nenhum relatório encontrado.</Text>
+              <Text style={styles.emptyMessage}>Nenhum relatório encontrado no período.</Text>
             ) : (
               sortedDates.map((dateKey) => {
                 const items = groups[dateKey];
@@ -275,8 +319,8 @@ export default function Relatorios() {
                         key={a.uid || a.id}
                         icon="checkmark-circle-outline"
                         title={`${getClienteNome(a.cliente)} - ${a.horario || ""}`}
-                        subtitle={`${getServicoNome(a.servicos)} · ${getFuncionarioNome(a.profissionais || a.profissional)}`}
-                        onView={() => abrirModalView(a)}
+                        subtitle={`${getServicoNome(a.servicos)} · ${getFuncionarioNome(a.profissionais)}`}
+                        onView={() => abrirModal(a)}
                         style={styles.card}
                       />
                     ))}
@@ -288,8 +332,17 @@ export default function Relatorios() {
         )}
       </View>
       
-      {/* Modal Visualização */}
-      <Modal visible={modalViewVisible} animationType="none" transparent={true} onRequestClose={fecharModalView}>
+      {showPicker && (
+        <DateTimePicker
+            value={new Date()}
+            mode="date"
+            display="default"
+            maximumDate={new Date()}
+            onChange={onChangeDate}
+        />
+      )}
+
+      <Modal visible={modalViewVisible} animationType="none" transparent={true} onRequestClose={fecharModal}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeaderRight}>
@@ -297,11 +350,10 @@ export default function Relatorios() {
                   <Text style={styles.modalTitle}>Detalhes</Text>
                   <Text style={styles.modalSubtitle}>Registro concluído</Text>
                 </View>
-                <TouchableOpacity onPress={fecharModalView} style={styles.closeButton}>
+                <TouchableOpacity onPress={fecharModal} style={styles.closeButton}>
                     <Ionicons name="close" size={26} color={theme.colors.text} />
                 </TouchableOpacity>
             </View>
-            
             {agendamentoSelecionado && (
                 <View style={styles.modalInner}>
                     <View style={styles.topCard}>
@@ -313,24 +365,17 @@ export default function Relatorios() {
                              </View>
                         </View>
                     </View>
-                    
                     <View style={styles.detailsCard}>
                         <View style={styles.detailRow}>
                              <View style={styles.detailCol}>
                                 <Text style={styles.detailLabel}>Serviço</Text>
-                                <Text style={styles.detailValue}>
-                                    {getServicoNome(agendamentoSelecionado.servicos || agendamentoSelecionado.servico)}
-                                </Text>
+                                <Text style={styles.detailValue}>{getServicoNome(agendamentoSelecionado.servicos || agendamentoSelecionado.servico)}</Text>
                                 <Text style={[styles.detailLabel, {marginTop: 10}]}>Valor</Text>
-                                <Text style={styles.detailValue}>
-                                    {agendamentoSelecionado.valor ? `R$ ${agendamentoSelecionado.valor}` : '-'}
-                                </Text>
+                                <Text style={styles.detailValue}>{agendamentoSelecionado.valor ? `R$ ${agendamentoSelecionado.valor}` : '-'}</Text>
                              </View>
                              <View style={styles.detailCol}>
                                 <Text style={styles.detailLabel}>Profissional</Text>
-                                <Text style={styles.detailValue}>
-                                    {getFuncionarioNome(agendamentoSelecionado.profissionais || agendamentoSelecionado.profissional)}
-                                </Text>
+                                <Text style={styles.detailValue}>{getFuncionarioNome(agendamentoSelecionado.profissionais || agendamentoSelecionado.profissional)}</Text>
                              </View>
                         </View>
                         {agendamentoSelecionado.observacoes ? (
@@ -351,14 +396,21 @@ export default function Relatorios() {
 
 const styles = StyleSheet.create({
   container: { padding: 16, flex: 1, backgroundColor: theme.colors.background },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
   title: { fontSize: 20, fontWeight: "700", color: theme.colors.text },
-  extraFilters: { flexDirection: "row", gap: 8, flexWrap: 'wrap' },
+  
+  extraFilters: { gap: 10 },
+  dateRow: { flexDirection: 'row', gap: 15, alignItems: 'center' },
+  listFilters: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+
+  pdfButton: { backgroundColor: theme.colors.primary, paddingHorizontal: 12 },
+
+  dateChip: {
+    flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: theme.colors.textInput,
+    paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, backgroundColor: "white", marginRight: 5,
+  },
+  dateChipText: { marginRight: 6, color: theme.colors.textInput, fontSize: 12, fontWeight: '600' },
+
   dateContainer: { paddingVertical: 8 },
   dateText: { fontWeight: "700", color: theme.colors.text },
   card: { marginBottom: 10 },
