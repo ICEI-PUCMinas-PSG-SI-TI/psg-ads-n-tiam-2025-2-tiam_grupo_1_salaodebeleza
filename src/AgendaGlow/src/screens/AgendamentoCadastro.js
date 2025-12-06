@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Alert } from "react-native";
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Modal} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Header from "../components/Header";
 import Input from "../components/Input";
@@ -11,8 +11,16 @@ import { listenServicos } from "../services/servicoService";
 import { listenClientes } from "../services/clienteService";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { addAgendamento } from '../services/agendamentoService';
+import { enviarWhatsappAgendamento } from '../services/whatsappAgendamento';
+import { useNavigation, useRoute } from '@react-navigation/native';
+  
 
 export default function AgendamentoCadastro() {
+
+  const navigation = useNavigation();
+    const route = useRoute();
+    const lista = route.lista?.lista;
+ 
   const [cliente, setCliente] = useState(null);
   const [servicosSelecionados, setServicosSelecionados] = useState([]);
   const [profissionaisSelecionados, setProfissionaisSelecionados] = useState([]);
@@ -27,6 +35,30 @@ export default function AgendamentoCadastro() {
   const [listaFuncionarios, setListaFuncionarios] = useState([]);
   const [listaClientes, setListaClientes] = useState([]);
   const [listaServicos, setListaServicos] = useState([]);
+
+  // CONTROLE DOS MODAIS
+const [modalSucessoVisible, setModalSucessoVisible] = useState(false);
+const [modalErroVisible, setModalErroVisible] = useState(false);
+const [modalWhatsappVisible, setModalWhatsappVisible] = useState(false);
+const [modalMensagem, setModalMensagem] = useState("");
+
+const abrirModalSucesso = (mensagem) => {
+  setModalMensagem(mensagem);
+  setModalSucessoVisible(true);
+};
+
+const abrirModalErro = (mensagem) => {
+  setModalMensagem(mensagem);
+  setModalErroVisible(true);
+};
+
+const abrirModalWhatsapp = () => {
+  setModalWhatsappVisible(true);
+};
+
+const fecharModal = () => {
+  setModalWhatsappVisible(false);
+};
 
   useEffect(() => {
     const unsubscribeFuncionarios = listenFuncionarios((lista) => {
@@ -52,6 +84,11 @@ export default function AgendamentoCadastro() {
   }, []);
 
   async function handleSalvar() {
+
+    const clienteObj = listaClientes.find(c => c.id === cliente);
+
+    const dataHoraAgendamento = new Date(`${data}T${horario}:00`);
+  
     const novoAgendamento = {
       cliente,
       servicos: servicosSelecionados.map(s => s.id),
@@ -60,6 +97,7 @@ export default function AgendamentoCadastro() {
       horario,
       valor,
       observacoes,
+    
     };
 
     try {
@@ -67,20 +105,16 @@ export default function AgendamentoCadastro() {
       console.log(result);
 
       if (result.success) {
-        Alert.alert("Sucesso", "Agendamento salvo com sucesso!");
-        // limpa os campos
-        setCliente(null);
-        setServicosSelecionados([]);
-        setProfissionaisSelecionados([]);
-        setData("");
-        setHorario("");
-        setValor("");
-        setObservacoes("");
-      } else {
-        Alert.alert("Erro", result.message || "Falha ao salvar agendamento.");
-      }
+      // Abre modal de SUCESSO (apenas OK)
+      abrirModalSucesso("Agendamento salvo com sucesso!");
+        
+    } else {
+      // Abre modal de ERRO (apenas OK)
+      abrirModalErro(result.message || "Falha ao salvar agendamento.");
+    }
+
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível salvar o agendamento.");
+       abrirModalErro(error.message || "Não foi possível salvar o agendamento.");
       console.error(error);
     } finally {
       setLoading(false);
@@ -194,7 +228,6 @@ export default function AgendamentoCadastro() {
           onCancel={hideDatePicker}
         />
 
-
         <TouchableOpacity onPress={showTimePicker} activeOpacity={0.7}>
           <View pointerEvents="none">
             <Input
@@ -229,7 +262,97 @@ export default function AgendamentoCadastro() {
           disabled={loading}
         />
       </ScrollView>
+       
+{/* MODAL DE SUCESSO */}
+<Modal visible={modalSucessoVisible} transparent animationType="fade">
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalBox}>
+      <Text style={styles.modalText}>{modalMensagem}</Text>
+      <Button 
+        title="OK" 
+        onPress={() => {
+          setModalSucessoVisible(false); // fecha este modal
+          setModalWhatsappVisible(true); // abre modal WhatsApp
+        }} 
+      />
     </View>
+  </View>
+</Modal>
+
+{/* MODAL DE ERRO */}
+<Modal visible={modalErroVisible} transparent animationType="fade">
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalBox}>
+      <Text style={styles.modalText}>{modalMensagem}</Text>
+      <Button 
+        title="OK" 
+        onPress={() => setModalErroVisible(false)} 
+      />
+    </View>
+  </View>
+</Modal>
+
+{/* MODAL WHATSAPP */}
+<Modal visible={modalWhatsappVisible} transparent animationType="fade">
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalBox}>
+      <Text style={styles.modalText}>Deseja enviar a confirmação do agendamento no WhatsApp?</Text>
+      
+      <Button
+        title="Enviar WhatsApp"
+        onPress={() => {
+          const clienteObj = listaClientes.find(
+            (c) => String(c.id) === String(cliente)
+          );
+
+          if (!clienteObj) {
+            abrirModalErro( result.message ||"Não foi possível carregar o cliente.");
+            return;
+          }
+
+          enviarWhatsappAgendamento({
+            nome: clienteObj.nome,
+            telefone: clienteObj.telefone,
+            data,
+            horario,
+            servicos: servicosSelecionados.map((s) => s.nome),
+          });
+
+          // Limpa os campos
+          setCliente(null);
+          setServicosSelecionados([]);
+          setProfissionaisSelecionados([]);
+          setData("");
+          setHorario("");
+          setValor("");
+          setObservacoes("");
+
+          setModalWhatsappVisible(false);
+          navigation.navigate("Agenda");
+        }}
+      />
+      <Button
+  title="Cancelar"
+  onPress={() => {
+    setModalWhatsappVisible(false);
+    
+    // limpar campos 
+    setCliente(null);
+    setServicosSelecionados([]);
+    setProfissionaisSelecionados([]);
+    setData("");
+    setHorario("");
+    setValor("");
+    setObservacoes("");
+    navigation.navigate("Agenda");
+  }}
+/>
+    </View>
+  </View>
+</Modal>
+
+    </View>
+    
   );
 }
 
@@ -261,4 +384,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   saveButton: { marginTop: theme.spacing.large },
+  
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0,0,0,0.4)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+modalBox: {
+  width: '80%',
+  backgroundColor: '#fff',
+  borderRadius: 10,
+  padding: 20,
+  alignItems: 'center',
+},
+modalText: {
+  fontSize: 16,
+  color: '#333',
+  textAlign: 'center',
+  marginBottom: 15,
+},
+
 });
