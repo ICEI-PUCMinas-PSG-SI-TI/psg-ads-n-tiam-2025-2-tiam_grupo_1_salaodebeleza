@@ -94,6 +94,21 @@ export default function Agenda() {
     return servico ? servico.nome : "Não informado";
   };
 
+  const getJustOneFuncionario = (ids) => {
+    if (!ids) return "Não informado";
+    if (Array.isArray(ids)) {
+      const firstId = ids[0];
+      const funcionario = funcionarios.find((f) => f.id === firstId);
+      const funcionarioNome = funcionario ? funcionario.nome : "Desconhecido";
+      const additional = ids.length - 1;
+      return additional > 0
+        ? `${funcionarioNome} +${additional}`
+        : funcionarioNome;
+    }
+    const funcionario = funcionarios.find((f) => f.id === ids);
+    return funcionario ? funcionario.nome : "Não informado";
+  };
+
   // Converte string 'dd/mm/yyyy' para objeto Date (local)
   const parseDatePtBr = (dateStr) => {
     if (!dateStr || typeof dateStr !== "string") return null;
@@ -344,7 +359,7 @@ export default function Agenda() {
                         }`}
                         subtitle={`${getJustOneService(
                           a.servicos
-                        )} · ${getFuncionarioNome(a.profissionais)}`}
+                        )} · ${getJustOneFuncionario(a.profissionais)}`}
                         onView={() => abrirModalView(a)}
                       />
                     ))}
