@@ -249,7 +249,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.container3,
     borderRadius: theme.radius.medium,
     paddingHorizontal: theme.spacing.medium,
-    paddingVertical: 10,
     marginVertical: theme.spacing.small,
     color: theme.colors.textInput,
     fontSize: 16,
