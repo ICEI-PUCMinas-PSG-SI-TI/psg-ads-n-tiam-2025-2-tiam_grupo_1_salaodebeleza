@@ -2,12 +2,16 @@
   "expo": {
     "name": "AgendaGlow",
     "slug": "agendaglow",
-    "scheme" : "agendaglow",
+    "scheme": "agendaglow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "developmentClient": {},
+    "experiments": {
+      "typedRoutes": true
+    },
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -21,7 +25,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.arthur71149.agendaglow"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,6 +43,11 @@
           "cameraPermission": "Permitir que este app use a câmera."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ed0e70b2-b0f7-4d83-912f-019d3c226d32"
+      }
+    }
   }
 }
