@@ -1,93 +1,176 @@
 import { useState } from "react";
-import { View, Text, Pressable, Modal, FlatList, StyleSheet } from "react-native";
-import { theme } from "../styles/theme";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+  Modal,
+  Platform,
+  Animated,
+  PanResponder,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { theme } from "../styles/theme";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Filter({ label, listItem = [], onSelect }) {
-  const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const insets = useSafeAreaInsets();
+  const [translateY] = useState(() => new Animated.Value(0));
+
+  // Reset translateY ao abrir o modal
+  const open = () => {
+    translateY.setValue(0);
+    setVisible(true);
+  };
+
+  // Fecha o modal animando para baixo, só reseta translateY após o modal sumir
+  const close = () => {
+    Animated.timing(translateY, {
+      toValue: 500,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setVisible(false);
+      // O reset do translateY será feito no efeito abaixo
+    });
+  };
+
+  // Quando o modal for fechado, reseta translateY
+  // Isso garante que não "pule" para cima antes de sumir
+  // Efeito só roda quando visible muda para false
+  // Não executa no primeiro render
+  useState(() => {
+    let first = true;
+    return () => {
+      if (first) {
+        first = false;
+        return;
+      }
+      if (!visible) {
+        translateY.setValue(0);
+      }
+    };
+  }, [visible]);
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: (_, gestureState) => {
+      return gestureState.dy > 5;
+    },
+    onPanResponderMove: (_, gestureState) => {
+      if (gestureState.dy > 0) {
+        translateY.setValue(gestureState.dy);
+      }
+    },
+    onPanResponderRelease: (_, gestureState) => {
+      if (gestureState.dy > 100) {
+        close();
+      } else {
+        Animated.spring(translateY, {
+          toValue: 0,
+          useNativeDriver: true,
+        }).start();
+      }
+    },
+  });
 
   const handleSelect = (id) => {
-    const itemId = id;
-    const exists = selected.some(
-      (i) => i?.id === itemId || i?.sid === itemId
-    );
+    const exists = selected.some((i) => i?.id === id || i?.sid === id);
+
+    let newSelected;
 
     if (exists) {
-      // Remove se já estiver selecionado
-      const newSelected = selected.filter(
-        (i) => i?.id !== itemId && i?.sid !== itemId
-      );
-      setSelected(newSelected);
-      // Notifica com array de IDs selecionados
-      const selectedIds = newSelected.map((i) => i.id || i.sid);
-      onSelect?.(selectedIds);
+      newSelected = selected.filter((i) => (i.id ?? i.sid) !== id);
     } else {
-      // Adiciona se não estiver selecionado
-      const item = listItem.find((i) => i.id === itemId || i.sid === itemId);
-      if (item) {
-        const newSelected = [...selected, item];
-        setSelected(newSelected);
-        // Notifica com array de IDs selecionados
-        const selectedIds = newSelected.map((i) => i.id || i.sid);
-        onSelect?.(selectedIds);
-      }
+      const item = listItem.find((i) => (i.id ?? i.sid) === id);
+      if (!item) return;
+      newSelected = [...selected, item];
     }
+
+    setSelected(newSelected);
+    onSelect?.(newSelected.map((i) => i.id ?? i.sid));
   };
 
-  const isSelected = (id) => {
-    return selected.some((i) => i?.id === id || i?.sid === id);
-  };
-
-  const getSelectedCount = () => {
-    return selected.length;
-  };
+  const isSelected = (id) => selected.some((i) => (i.id ?? i.sid) === id);
 
   return (
     <>
-      <Pressable style={styles.chip} onPress={() => setOpen(true)}>
+      {/* Botão do filtro */}
+      <Pressable style={styles.chip} onPress={open}>
         <Text style={styles.chipText}>
           {label}
-          {getSelectedCount() > 0 && ` (${getSelectedCount()})`}
+          {selected.length > 0 && ` (${selected.length})`}
         </Text>
-        <Ionicons name="chevron-down" size={16} color={theme.colors.textInput} />
+        <Ionicons
+          name="chevron-down"
+          size={16}
+          color={theme.colors.textInput}
+        />
       </Pressable>
 
-      <Modal visible={open} transparent animationType="fade">
-        <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
-          <View style={styles.modalBox} onStartShouldSetResponder={() => true}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{label}</Text>
-              <Pressable onPress={() => setOpen(false)}>
-                <Ionicons name="close" size={24} color={theme.colors.text} />
-              </Pressable>
+      {/* Modal estilo bottom sheet */}
+      <Modal
+        visible={visible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={close}
+      >
+        <Pressable style={styles.overlay} onPress={close}>
+          <Animated.View
+            style={[
+              styles.modalContainer,
+              {
+                paddingBottom: insets.bottom + 30,
+                transform: [{ translateY }],
+              },
+            ]}
+          >
+            {/* Header fixo com área de arrastar */}
+            <View style={styles.header} {...panResponder.panHandlers}>
+              <View style={styles.dragHandle} />
+              <View style={styles.headerContent}>
+                <Text style={styles.headerTitle}>{label}</Text>
+
+              </View>
             </View>
-            <FlatList
-              data={listItem}
-              keyExtractor={(item) => item.id?.toString() || item.sid?.toString() || item.nome}
-              renderItem={({ item }) => {
-                const itemId = item.id || item.sid;
-                const checked = isSelected(itemId);
-                return (
-                  <Pressable
-                    style={styles.option}
-                    onPress={() => handleSelect(itemId)}
-                  >
-                    <View style={styles.optionContent}>
-                      <Ionicons
-                        name={checked ? "checkbox" : "checkbox-outline"}
-                        size={24}
-                        color={checked ? theme.colors.primary : theme.colors.textInput}
-                      />
-                      <Text style={[styles.optionText, checked && styles.optionTextSelected]}>
+
+            {/* Lista */}
+            <ScrollView style={{ maxHeight: 350 }}>
+              <View style={styles.chipGrid}>
+                {listItem.map((item) => {
+                  const itemId = item.id || item.sid;
+                  const checked = isSelected(itemId);
+
+                  return (
+                    <Pressable
+                      key={itemId}
+                      style={[
+                        styles.selectableChip,
+                        checked && styles.selectableChipSelected,
+                      ]}
+                      onPress={() => handleSelect(itemId)}
+                    >
+                      <Text
+                        style={[
+                          styles.selectableChipText,
+                          checked && styles.selectableChipTextSelected,
+                        ]}
+                      >
                         {item.nome}
                       </Text>
-                    </View>
-                  </Pressable>
-                );
-              }}
-            />
-          </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </ScrollView>
+            <Pressable style={styles.floatingCloseButton} onPress={close}>
+            <Ionicons name="close" size={22} color="#333" />
+          </Pressable>
+          </Animated.View>
+          
         </Pressable>
       </Modal>
     </>
@@ -109,37 +192,50 @@ const styles = StyleSheet.create({
     marginRight: 6,
     color: theme.colors.textInput,
   },
-  backdrop: {
+
+  overlay: {
     flex: 1,
-    justifyContent: "center",
-    backgroundColor: "#00000055",
-    padding: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
   },
-  modalBox: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    maxHeight: "60%",
-    padding: 10,
+
+  modalContainer: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingHorizontal: 10,
+    maxHeight: 500,
   },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+
+  header: {
+    padding:theme.spacing.small,
+
+  },
+  dragHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: "#ccc",
+    borderRadius: 2,
+    alignSelf: "center",
     marginBottom: 10,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
   },
-  modalTitle: {
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  headerTitle: {
     fontSize: 18,
     fontWeight: "700",
     color: theme.colors.text,
   },
+
   option: {
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 12,
-    paddingHorizontal: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: "#f0f0f0",
   },
   optionContent: {
     flexDirection: "row",
@@ -153,5 +249,52 @@ const styles = StyleSheet.create({
   optionTextSelected: {
     fontWeight: "600",
     color: theme.colors.primary,
+  },
+  chipGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    padding: theme.spacing.small,
+  },
+
+  selectableChip: {
+    paddingVertical: 5,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: theme.colors.textInput,
+    backgroundColor: "#fff",
+  },
+
+  selectableChipSelected: {
+    backgroundColor: theme.colors.primary + "22",
+    borderColor: theme.colors.primary,
+  },
+
+  selectableChipText: {
+    color: theme.colors.text,
+    fontSize: 15,
+  },
+
+  selectableChipTextSelected: {
+    color: theme.colors.primary,
+    fontWeight: "600",
+  },
+  floatingCloseButton: {
+    position: "absolute",
+    top: -60,
+    right: 10,
+    zIndex: 999,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 5, // Android shadow
   },
 });
