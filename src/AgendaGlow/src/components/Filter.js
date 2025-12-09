@@ -71,9 +71,21 @@ export default function Filter({ groups = [], onChange }) {
     <>
       {/* BOTÃO PRINCIPAL */}
       <Pressable style={styles.chip} onPress={open}>
-        <Text style={styles.chipText}>Filtros</Text>
-        <Ionicons name="chevron-down" size={16} color={theme.colors.textInput} />
-      </Pressable>
+  <Ionicons
+    name="filter-outline"
+    size={18}
+    color={theme.colors.textInput}
+    style={{ marginRight: 6 }}
+  />
+
+  <Text style={styles.chipText}>Filtros</Text>
+
+  <Ionicons
+    name="chevron-down"
+    size={16}
+    color={theme.colors.textInput}
+  />
+</Pressable>
 
       {/* MODAL ÚNICO */}
       <Modal visible={visible} transparent animationType="fade">

@@ -275,11 +275,6 @@ export default function Agenda() {
         />
       </View>
       <View style={styles.containerFiltros}>
-        <FilterDate
-          onSelect={(date) => {
-            setFilters((prev) => ({ ...prev, date }));
-          }}
-        ></FilterDate>
         <Filter
           groups={[          
             {label: "Profissionais", items: funcionarios},
@@ -293,6 +288,12 @@ export default function Agenda() {
             }));
           }}
         />
+        <FilterDate
+          onSelect={(date) => {
+            setFilters((prev) => ({ ...prev, date }));
+          }}
+        ></FilterDate>
+        
         
       </View>
 
