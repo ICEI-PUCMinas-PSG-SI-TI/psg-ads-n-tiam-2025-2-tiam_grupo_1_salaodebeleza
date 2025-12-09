@@ -79,7 +79,7 @@ export default function Servicos({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header userName="Usuario" />
+      <Header pageTitle={"SERVIÇOS"} />
 
       <View style={styles.headerRow}>
         <Text style={styles.title}>Serviços</Text>
