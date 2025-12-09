@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Header from "../components/Header";
 import Input from "../components/Input";
@@ -10,12 +17,15 @@ import { listenFuncionarios } from "../services/funcionarioService";
 import { listenServicos } from "../services/servicoService";
 import { listenClientes } from "../services/clienteService";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { addAgendamento } from '../services/agendamentoService';
+import { addAgendamento } from "../services/agendamentoService";
+import { useNavigation } from "@react-navigation/native";
 
 export default function AgendamentoCadastro() {
   const [cliente, setCliente] = useState(null);
   const [servicosSelecionados, setServicosSelecionados] = useState([]);
-  const [profissionaisSelecionados, setProfissionaisSelecionados] = useState([]);
+  const [profissionaisSelecionados, setProfissionaisSelecionados] = useState(
+    []
+  );
   const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -27,6 +37,7 @@ export default function AgendamentoCadastro() {
   const [listaFuncionarios, setListaFuncionarios] = useState([]);
   const [listaClientes, setListaClientes] = useState([]);
   const [listaServicos, setListaServicos] = useState([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const unsubscribeFuncionarios = listenFuncionarios((lista) => {
@@ -54,8 +65,8 @@ export default function AgendamentoCadastro() {
   async function handleSalvar() {
     const novoAgendamento = {
       cliente,
-      servicos: servicosSelecionados.map(s => s.id),
-      profissionais: profissionaisSelecionados.map(p => p.id),
+      servicos: servicosSelecionados.map((s) => s.id),
+      profissionais: profissionaisSelecionados.map((p) => p.id),
       data,
       horario,
       valor,
@@ -76,6 +87,7 @@ export default function AgendamentoCadastro() {
         setHorario("");
         setValor("");
         setObservacoes("");
+        setTimeout(() => navigation.navigate("Agenda"), 1000);
       } else {
         Alert.alert("Erro", result.message || "Falha ao salvar agendamento.");
       }
@@ -117,26 +129,28 @@ export default function AgendamentoCadastro() {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Preencha os campos abaixo</Text>
 
-        <Picker
-          style={styles.inputLike}
-          dropdownIconColor={theme.colors.textInput}
-          selectedValue={cliente}
-          onValueChange={setCliente}
-        >
-          <Picker.Item
-            color={theme.colors.textInput}
-            label="Selecione o Cliente"
-            value={null}
-          />
-          {listaClientes.map((c) => (
+        <View style={styles.inputPickerContainer}>
+          <Picker
+            style={styles.inputLike}
+            dropdownIconColor={theme.colors.textInput}
+            selectedValue={cliente}
+            onValueChange={setCliente}
+          >
             <Picker.Item
               color={theme.colors.textInput}
-              key={c.id}
-              label={c.nome ?? 'Cliente'}
-              value={c.id}
+              label="Selecione o Cliente"
+              value={null}
             />
-          ))}
-        </Picker>
+            {listaClientes.map((c) => (
+              <Picker.Item
+                color={theme.colors.textInput}
+                key={c.id}
+                label={c.nome ?? "Cliente"}
+                value={c.id}
+              />
+            ))}
+          </Picker>
+        </View>
 
         <MultiSelect
           placeholder="Selecione serviços"
@@ -194,7 +208,6 @@ export default function AgendamentoCadastro() {
           onCancel={hideDatePicker}
         />
 
-
         <TouchableOpacity onPress={showTimePicker} activeOpacity={0.7}>
           <View pointerEvents="none">
             <Input
@@ -242,15 +255,17 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     marginBottom: theme.spacing.medium,
   },
+  inputPickerContainer: {
+    overflow: "hidden",
+    borderRadius: theme.radius.medium,
+    borderWidth: 1,
+    borderColor: theme.colors.container3,
+  },
   inputLike: {
     backgroundColor: theme.colors.container3,
-    borderRadius: theme.radius.medium,
     paddingHorizontal: theme.spacing.medium,
-    paddingVertical: 10,
-    marginVertical: theme.spacing.small,
     color: theme.colors.textInput,
     fontSize: 16,
-    borderWidth: 1,
     borderColor: theme.colors.container3,
   },
   label: {
