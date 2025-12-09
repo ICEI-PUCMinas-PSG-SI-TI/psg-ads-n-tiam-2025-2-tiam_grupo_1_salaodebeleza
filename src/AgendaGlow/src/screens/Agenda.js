@@ -281,22 +281,19 @@ export default function Agenda() {
           }}
         ></FilterDate>
         <Filter
-          label="Profissionais"
-          listItem={funcionarios}
-          onSelect={(profissionais) => {
-            setFilters((prev) => ({
+          groups={[          
+            {label: "Profissionais", items: funcionarios},
+            {label: "Serviços", items: servicos},
+          ]}
+          onChange={(filterData) => {
+            setFilters(prev => ({
               ...prev,
-              profissional: profissionais || [],
+              profissional: filterData.profissional,
+              servico: filterData.servico,
             }));
           }}
-        ></Filter>
-        <Filter
-          label="Serviços"
-          listItem={servicos}
-          onSelect={(servicos) => {
-            setFilters((prev) => ({ ...prev, servico: servicos || [] }));
-          }}
-        ></Filter>
+        />
+        
       </View>
 
       {/* Lista */}
