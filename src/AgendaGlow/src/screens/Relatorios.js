@@ -47,14 +47,18 @@ export default function Relatorios() {
   const [modalViewVisible, setModalViewVisible] = useState(false);
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null);
 
+  // Paginação 
+  const [currentPage, setCurrentPage] = useState(0);
+  const ITEMS_PER_PAGE = 8;
+
   const parseDatePtBr = (dateStr) => {
     if (!dateStr) return null;
     const parts = dateStr.split("/");
     if (parts.length !== 3) return null;
     return new Date(
-      parseInt(parts[2]),
-      parseInt(parts[1]) - 1,
-      parseInt(parts[0])
+      parseInt(parts[2], 8),
+      parseInt(parts[1], 8) - 1,
+      parseInt(parts[0], 8)
     );
   };
 
@@ -227,6 +231,7 @@ export default function Relatorios() {
     }
 
     setFilteredRelatorios(lista);
+    setCurrentPage(0); 
   }, [atendimentos, filters]);
 
   const getClienteNome = (clienteId) => {
@@ -276,13 +281,28 @@ export default function Relatorios() {
     return acc;
   }, {});
 
-  const sortedDates = Object.keys(groups).sort((d1, d2) => {
-    const dt1 = parseDatePtBr(d1);
-    const dt2 = parseDatePtBr(d2);
-    if (!dt1 || !dt2) return d1.localeCompare(d2);
-    return dt2.getTime() - dt1.getTime();
+  const sortedList = [...filteredRelatorios].sort((a, b) => {
+    const dtA = parseDatePtBr(a.data);
+    const dtB = parseDatePtBr(b.data);
+    if (dtA && dtB && dtA.getTime() !== dtB.getTime()) {
+      return dtB.getTime() - dtA.getTime(); // datas mais recentes primeiro
+    }
+    if (a.horario && b.horario) {
+      const [ah, am] = a.horario.split(":").map(Number);
+      const [bh, bm] = b.horario.split(":").map(Number);
+      if (ah !== bh) return bh - ah;
+      return (bm || 0) - (am || 0);
+    }
+    return 0;
   });
 
+  const totalPages = Math.max(1, Math.ceil(sortedList.length / ITEMS_PER_PAGE));
+  const startIndex = currentPage * ITEMS_PER_PAGE;
+  const paginatedItems = sortedList.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+  
   const abrirModal = (item) => {
     setAgendamentoSelecionado(item);
     setModalViewVisible(true);
@@ -403,40 +423,77 @@ export default function Relatorios() {
             style={{ marginTop: 20 }}
           />
         ) : (
-          <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-            {sortedDates.length === 0 ? (
-              <Text style={styles.emptyMessage}>
-                Nenhum relatório encontrado no período.
-              </Text>
-            ) : (
-              sortedDates.map((dateKey) => {
-                const items = groups[dateKey];
-                return (
-                  <View key={dateKey}>
-                    <View style={styles.dateContainer}>
-                      <Text style={styles.dateText}>
-                        {formatDateHeader(dateKey)}
-                      </Text>
-                    </View>
-                    {items.map((a) => (
-                      <Card
-                        key={a.uid || a.id}
-                        icon="checkmark-circle-outline"
-                        title={`${getClienteNome(a.cliente)} - ${
-                          a.horario || ""
-                        }`}
-                        subtitle={`${getServicoNome(
-                          a.servicos
-                        )} · ${getFuncionarioNome(a.profissionais)}`}
-                        onView={() => abrirModal(a)}
-                        style={styles.card}
-                      />
-                    ))}
+          <>
+            <ScrollView contentContainerStyle={{ paddingBottom: 8 }}>
+              {paginatedItems.length === 0 ? (
+                <Text style={styles.emptyMessage}>
+                  Nenhum relatório encontrado no período.
+                </Text>
+              ) : (
+                paginatedItems.map((a) => (
+                  <View key={a.uid || a.id}>
+                    {/* mostrando a data do item (pode aparecer datas diferentes na mesma página) */}
+                    <Text style={styles.itemDate}>
+                      {formatDateHeader(a.data)}
+                    </Text>
+                    <Card
+                      icon="checkmark-circle-outline"
+                      title={`${getClienteNome(a.cliente)} - ${
+                        a.horario || ""
+                      }`}
+                      subtitle={`${getServicoNome(
+                        a.servicos
+                      )} · ${getFuncionarioNome(a.profissionais)}`}
+                      onView={() => abrirModal(a)}
+                      style={styles.card}
+                    />
                   </View>
-                );
-              })
-            )}
-          </ScrollView>
+                ))
+              )}
+
+              {/* PAGINAÇÃO */}
+              <View style={styles.paginationContainerBottom}>
+                <TouchableOpacity
+                  onPress={() => setCurrentPage((p) => Math.max(0, p - 1))}
+                  disabled={currentPage === 0}
+                >
+                  <Text
+                    style={[
+                      styles.paginationArrow,
+                      { opacity: currentPage === 0 ? 0.3 : 1 },
+                    ]}
+                  >
+                    {"<"}
+                  </Text>
+                </TouchableOpacity>
+
+                <Text style={styles.paginationText}>
+                  {Math.min(totalPages, currentPage + 1)} / {totalPages}
+                </Text>
+
+                <TouchableOpacity
+                  onPress={() =>
+                    setCurrentPage((p) =>
+                      Math.min(totalPages - 1, p + 1)
+                    )
+                  }
+                  disabled={currentPage === totalPages - 1}
+                >
+                  <Text
+                    style={[
+                      styles.paginationArrow,
+                      {
+                        opacity:
+                          currentPage === totalPages - 1 ? 0.3 : 1,
+                      },
+                    ]}
+                  >
+                    {">"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </>
         )}
       </View>
 
@@ -578,6 +635,24 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: theme.colors.textInput,
     marginTop: 16,
+  },
+
+  // PAGINAÇÃO
+  paginationContainerBottom: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 12,
+    gap: 20,
+  },
+  paginationArrow: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: theme.colors.text,
+  },
+  paginationText: {
+    fontSize: 14,
+    color: theme.colors.text,
   },
 
   modalOverlay: {
