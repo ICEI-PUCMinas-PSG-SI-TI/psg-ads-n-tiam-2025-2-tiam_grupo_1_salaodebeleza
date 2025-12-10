@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "118140119077",
+    "project_id": "agendaglow-690e2",
+    "storage_bucket": "agendaglow-690e2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118140119077:android:5f3399ba6b53484f84b7cc",
+        "android_client_info": {
+          "package_name": "com.arthur71149.agendaglow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "118140119077-gdbgi0ld7dce4f8g2lt8pma4mdd1ojg5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVj2_bU3dcyonutT0ebe8IvsFbJyaCcCo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "118140119077-gdbgi0ld7dce4f8g2lt8pma4mdd1ojg5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
