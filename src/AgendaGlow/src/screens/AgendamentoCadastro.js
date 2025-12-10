@@ -98,7 +98,8 @@ export default function AgendamentoCadastro() {
                 await sendAppointmentPush(
                     idsDosProfissionais, // IDs dos destinatários
                     servicosSelecionados[0]?.nome || 'Serviço Agendado', // Nome do 1º serviço
-                    dataHoraStr
+                    dataHoraStr,
+                    result.id
                 );
             }
 

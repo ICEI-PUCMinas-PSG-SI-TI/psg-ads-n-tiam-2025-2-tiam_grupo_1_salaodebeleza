@@ -18,7 +18,7 @@ Notifications.setNotificationHandler({
  * @param {string} serviceTitle O título do serviço agendado.
  * @param {string} dataHoraStr A data e hora do agendamento (Ex: "10/12/2025 às 14:30").
  */
-export async function sendAppointmentPush(profissionalIds, serviceTitle, dataHoraStr) {
+export async function sendAppointmentPush(profissionalIds, serviceTitle, dataHoraStr, agendamentoId) {
     const tokens = [];
     console.log("Buscando os tokens");
     // 1. Buscar os tokens push dos profissionais envolvidos
@@ -51,7 +51,12 @@ export async function sendAppointmentPush(profissionalIds, serviceTitle, dataHor
         data: { 
             type: 'new_appointment',
             service: serviceTitle,
-            time: dataHoraStr
+            time: dataHoraStr,
+            screen: "Tabs",
+            params: {
+                screen: "Agenda", 
+                agendamentoId: agendamentoId,
+            }
         },
     }));
     
