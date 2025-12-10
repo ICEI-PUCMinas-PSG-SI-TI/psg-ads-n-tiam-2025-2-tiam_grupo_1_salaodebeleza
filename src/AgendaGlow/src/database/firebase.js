@@ -1,7 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth'; 
+import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -18,8 +19,25 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-});
+let auth;
+
+if (Platform.OS !== 'web') {
+    // ⭐️ AMBIENTE MOBILE (REACT NATIVE)
+    // Inicializa a autenticação usando a persistência AsyncStorage
+    auth = initializeAuth(app, {
+        persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+    });
+    
+} else {
+    // ⭐️ AMBIENTE WEB (BROWSER)
+    // A persistência padrão (browserLocalPersistence ou browserSessionPersistence)
+    // é automaticamente usada se não for especificada,
+    // mas para evitar que o código que importa 'getReactNativePersistence' quebre,
+    // garantimos que 'initializeAuth' seja chamado de forma segura.
+    
+    // Você pode usar initializeAuth sem o argumento de persistência
+    // Ou usar getAuth, se for o caso
+    auth = getAuth(app); // Use getAuth para web, que é mais comum
+}
 
 export { db, auth };
