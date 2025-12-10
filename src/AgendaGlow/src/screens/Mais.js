@@ -142,7 +142,7 @@ export default function Mais() {
 
         <Button
           icon="briefcase-outline"
-          title="Serviços"
+          title=" Serviços"
           onPress={() => navigation.navigate("Servicos")}
           style={{
             width: "100%",
@@ -152,7 +152,7 @@ export default function Mais() {
         />
         <Button
           icon="bar-chart-outline"
-          title="Relatórios"
+          title=" Relatórios"
           onPress={() => navigation.navigate("Relatorios")}
           style={{
             width: "100%",
@@ -162,7 +162,7 @@ export default function Mais() {
         />
         <Button
           icon="people-outline"
-          title="Equipe"
+          title=" Equipe"
           onPress={() => navigation.navigate("Funcionarios")}
           style={{ width: "100%" }}
           seta="true"
@@ -170,7 +170,7 @@ export default function Mais() {
         />
         <Button
           icon="person-outline"
-          title={loadingMeusDados ? "Carregando..." : "Alterar meus dados"}
+          title={loadingMeusDados ? "Carregando..." : " Alterar meus dados"}
           onPress={handleMeusDados}
           style={{ width: "100%" }}
           disabled={loadingMeusDados}
@@ -179,7 +179,7 @@ export default function Mais() {
         />
         <Button
           icon="logo-google"
-          title="Vincular conta Google"
+          title=" Vincular conta Google"
           onPress={() => navigation.navigate("VincularGoogle")}
           style={{ width: "100%", width: "100%" }}
           seta="true"
@@ -187,7 +187,7 @@ export default function Mais() {
         />
         <Button
           icon="log-out-outline"
-          title="Sair"
+          title=" Sair"
           onPress={logout}
           style={{ width: "100%", width: "100%" }}
           seta="true"

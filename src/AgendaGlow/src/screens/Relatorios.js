@@ -307,7 +307,7 @@ export default function Relatorios() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Header title="Relatórios" />
+      <Header pageTitle="RELATÓRIOS" />
       <View style={styles.container}>
         <View style={styles.headerRow}>
           <Text style={styles.title}>Relatórios Concluídos</Text>
@@ -549,7 +549,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: "700", color: theme.colors.text },
 
   extraFilters: { gap: 10 ,flexDirection: "row-reverse" , alignSelf: "baseline"},
-  dateRow: { flexDirection: "row", gap: 15, alignItems: "center" },
+  dateRow: { flexDirection: "row", gap: 11, alignItems: "center" },
   listFilters: { flexDirection: "row", gap: 8, flexWrap: "wrap" ,},
 
   pdfButton: { backgroundColor: theme.colors.primary, paddingHorizontal: 12 },
@@ -563,10 +563,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     backgroundColor: "white",
-    marginRight: 5,
   },
   dateChipText: {
-    marginRight: 6,
+    marginRight: 8,
     color: theme.colors.textInput,
     fontSize: 12,
     fontWeight: "600",
