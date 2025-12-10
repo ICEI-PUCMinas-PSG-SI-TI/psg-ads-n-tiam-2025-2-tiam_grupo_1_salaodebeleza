@@ -146,7 +146,11 @@ export default function Relatorios() {
     });
     const unsubF = listenFuncionarios((lista) => {
       setFuncionariosList(
-        (lista || []).map((f) => ({ id: f.uid || f.id, nome: f.nome || f }))
+        (lista || []).map((f) => ({ 
+          id: f.id, 
+          uid: f.uid,
+          nome: f.nome || f 
+        }))
       );
     });
 
@@ -235,12 +239,25 @@ export default function Relatorios() {
     const c = clientesList.find((i) => i.id === clienteId);
     return c ? c.nome : clienteId;
   };
+  const getServicoNome = (ids) => {
+    if (!ids) return "Não informado";
+    const arr = Array.isArray(ids) ? ids : [ids];
+    return arr
+      .map((targetId) => {
+        if (typeof targetId === "object") return targetId.nome || "Desconhecido";
+        const s = servicosList.find(
+          (i) => i.id === targetId || i.sid === targetId
+        );
+        return s ? s.nome : "Desconhecido";
+      })
+      .join(", ");
+  };
   const getFuncionarioNome = (ids) => {
     if (!ids) return "Não informado";
     const arr = Array.isArray(ids) ? ids : [ids];
     return arr
       .map((targetId) => {
-        if (typeof targetId === "object") return targetId.nome;
+        if (typeof targetId === "object") return targetId.nome || "Desconhecido";
         const f = funcionariosList.find(
           (i) => i.id === targetId || i.uid === targetId
         );
@@ -248,16 +265,38 @@ export default function Relatorios() {
       })
       .join(", ");
   };
-  const getServicoNome = (ids) => {
+
+  const getJustOneService = (ids) => {
     if (!ids) return "Não informado";
-    const arr = Array.isArray(ids) ? ids : [ids];
-    return arr
-      .map((id) => {
-        if (typeof id === "object") return id.nome;
-        const s = servicosList.find((i) => i.id === id);
-        return s ? s.nome : "Desconhecido";
-      })
-      .join(", ");
+    // Se for array, mostra apenas o primeiro e o número de adicionais: "Manicure +2"
+    if (Array.isArray(ids)) {
+      if (ids.length === 0) return "Não informado";
+      // suporta arrays de objetos ({ id }) ou de ids simples
+      const first = ids[0];
+      const firstId = first.id || first;
+      const servico = servicosList.find((s) => s.id === firstId);
+      const servicoNome = servico ? servico.nome : "Desconhecido";
+      const additional = ids.length - 1;
+      return additional > 0 ? `${servicoNome} +${additional}` : servicoNome;
+    }
+
+    const servico = servicosList.find((s) => s.id === ids);
+    return servico ? servico.nome : "Não informado";
+  };
+
+  const getJustOneFuncionario = (ids) => {
+    if (!ids) return "Não informado";
+    if (Array.isArray(ids)) {
+      const firstId = ids[0];
+      const funcionario = funcionariosList.find((f) => f.id === firstId || f.uid === firstId);
+      const funcionarioNome = funcionario ? funcionario.nome : "Desconhecido";
+      const additional = ids.length - 1;
+      return additional > 0
+        ? `${funcionarioNome} +${additional}`
+        : funcionarioNome;
+    }
+    const funcionario = funcionariosList.find((f) => f.id === ids || f.uid === ids);
+    return funcionario ? funcionario.nome : "Não informado";
   };
 
   const formatDateHeader = (dateStr) => {
@@ -307,7 +346,7 @@ export default function Relatorios() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Header pageTitle="RELATÓRIOS" />
+      <Header title="Relatórios" />
       <View style={styles.container}>
         <View style={styles.headerRow}>
           <Text style={styles.title}>Relatórios Concluídos</Text>
@@ -425,9 +464,9 @@ export default function Relatorios() {
                         title={`${getClienteNome(a.cliente)} - ${
                           a.horario || ""
                         }`}
-                        subtitle={`${getServicoNome(
+                        subtitle={`${getJustOneService(
                           a.servicos
-                        )} · ${getFuncionarioNome(a.profissionais)}`}
+                        )} · ${getJustOneFuncionario(a.profissionais)}`}
                         onView={() => abrirModal(a)}
                         style={styles.card}
                       />
@@ -549,7 +588,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: "700", color: theme.colors.text },
 
   extraFilters: { gap: 10 ,flexDirection: "row-reverse" , alignSelf: "baseline"},
-  dateRow: { flexDirection: "row", gap: 11, alignItems: "center" },
+  dateRow: { flexDirection: "row", gap: 15, alignItems: "center" },
   listFilters: { flexDirection: "row", gap: 8, flexWrap: "wrap" ,},
 
   pdfButton: { backgroundColor: theme.colors.primary, paddingHorizontal: 12 },
@@ -563,9 +602,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     backgroundColor: "white",
+    marginRight: 5,
   },
   dateChipText: {
-    marginRight: 8,
+    marginRight: 6,
     color: theme.colors.textInput,
     fontSize: 12,
     fontWeight: "600",
