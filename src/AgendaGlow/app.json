@@ -27,9 +27,11 @@
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "RECEIVE_BOOT_COMPLETED" 
       ],
-      "package": "com.arthur71149.agendaglow"
+      "package": "com.arthur71149.agendaglow",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -42,7 +44,8 @@
           "photosPermission": "Permitir que este app acesse suas fotos.",
           "cameraPermission": "Permitir que este app use a câmera."
         }
-      ]
+      ],
+      "expo-notifications" 
     ],
     "extra": {
       "eas": {

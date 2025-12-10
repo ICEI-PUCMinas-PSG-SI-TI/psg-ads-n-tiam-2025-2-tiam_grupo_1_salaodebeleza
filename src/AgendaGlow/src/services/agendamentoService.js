@@ -5,20 +5,21 @@ import {
 
 const AGENDAMENTOS_COLLECTION = 'agendamentos';
 
-// --- Funções CRUD Originais ---
-
 export const addAgendamento = async (agendamento) => {
   try {
-    const colRef = collection(db, AGENDAMENTOS_COLLECTION);
-    const docRef = doc(colRef); // Gera ID manualmente antes de salvar
-
-    await addDoc(collection(db, AGENDAMENTOS_COLLECTION), {
+    // addDoc cria o documento e gera o ID automaticamente
+    const docRef = await addDoc(collection(db, AGENDAMENTOS_COLLECTION), {
       ...agendamento,
-      uid: docRef.id,
       ativo: true,
       criadoEm: new Date(),
     });
-    return { success: true };
+
+    // Se quiser guardar o ID dentro do próprio documento (opcional, mas comum),
+    // você pode fazer um update logo em seguida:
+    await updateDoc(docRef, { uid: docRef.id });
+
+    // RETORNA O ID PARA A TELA (Essencial para a notificação)
+    return { success: true, id: docRef.id }; 
   } catch (error) {
     console.error('Erro ao adicionar agendamento:', error);
     return { success: false, message: error.message };

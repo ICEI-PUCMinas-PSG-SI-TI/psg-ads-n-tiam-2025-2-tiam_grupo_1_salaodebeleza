@@ -11,6 +11,7 @@ import { listenServicos } from "../services/servicoService";
 import { listenClientes } from "../services/clienteService";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { addAgendamento } from '../services/agendamentoService';
+import { sendAppointmentPush } from '../services/notificationService';
 
 export default function AgendamentoCadastro() {
   const [cliente, setCliente] = useState(null);
@@ -52,41 +53,76 @@ export default function AgendamentoCadastro() {
   }, []);
 
   async function handleSalvar() {
+    setLoading(true);
+
+    // Validação básica (opcional, mas recomendado)
+    if (!cliente || profissionaisSelecionados.length === 0 || servicosSelecionados.length === 0 || !data || !horario) {
+        Alert.alert("Erro", "Por favor, preencha o Cliente, Profissionais, Serviços, Data e Horário.");
+        setLoading(false);
+        return;
+    }
+
+    // 1. Cria as strings para o Firestore e para a Notificação
+    const dataHoraStr = `${data} às ${horario}`;
+    
+    // 2. Cria o objeto a ser salvo no Firestore
     const novoAgendamento = {
-      cliente,
-      servicos: servicosSelecionados.map(s => s.id),
-      profissionais: profissionaisSelecionados.map(p => p.id),
-      data,
-      horario,
-      valor,
-      observacoes,
+        // Campos principais (exatamente como no seu exemplo):
+        ativo: true, // Já é adicionado no service, mas é bom ter clareza
+        cliente: cliente, // ID do cliente
+        data: data,       // Ex: "12/12/2025"
+        horario: horario, // Ex: "05:30"
+        valor: valor,     // Ex: "400"
+        observacoes: observacoes,
+
+        // IDs dos profissionais e serviços (Arrays de strings de IDs)
+        profissionais: profissionaisSelecionados.map(p => p.id),
+        servicos: servicosSelecionados.map(s => s.id),
+        
+        // Dados adicionais para a notificação (opcional, mas útil se salvar o agendamento falhar)
+        dataHoraStr: dataHoraStr, 
+        servicoPrincipal: servicosSelecionados[0]?.nome,
+        // O campo 'uid' e 'criadoEm' serão adicionados em agendamentoService.js
     };
 
     try {
-      const result = await addAgendamento(novoAgendamento);
-      console.log(result);
+        const result = await addAgendamento(novoAgendamento);
 
-      if (result.success) {
-        Alert.alert("Sucesso", "Agendamento salvo com sucesso!");
-        // limpa os campos
-        setCliente(null);
-        setServicosSelecionados([]);
-        setProfissionaisSelecionados([]);
-        setData("");
-        setHorario("");
-        setValor("");
-        setObservacoes("");
-      } else {
-        Alert.alert("Erro", result.message || "Falha ao salvar agendamento.");
-      }
+        if (result.success) {
+            
+            // ⬇️ PEGA A LISTA DE IDS PARA ENVIAR O PUSH
+            const idsDosProfissionais = profissionaisSelecionados.map(p => p.id); 
+            
+            // ⬇️ CHAMA A FUNÇÃO PUSH REMOTA IMEDIATA
+            if (idsDosProfissionais.length > 0) {
+                await sendAppointmentPush(
+                    idsDosProfissionais, // IDs dos destinatários
+                    servicosSelecionados[0]?.nome || 'Serviço Agendado', // Nome do 1º serviço
+                    dataHoraStr
+                );
+            }
+
+            Alert.alert("Sucesso", "Agendamento salvo e notificado com sucesso!");
+            
+            // Limpar campos após sucesso
+            setCliente(null);
+            setServicosSelecionados([]);
+            setProfissionaisSelecionados([]);
+            setData("");
+            setHorario("");
+            setValor("");
+            setObservacoes("");
+
+        } else {
+            Alert.alert("Erro", `Falha ao salvar agendamento: ${result.message}`);
+        }
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível salvar o agendamento.");
-      console.error(error);
+        console.error("Erro geral ao salvar/notificar:", error);
+        Alert.alert("Erro", "Ocorreu um erro inesperado ao salvar o agendamento.");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  }
-
+}
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
