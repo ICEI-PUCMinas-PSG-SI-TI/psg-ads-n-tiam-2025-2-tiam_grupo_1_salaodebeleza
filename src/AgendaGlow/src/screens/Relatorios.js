@@ -268,14 +268,12 @@ export default function Relatorios() {
 
   const getJustOneService = (ids) => {
     if (!ids) return "Não informado";
-    // Se for array, mostra apenas o primeiro e o número de adicionais: "Manicure +2"
     if (Array.isArray(ids)) {
       if (ids.length === 0) return "Não informado";
-      // suporta arrays de objetos ({ id }) ou de ids simples
       const first = ids[0];
       const firstId = first.id || first;
       const servico = servicosList.find((s) => s.id === firstId);
-      const servicoNome = servico ? servico.nome : "Desconhecido";
+      const servicoNome = servico ? servico.nome : "Atendimento";
       const additional = ids.length - 1;
       return additional > 0 ? `${servicoNome} +${additional}` : servicoNome;
     }
@@ -345,139 +343,138 @@ export default function Relatorios() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <Header title="Relatórios" />
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <Text style={styles.title}>Relatórios Concluídos</Text>
-          <Button
-            title="Gerar PDF"
-            small
-            onPress={() => gerarPDF()}
-            style={styles.pdfButton}
-          />
-        </View>
+    <View style={styles.container}>
+      <Header pageTitle="RELATÓRIOS" />
 
-        <View style={styles.extraFilters}>
-          <View style={styles.dateRow}>
-            <Pressable
-              style={styles.dateChip}
-              onPress={() => abrirDatePicker("dataInicio")}
-            >
-              <Text style={styles.dateChipText}>
-                {filters.dataInicio ? `De: ${filters.dataInicio}` : "De"}
-              </Text>
-              {filters.dataInicio && (
-                <TouchableOpacity
-                  onPress={() => limparData("dataInicio")}
-                  style={{ marginRight: 4 }}
-                >
-                  <Ionicons
-                    name="close-circle"
-                    size={16}
-                    color={theme.colors.textInput}
-                  />
-                </TouchableOpacity>
-              )}
-              <Ionicons
-                name="calendar"
-                size={16}
-                color={theme.colors.textInput}
-              />
-            </Pressable>
-            <Pressable
-              style={styles.dateChip}
-              onPress={() => abrirDatePicker("dataFim")}
-            >
-              <Text style={styles.dateChipText}>
-                {filters.dataFim ? `Até: ${filters.dataFim}` : "Até"}
-              </Text>
-              {filters.dataFim && (
-                <TouchableOpacity
-                  onPress={() => limparData("dataFim")}
-                  style={{ marginRight: 4 }}
-                >
-                  <Ionicons
-                    name="close-circle"
-                    size={16}
-                    color={theme.colors.textInput}
-                  />
-                </TouchableOpacity>
-              )}
-              <Ionicons
-                name="calendar"
-                size={16}
-                color={theme.colors.textInput}
-              />
-            </Pressable>
-          </View>
-
-          <View style={styles.listFilters}>
-            <Filter
-              groups={[          
-                {label: "Profissionais", items: funcionariosList},
-                {label: "Serviços", items: servicosList},
-              ]}
-              onChange={(filterData) => {
-                setFilters(prev => ({
-                  ...prev,
-                  profissional: filterData.profissional,
-                  servico: filterData.servico,
-                }));
-              }}
-            />
-          </View>
-        </View>
-
-        <View style={{ marginTop: 12, marginBottom: 8 }}>
-          <Text style={{ color: theme.colors.text }}>
-            Total: {filteredRelatorios.length}
-          </Text>
-        </View>
-
-        {loading ? (
-          <ActivityIndicator
-            size="large"
-            color={theme.colors.primary}
-            style={{ marginTop: 20 }}
-          />
-        ) : (
-          <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-            {sortedDates.length === 0 ? (
-              <Text style={styles.emptyMessage}>
-                Nenhum relatório encontrado no período.
-              </Text>
-            ) : (
-              sortedDates.map((dateKey) => {
-                const items = groups[dateKey];
-                return (
-                  <View key={dateKey}>
-                    <View style={styles.dateContainer}>
-                      <Text style={styles.dateText}>
-                        {formatDateHeader(dateKey)}
-                      </Text>
-                    </View>
-                    {items.map((a) => (
-                      <Card
-                        key={a.uid || a.id}
-                        icon="checkmark-circle-outline"
-                        title={`${getClienteNome(a.cliente)} - ${
-                          a.horario || ""
-                        }`}
-                        subtitle={`${getJustOneService(
-                          a.servicos
-                        )} · ${getJustOneFuncionario(a.profissionais)}`}
-                        onView={() => abrirModal(a)}
-                        style={styles.card}
-                      />
-                    ))}
-                  </View>
-                );
-              })
-            )}
-          </ScrollView>
-        )}
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>Atendimentos</Text>
+        <Button
+          title="Gerar PDF"
+          small
+          onPress={() => gerarPDF()}
+          style={styles.pdfButton}
+        />
       </View>
+
+      <View style={styles.extraFilters}>
+        <View style={styles.dateRow}>
+          <Pressable
+            style={styles.dateChip}
+            onPress={() => abrirDatePicker("dataInicio")}
+          >
+            <Text style={styles.dateChipText}>
+              {filters.dataInicio ? `De: ${filters.dataInicio}` : "De"}
+            </Text>
+            {filters.dataInicio && (
+              <TouchableOpacity
+                onPress={() => limparData("dataInicio")}
+                style={{ marginRight: 4 }}
+              >
+                <Ionicons
+                  name="close-circle"
+                  size={16}
+                  color={theme.colors.textInput}
+                />
+              </TouchableOpacity>
+            )}
+            <Ionicons
+              name="calendar"
+              size={16}
+              color={theme.colors.textInput}
+            />
+          </Pressable>
+          <Pressable
+            style={styles.dateChip}
+            onPress={() => abrirDatePicker("dataFim")}
+          >
+            <Text style={styles.dateChipText}>
+              {filters.dataFim ? `Até: ${filters.dataFim}` : "Até"}
+            </Text>
+            {filters.dataFim && (
+              <TouchableOpacity
+                onPress={() => limparData("dataFim")}
+                style={{ marginRight: 4 }}
+              >
+                <Ionicons
+                  name="close-circle"
+                  size={16}
+                  color={theme.colors.textInput}
+                />
+              </TouchableOpacity>
+            )}
+            <Ionicons
+              name="calendar"
+              size={16}
+              color={theme.colors.textInput}
+            />
+          </Pressable>
+        </View>
+
+        <View style={styles.listFilters}>
+          <Filter
+            groups={[          
+              {label: "Profissionais", items: funcionariosList},
+              {label: "Serviços", items: servicosList},
+            ]}
+            onChange={(filterData) => {
+              setFilters(prev => ({
+                ...prev,
+                profissional: filterData.profissional,
+                servico: filterData.servico,
+              }));
+            }}
+          />
+        </View>
+      </View>
+
+      <View style={{ marginTop: 12, marginBottom: 8, paddingHorizontal: theme.spacing.large }}>
+        <Text style={{ color: theme.colors.text }}>
+          Total: {filteredRelatorios.length}
+        </Text>
+      </View>
+
+      {loading ? (
+        <ActivityIndicator
+          size="large"
+          color={theme.colors.primary}
+          style={{ marginTop: 40 }}
+        />
+      ) : (
+        <ScrollView contentContainerStyle={styles.listContainer}>
+          {sortedDates.length === 0 ? (
+            <Text style={styles.emptyMessage}>
+              Nenhum relatório encontrado no período.
+            </Text>
+          ) : (
+            sortedDates.map((dateKey) => {
+              const items = groups[dateKey];
+              return (
+                <View key={dateKey}>
+                  <View style={styles.dateContainer}>
+                    <Text style={styles.dateText}>
+                      {formatDateHeader(dateKey)}
+                    </Text>
+                  </View>
+                  {items.map((a) => (
+                    <Card
+                      key={a.uid || a.id}
+                      icon="checkmark-circle-outline"
+                      title={`${getClienteNome(a.cliente)} - ${
+                        a.horario || ""
+                      }`}
+                      subtitle={`${getJustOneService(
+                        a.servicos
+                      )} · ${getJustOneFuncionario(a.profissionais)}`}
+                      onView={() => abrirModal(a)}
+                      style={styles.card}
+                    />
+                  ))}
+                </View>
+              );
+            })
+          )}
+        </ScrollView>
+      )}
 
       {showPicker && (
         <DateTimePicker
@@ -578,17 +575,19 @@ export default function Relatorios() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, flex: 1, backgroundColor: theme.colors.background },
+  container: { flex: 1, backgroundColor: theme.colors.background },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    paddingHorizontal: theme.spacing.large,
+    paddingVertical: theme.spacing.medium,
   },
   title: { fontSize: 20, fontWeight: "700", color: theme.colors.text },
+  listContainer: { paddingHorizontal: theme.spacing.large, paddingBottom: 100 },
 
-  extraFilters: { gap: 10 ,flexDirection: "row-reverse" , alignSelf: "baseline"},
-  dateRow: { flexDirection: "row", gap: 15, alignItems: "center" },
+  extraFilters: { gap: 10,flexDirection: "row-reverse" , alignSelf: "baseline", paddingHorizontal: theme.spacing.large, },
+  dateRow: { flexDirection: "row", gap: 11, alignItems: "center" },
   listFilters: { flexDirection: "row", gap: 8, flexWrap: "wrap" ,},
 
   pdfButton: { backgroundColor: theme.colors.primary, paddingHorizontal: 12 },
@@ -602,7 +601,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     backgroundColor: "white",
-    marginRight: 5,
   },
   dateChipText: {
     marginRight: 6,
@@ -611,8 +609,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  dateContainer: { paddingVertical: 8 },
-  dateText: { fontWeight: "700", color: theme.colors.text },
+  dateContainer: {
+    paddingHorizontal: theme.spacing.small,
+    paddingBottom: theme.spacing.small,
+    alignItems: "flex-start",
+  },
+  dateText: {
+    fontSize: 14,
+    color: theme.colors.textInput,
+    fontWeight: "500",
+    textAlign: "left",
+  },
+
   card: { marginBottom: 10 },
   emptyMessage: {
     textAlign: "center",

@@ -7,7 +7,6 @@ import {
   Modal,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/Header";
@@ -35,6 +34,10 @@ export default function Agenda() {
   const [loading, setLoading] = useState(true);
   const [modalViewVisible, setModalViewVisible] = useState(false);
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null);
+  const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
+  const [modalMessageVisible, setModalMessageVisible] = useState(false);
+  const [messageType, setMessageType] = useState("success"); 
+  const [messageText, setMessageText] = useState("");
   const [filters, setFilters] = useState({
     date: null,
     profissional: [],
@@ -42,7 +45,6 @@ export default function Agenda() {
   });
   const [filteredAgendamentos, setFilteredAgendamentos] = useState([]);
 
-  // Função para formatar data no formato pt-BR
   const formatarDataHoje = () => {
     const hoje = new Date();
     return hoje.toLocaleDateString("pt-BR");
@@ -78,10 +80,8 @@ export default function Agenda() {
 
   const getJustOneService = (ids) => {
     if (!ids) return "Não informado";
-    // Se for array, mostra apenas o primeiro e o número de adicionais: "Manicure +2"
     if (Array.isArray(ids)) {
       if (ids.length === 0) return "Não informado";
-      // suporta arrays de objetos ({ id }) ou de ids simples
       const first = ids[0];
       const firstId = first.id || first;
       const servico = servicos.find((s) => s.id === firstId || s.sid === firstId);
@@ -109,7 +109,6 @@ export default function Agenda() {
     return funcionario ? funcionario.nome : "Não informado";
   };
 
-  // Converte string 'dd/mm/yyyy' para objeto Date (local)
   const parseDatePtBr = (dateStr) => {
     if (!dateStr || typeof dateStr !== "string") return null;
     const parts = dateStr.split("/");
@@ -120,14 +119,12 @@ export default function Agenda() {
     return new Date(year, month - 1, day);
   };
 
-  // Função para obter nome do cliente (mock por enquanto)
   const getClienteNome = (clienteId) => {
     if (!clienteId) return "Não informado";
     const cliente = clientes.find((c) => c.cid === clienteId);
     return cliente ? cliente.nome : clienteId || "Não informado";
   };
 
-  // Formata cabeçalho de data: mostra 'Hoje - dd/mm/yyyy' quando aplicável
   const formatDateHeader = (dateStr) => {
     if (!dateStr) return "Sem data";
     const dt = parseDatePtBr(dateStr);
@@ -144,12 +141,11 @@ export default function Agenda() {
   useEffect(() => {
     const unsubscribeAgendamentos = listenAgendamentos((lista) => {
       setAgendamentos(lista);
-      // Filtrar agendamentos a partir do dia atual (hoje em diante)
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0);
       const agendamentosFuturos = lista.filter((a) => {
         const dt = parseDatePtBr(a.data);
-        if (!dt) return false; // ignora registros sem data válida
+        if (!dt) return false; 
         dt.setHours(0, 0, 0, 0);
         return dt.getTime() >= hoje.getTime();
       });
@@ -183,48 +179,37 @@ export default function Agenda() {
   };
 
   const fecharModalView = () => {
-    setAgendamentoSelecionado(null);
     setModalViewVisible(false);
   };
 
-  // Função para excluir agendamento com confirmação
   const handleExcluir = async () => {
     if (!agendamentoSelecionado) return;
 
-    Alert.alert(
-      "Excluir agendamento",
-      `Tem certeza que deseja excluir este agendamento?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              setLoading(true);
-              const result = await deleteAgendamento(agendamentoSelecionado.id);
+    try {
+      setLoading(true);
+      const result = await deleteAgendamento(agendamentoSelecionado.id);
 
-              if (result.success) {
-                Alert.alert("Sucesso", "Agendamento excluído com sucesso!");
-                setAgendamentosDoDia((prev) =>
-                  prev.filter((a) => a.id !== agendamentoSelecionado.id)
-                );
-                fecharModalView();
-              } else {
-                Alert.alert(
-                  "Erro",
-                  result.message || "Falha ao excluir agendamento."
-                );
-              }
-            } catch (error) {
-              Alert.alert("Erro", error.message);
-            } finally {
-              setLoading(false);
-            }
-          },
-        },
-      ]
-    );
+      if (result.success) {
+        setMessageType("success");
+        setMessageText("Agendamento excluído com sucesso!");
+
+        setAgendamentosDoDia(prev =>
+          prev.filter(a => a.id !== agendamentoSelecionado.id)
+        );
+
+        setAgendamentoSelecionado(null);
+      } else {
+        setMessageType("error");
+        setMessageText(result.message || "Falha ao excluir agendamento.");
+      }
+    } catch (error) {
+      setMessageType("error");
+      setMessageText(error.message || "Erro ao excluir.");
+    } finally {
+      setModalConfirmVisible(false);
+      setModalMessageVisible(true);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -265,7 +250,6 @@ export default function Agenda() {
     <View style={styles.container}>
       <Header pageTitle={"AGENDA"} />
 
-      {/* Cabeçalho */}
       <View style={styles.headerRow}>
         <Text style={styles.title}>Agendamentos</Text>
         <Button
@@ -274,6 +258,7 @@ export default function Agenda() {
           onPress={() => navigation.navigate("AgendamentoCadastro")}
         />
       </View>
+      
       <View style={styles.containerFiltros}>
         <Filter
           groups={[          
@@ -293,11 +278,8 @@ export default function Agenda() {
             setFilters((prev) => ({ ...prev, date }));
           }}
         ></FilterDate>
-        
-        
       </View>
 
-      {/* Lista */}
       {loading ? (
         <ActivityIndicator
           size="large"
@@ -314,7 +296,6 @@ export default function Agenda() {
             </Text>
           ) : (
             (() => {
-              // Agrupa por data (a.data) e ordena as datas e os agendamentos por horário
               const groups = filteredAgendamentos.reduce((acc, a) => {
                 const key = a.data || "Sem data";
                 if (!acc[key]) acc[key] = [];
@@ -331,7 +312,6 @@ export default function Agenda() {
 
               return sortedDates.map((dateKey) => {
                 const items = groups[dateKey].slice();
-                // ordenar por horário quando disponível ('HH:MM')
                 items.sort((x, y) => {
                   const t1 = x.horario || "";
                   const t2 = y.horario || "";
@@ -369,7 +349,6 @@ export default function Agenda() {
         </ScrollView>
       )}
 
-      {/* MODAL DE VISUALIZAÇÃO */}
       <Modal
         visible={modalViewVisible}
         animationType="none"
@@ -395,7 +374,6 @@ export default function Agenda() {
 
             {agendamentoSelecionado && (
               <View style={modalStyle.modalInner}>
-                {/* resumo curto no topo (cartão claro) */}
                 <View style={modalStyle.topCard}>
                   <View style={modalStyle.topCardLeft}>
                     <View style={modalStyle.topCardIcon}>
@@ -428,7 +406,6 @@ export default function Agenda() {
                   </View>
                 </View>
 
-                {/* cartão branco com detalhes em duas colunas */}
                 <View style={modalStyle.detailsCard}>
                   <View style={modalStyle.detailRow}>
                     <View style={modalStyle.detailCol}>
@@ -494,7 +471,6 @@ export default function Agenda() {
                   ) : null}
                 </View>
 
-                {/* botões: editar (outline) e excluir (cheio) */}
                 <View style={modalStyle.actionsRow}>
                   <Button
                     title="Editar"
@@ -510,7 +486,10 @@ export default function Agenda() {
 
                   <Button
                     title="Excluir"
-                    onPress={handleExcluir}
+                    onPress={() => {
+                      fecharModalView(); 
+                      setTimeout(() => setModalConfirmVisible(true), 50); 
+                    }}
                     style={modalStyle.deleteButton}
                     textStyle={modalStyle.deleteButtonText}
                   />
@@ -520,16 +499,102 @@ export default function Agenda() {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={modalConfirmVisible}
+        animationType="none"
+        transparent={true}
+        onRequestClose={() => setModalConfirmVisible(false)}
+      >
+        <View style={modalStyle.modalOverlay}>
+          <View style={modalStyle.modalContainer}>
+            <Text style={modalStyle.modalTitle}>Confirmar exclusão</Text>
+            <Text style={modalStyle.modalSubtitle}>
+              Deseja realmente excluir este agendamento? Essa
+              ação é irreversível.
+            </Text>
+
+            <View style={{ marginTop: 20, flexDirection: "row", gap: 10 }}>
+              <Button
+                title="Cancelar"
+                onPress={() => setModalConfirmVisible(false)}
+                style={{
+                  backgroundColor: theme.colors.white,
+                  borderWidth: 1,
+                  borderColor: theme.colors.primary,
+                  flex: 1,
+                }}
+                textStyle={{ color: theme.colors.primary, fontWeight: "700" }}
+              />
+
+              <Button
+                title="Excluir"
+                onPress={handleExcluir}
+                style={{
+                  backgroundColor: theme.colors.primary,
+                  flex: 1,
+                }}
+                textStyle={{ color: theme.colors.white, fontWeight: "700" }}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={modalMessageVisible}
+        animationType="none"
+        transparent={true}
+        onRequestClose={() => setModalMessageVisible(false)}
+      >
+        <View style={modalStyle.modalOverlay}>
+          <View style={modalStyle.modalContainer}>
+            <Text
+              style={[
+                modalStyle.modalTitle,
+                {
+                  color: theme.colors.primary,
+                },
+              ]}
+            >
+              {messageType === "success" ? "Sucesso" : "Atenção"}
+            </Text>
+
+            <Text
+              style={[
+                modalStyle.modalSubtitle,
+                {
+                  color: theme.colors.textInput,
+                  marginTop: 10,
+                },
+              ]}
+            >
+              {messageText}
+            </Text>
+
+            <Button
+              title="OK"
+              onPress={() => setModalMessageVisible(false)}
+              style={{
+                backgroundColor: theme.colors.primary,
+                marginTop: 20,
+              }}
+              textStyle={{ color: theme.colors.white, fontWeight: "700" }}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
-// --- ESTILOS ---
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: theme.colors.background, gap: 10 },
+  container: { flex: 1, backgroundColor: theme.colors.background },
   containerFiltros: {
     flexDirection: "row",
     flexWrap: "wrap",
+    marginTop: theme.spacing.medium,
+    marginBottom: theme.spacing.medium,
     paddingLeft: theme.spacing.large,
     gap: 7,
     marginRight: theme.spacing.large,
@@ -541,9 +606,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.large,
     paddingTop: theme.spacing.medium,
   },
-  title: { fontSize: 20, fontWeight: "700", color: theme.colors.text },
+  title: { fontSize: 20, fontWeight: "700", color: theme.colors.text},
   dateContainer: {
-    paddingHorizontal: theme.spacing.large,
+    paddingHorizontal: theme.spacing.small,
     paddingBottom: theme.spacing.small,
     alignItems: "flex-start",
   },

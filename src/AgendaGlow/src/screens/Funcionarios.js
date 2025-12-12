@@ -44,7 +44,6 @@ export default function Funcionarios({ navigation }) {
     setModalViewVisible(false);
   };
 
-  // --- Exclusão lógica ---
   const confirmarExclusao = () => {
     fecharModalView();
     setModalConfirmVisible(true);
@@ -85,7 +84,6 @@ export default function Funcionarios({ navigation }) {
     <View style={styles.container}>
       <Header pageTitle={"EQUIPE"}/>
 
-      {/* Cabeçalho */}
       <View style={styles.headerRow}>
         <Text style={styles.title}>Profissionais</Text>
         <Button
@@ -95,7 +93,6 @@ export default function Funcionarios({ navigation }) {
         />
       </View>
 
-      {/* Lista */}
       {loading ? (
         <ActivityIndicator
           size="large"
@@ -125,7 +122,6 @@ export default function Funcionarios({ navigation }) {
         </ScrollView>
       )}
 
-      {/* MODAL DE DETALHES */}
       <Modal
         visible={modalViewVisible}
         animationType="none"
@@ -149,7 +145,6 @@ export default function Funcionarios({ navigation }) {
 
             {funcionarioSelecionado && (
               <View style={modalStyle.modalInner}>
-                {/* resumo curto no topo (cartão claro) */}
                 <View style={modalStyle.topCard}>
                   <View style={modalStyle.topCardLeft}>
                     <View style={modalStyle.topCardIcon}>
@@ -179,7 +174,6 @@ export default function Funcionarios({ navigation }) {
                   </View>
                 </View>
 
-                {/* cartão branco com detalhes em duas colunas */}
                 <View style={modalStyle.detailsCard}>
                   <View style={modalStyle.detailRow}>
                     <View style={modalStyle.detailCol}>
@@ -210,7 +204,6 @@ export default function Funcionarios({ navigation }) {
                   </View>
                 </View>
 
-                {/* botões: editar (outline) e excluir (cheio) */}
                 <View style={modalStyle.actionsRow}>
                   <Button
                     title="Excluir"
@@ -225,64 +218,89 @@ export default function Funcionarios({ navigation }) {
         </View>
       </Modal>
       
-      {/* --- MODAL DE CONFIRMAÇÃO --- */}
       <Modal
         visible={modalConfirmVisible}
-        transparent
-        animationType="fade"
+        animationType="none"
+        transparent={true}
         onRequestClose={() => setModalConfirmVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Confirmar Exclusão</Text>
-            <Text
-              style={{
-                color: theme.colors.text,
-                fontSize: 14,
-                marginBottom: 16,
-              }}
-            >
-              Tem certeza que deseja excluir {funcionarioSelecionado?.nome}?
-              Essa ação é irreversível.
+        <View style={modalStyle.modalOverlay}>
+          <View style={modalStyle.modalContainer}>
+            <Text style={modalStyle.modalTitle}>Confirmar exclusão</Text>
+
+            <Text style={[modalStyle.modalSubtitle, { marginTop: 10 }]}>
+              Tem certeza que deseja excluir {funcionarioSelecionado?.nome}? Essa ação é irreversível.
             </Text>
 
-            <View style={styles.modalButtons}>
+            <View style={{ marginTop: 20, flexDirection: "row", gap: 10 }}>
               <Button
                 title="Cancelar"
                 onPress={() => setModalConfirmVisible(false)}
-                style={{ marginRight: 8, backgroundColor: theme.colors.cancel }}
+                style={{
+                  backgroundColor: theme.colors.white,
+                  borderWidth: 1,
+                  borderColor: theme.colors.primary,
+                  flex: 1,
+                }}
+                textStyle={{
+                  color: theme.colors.primary,
+                  fontWeight: "700",
+                }}
               />
-              <Button title="Confirmar" onPress={handleExcluirConfirmado} />
+
+              <Button
+                title="Excluir"
+                onPress={handleExcluirConfirmado}
+                style={{
+                  backgroundColor: theme.colors.primary,
+                  flex: 1,
+                }}
+                textStyle={{
+                  color: theme.colors.white,
+                  fontWeight: "700",
+                }}
+              />
             </View>
           </View>
         </View>
       </Modal>
 
-      {/* --- MODAL DE FEEDBACK (SUCESSO / ERRO) --- */}
       <Modal
         visible={modalFeedbackVisible}
-        transparent
-        animationType="fade"
+        animationType="none"
+        transparent={true}
         onRequestClose={() => setModalFeedbackVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Aviso</Text>
+        <View style={modalStyle.modalOverlay}>
+          <View style={modalStyle.modalContainer}>
             <Text
-              style={{
-                color: theme.colors.text,
-                fontSize: 14,
-                marginBottom: 16,
-                textAlign: "center",
-              }}
+              style={[
+                modalStyle.modalTitle,
+                { color: theme.colors.primary },
+              ]}
+            >
+              Sucesso
+            </Text>
+
+            <Text
+              style={[
+                modalStyle.modalSubtitle,
+                { marginTop: 10,},
+              ]}
             >
               {feedbackMessage}
             </Text>
 
-            <Button title="OK" onPress={() => setModalFeedbackVisible(false)} />
+            <Button
+              title="OK"
+              onPress={() => setModalFeedbackVisible(false)}
+              style={{ backgroundColor: theme.colors.primary, marginTop: 20 }}
+              textStyle={{ color: theme.colors.white, fontWeight: "700" }}
+            />
           </View>
         </View>
       </Modal>
+
     </View>
   );
 }

@@ -21,6 +21,9 @@ export default function Servicos({ navigation }) {
   const [modalViewVisible, setModalViewVisible] = useState(false);
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState(null);
+  const [modalMessageVisible, setModalMessageVisible] = useState(false);
+  const [messageText, setMessageText] = useState("");
+  const [messageType, setMessageType] = useState("success");
 
   useEffect(() => {
     const unsubscribe = listenServicos((lista) => {
@@ -36,12 +39,10 @@ export default function Servicos({ navigation }) {
   };
 
   const fecharModalView = () => {
-    setServicoSelecionado(null);
     setModalViewVisible(false);
   };
 
   const abrirModalConfirmacao = () => {
-    // Fecha o modal de detalhes antes de abrir o de confirmação
     setModalViewVisible(false);
     setModalConfirmVisible(true);
   };
@@ -55,25 +56,27 @@ export default function Servicos({ navigation }) {
 
   const handleExcluir = async () => {
     if (!servicoSelecionado) return;
+
     try {
-      setLoading(true);
       setModalConfirmVisible(false);
 
-      const result = await deleteServico(
-        servicoSelecionado.sid,
-        servicoSelecionado.id
-      );
+      const result = await deleteServico(servicoSelecionado.sid, servicoSelecionado.id);
+
       if (result.success) {
-        setServicos((prev) =>
-          prev.filter((s) => s.id !== servicoSelecionado.id)
-        );
+        setServicos(prev => prev.filter(s => s.id !== servicoSelecionado.id));
+        setMessageType("success");
+        setMessageText("Serviço excluído com sucesso!");
+        setModalMessageVisible(true);
+        setServicoSelecionado(null);
       } else {
-        console.error("Falha ao excluir serviço:", result.message);
+        setMessageType("warning");
+        setMessageText("Não foi possível excluir o serviço.");
+        setModalMessageVisible(true);
       }
     } catch (error) {
-      console.error("Erro ao excluir serviço:", error);
-    } finally {
-      setLoading(false);
+      setMessageType("warning");
+      setMessageText("Erro ao excluir o serviço.");
+      setModalMessageVisible(true);
     }
   };
 
@@ -118,7 +121,6 @@ export default function Servicos({ navigation }) {
         </ScrollView>
       )}
 
-      {/* MODAL DE DETALHES */}
       <Modal
         visible={modalViewVisible}
         animationType="none"
@@ -142,7 +144,6 @@ export default function Servicos({ navigation }) {
 
             {servicoSelecionado && (
               <View style={modalStyle.modalInner}>
-                {/* resumo curto no topo (cartão claro) */}
                 <View style={modalStyle.topCard}>
                   <View style={modalStyle.topCardLeft}>
                     <View style={modalStyle.topCardIcon}>
@@ -172,7 +173,6 @@ export default function Servicos({ navigation }) {
                   </View>
                 </View>
 
-                {/* cartão branco com detalhes em duas colunas */}
                 <View style={modalStyle.detailsCard}>
                   <View style={modalStyle.detailRow}>
                     <View style={modalStyle.detailCol}>
@@ -198,7 +198,6 @@ export default function Servicos({ navigation }) {
                   </View>
                 </View>
 
-                {/* botões: editar (outline) e excluir (cheio) */}
                 <View style={modalStyle.actionsRow}>
                   <Button
                     title="Editar"
@@ -209,7 +208,10 @@ export default function Servicos({ navigation }) {
 
                   <Button
                     title="Excluir"
-                    onPress={abrirModalConfirmacao}
+                    onPress={() => {
+                      fecharModalView();
+                      setTimeout(() => setModalConfirmVisible(true), 50);
+                    }}
                     style={modalStyle.deleteButton}
                     textStyle={modalStyle.deleteButtonText}
                   />
@@ -220,49 +222,85 @@ export default function Servicos({ navigation }) {
         </View>
       </Modal>
 
-      {/* MODAL DE CONFIRMAÇÃO */}
       <Modal
         visible={modalConfirmVisible}
-        transparent
-        animationType="fade"
+        animationType="none"
+        transparent={true}
         onRequestClose={() => setModalConfirmVisible(false)}
       >
-        <View style={styles.modalOverlayConfirm}>
-          <View style={styles.modalConfirmContainer}>
-            <Text style={styles.modalConfirmTitle}>Confirmar exclusão</Text>
-            <Text style={styles.modalConfirmText}>
-              Tem certeza de que deseja excluir este serviço?
+        <View style={modalStyle.modalOverlay}>
+          <View style={modalStyle.modalContainer}>
+            <Text style={modalStyle.modalTitle}>Confirmar exclusão</Text>
+            <Text style={modalStyle.modalSubtitle}>
+              Tem certeza de que deseja excluir este serviço? Essa
+              ação é irreversível.
             </Text>
 
-            <View style={styles.modalButtonRow}>
-              <TouchableOpacity
-                style={[
-                  styles.modalButton,
-                  { backgroundColor: theme.colors.cancel },
-                ]}
+            <View style={{ marginTop: 20, flexDirection: "row", gap: 10 }}>
+              <Button
+                title="Cancelar"
                 onPress={() => setModalConfirmVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Cancelar</Text>
-              </TouchableOpacity>
+                style={{
+                  backgroundColor: theme.colors.white,
+                  borderWidth: 1,
+                  borderColor: theme.colors.primary,
+                  flex: 1,
+                }}
+                textStyle={{ color: theme.colors.primary, fontWeight: "700" }}
+              />
 
-              <TouchableOpacity
-                style={[
-                  styles.modalButton,
-                  { backgroundColor: theme.colors.primary },
-                ]}
+              <Button
+                title="Excluir"
                 onPress={handleExcluir}
-              >
-                <Text style={styles.modalButtonText}>Confirmar</Text>
-              </TouchableOpacity>
+                style={{
+                  backgroundColor: theme.colors.primary,
+                  flex: 1,
+                }}
+                textStyle={{ color: theme.colors.white, fontWeight: "700" }}
+              />
             </View>
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={modalMessageVisible}
+        animationType="none"
+        transparent={true}
+        onRequestClose={() => setModalMessageVisible(false)}
+      >
+        <View style={modalStyle.modalOverlay}>
+          <View style={modalStyle.modalContainer}>
+            <Text
+              style={[
+                modalStyle.modalTitle,
+                { color: theme.colors.primary }
+              ]}
+            >
+              {messageType === "success" ? "Sucesso" : "Atenção"}
+            </Text>
+
+            <Text style={[modalStyle.modalSubtitle, { marginTop: 10 }]}>
+              {messageText}
+            </Text>
+
+            <Button
+              title="OK"
+              onPress={() => setModalMessageVisible(false)}
+              style={{
+                backgroundColor: theme.colors.primary,
+                marginTop: 20,
+              }}
+              textStyle={{ color: theme.colors.white, fontWeight: "700" }}
+            />
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 }
 
-// --- ESTILOS ---
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   headerRow: {
@@ -275,7 +313,6 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: "700", color: theme.colors.text },
   listContainer: { paddingHorizontal: theme.spacing.large, paddingBottom: 100 },
 
-  // Fundo modal padrão
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -284,10 +321,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
-  // Fundo modal de confirmação mais claro
   modalOverlayConfirm: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.25)", // 👈 mais suave
+    backgroundColor: "rgba(0,0,0,0.25)",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
@@ -323,7 +359,6 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
   },
 
-  // Modal de confirmação
   modalConfirmContainer: {
     backgroundColor: theme.colors.white,
     borderRadius: 16,

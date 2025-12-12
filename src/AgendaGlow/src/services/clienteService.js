@@ -6,7 +6,6 @@ import {
 
 const CLIENTES_COLLECTION = 'clientes';
 
-// Função para adicionar um novo cliente
 export const addCliente = async (cliente) => {
   try {
     const colRef = collection(db, CLIENTES_COLLECTION);
@@ -26,7 +25,6 @@ export const addCliente = async (cliente) => {
   }
 };
 
-// Função para ouvir todos os clientes ativos em tempo real
 export const listenClientes = (callback) => {
   const q = query(collection(db, CLIENTES_COLLECTION), where('ativo', '==', true));
 
@@ -42,7 +40,6 @@ export const listenClientes = (callback) => {
   return unsubscribe;
 };
 
-// Função para buscar um cliente pelo seu CID
 export const getClienteById = async (cid) => {
   try {
     const q = query(collection(db, CLIENTES_COLLECTION), where('cid', '==', cid));
@@ -60,7 +57,6 @@ export const getClienteById = async (cid) => {
   }
 };
 
-// Função para atualizar um cliente existente
 export const updateCliente = async (cid, dados) => {
   try {
     const q = query(collection(db, CLIENTES_COLLECTION), where('cid', '==', cid));
@@ -84,7 +80,6 @@ export const updateCliente = async (cid, dados) => {
   }
 };
 
-// Função para deletar (exclusão lógica) um cliente
 export const deleteCliente = async (cid) => {
   try {
     if (!cid) throw new Error('CID é obrigatório para exclusão.');
@@ -108,5 +103,24 @@ export const deleteCliente = async (cid) => {
   } catch (error) {
     console.error('Erro ao excluir cliente (soft):', error);
     return { success: false, message: error.message };
+  }
+};
+
+export const telefoneExiste = async (telefone) => {
+  try {
+    const q = query(
+      collection(db, CLIENTES_COLLECTION),
+      where("telefone", "==", telefone),
+      where("ativo", "==", true)
+    );
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) return false;
+
+    return true;
+  } catch (error) {
+    console.error("Erro ao verificar telefone:", error);
+    return false;
   }
 };
