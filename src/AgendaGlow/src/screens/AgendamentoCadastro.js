@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Modal} from "react-native";
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Modal, Alert} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Header from "../components/Header";
 import Input from "../components/Input";
@@ -14,7 +14,6 @@ import { addAgendamento } from '../services/agendamentoService';
 import { enviarWhatsappAgendamento } from '../services/whatsappAgendamento';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { iniciarLembretesWhatsApp } from '../utils/lembreteAgendamentoUtils';
-  
 
 export default function AgendamentoCadastro() {
 
@@ -24,7 +23,9 @@ export default function AgendamentoCadastro() {
  
   const [cliente, setCliente] = useState(null);
   const [servicosSelecionados, setServicosSelecionados] = useState([]);
-  const [profissionaisSelecionados, setProfissionaisSelecionados] = useState([]);
+  const [profissionaisSelecionados, setProfissionaisSelecionados] = useState(
+    []
+  );
   const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -36,6 +37,7 @@ export default function AgendamentoCadastro() {
   const [listaFuncionarios, setListaFuncionarios] = useState([]);
   const [listaClientes, setListaClientes] = useState([]);
   const [listaServicos, setListaServicos] = useState([]);
+  const navigation = useNavigation();
 
   // CONTROLE DOS MODAIS
 const [modalSucessoVisible, setModalSucessoVisible] = useState(false);
@@ -92,8 +94,8 @@ const fecharModal = () => {
   
     const novoAgendamento = {
       cliente,
-      servicos: servicosSelecionados.map(s => s.id),
-      profissionais: profissionaisSelecionados.map(p => p.id),
+      servicos: servicosSelecionados.map((s) => s.id),
+      profissionais: profissionaisSelecionados.map((p) => p.id),
       data,
       horario,
       valor,
@@ -106,18 +108,29 @@ const fecharModal = () => {
       console.log(result);
 
       if (result.success) {
-
         await iniciarLembretesWhatsApp(result.id);
       // Abre modal de SUCESSO (apenas OK)
  
       abrirModalSucesso("Agendamento salvo com sucesso!");
-       
       
-    } else {
+      } else {
       // Abre modal de ERRO (apenas OK)
       abrirModalErro(result.message || "Falha ao salvar agendamento.");
-    }
+      }
 
+        Alert.alert("Sucesso", "Agendamento salvo com sucesso!");
+        // limpa os campos
+        setCliente(null);
+        setServicosSelecionados([]);
+        setProfissionaisSelecionados([]);
+        setData("");
+        setHorario("");
+        setValor("");
+        setObservacoes("");
+        setTimeout(() => navigation.navigate("Agenda"), 1000);
+      } else {
+        Alert.alert("Erro", result.message || "Falha ao salvar agendamento.");
+      }
     } catch (error) {
        abrirModalErro(error.message || "Não foi possível salvar o agendamento.");
       console.error(error);
@@ -156,26 +169,28 @@ const fecharModal = () => {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Preencha os campos abaixo</Text>
 
-        <Picker
-          style={styles.inputLike}
-          dropdownIconColor={theme.colors.textInput}
-          selectedValue={cliente}
-          onValueChange={setCliente}
-        >
-          <Picker.Item
-            color={theme.colors.textInput}
-            label="Selecione o Cliente"
-            value={null}
-          />
-          {listaClientes.map((c) => (
+        <View style={styles.inputPickerContainer}>
+          <Picker
+            style={styles.inputLike}
+            dropdownIconColor={theme.colors.textInput}
+            selectedValue={cliente}
+            onValueChange={setCliente}
+          >
             <Picker.Item
               color={theme.colors.textInput}
-              key={c.id}
-              label={c.nome ?? 'Cliente'}
-              value={c.id}
+              label="Selecione o Cliente"
+              value={null}
             />
-          ))}
-        </Picker>
+            {listaClientes.map((c) => (
+              <Picker.Item
+                color={theme.colors.textInput}
+                key={c.id}
+                label={c.nome ?? "Cliente"}
+                value={c.id}
+              />
+            ))}
+          </Picker>
+        </View>
 
         <MultiSelect
           placeholder="Selecione serviços"
@@ -370,15 +385,17 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     marginBottom: theme.spacing.medium,
   },
+  inputPickerContainer: {
+    overflow: "hidden",
+    borderRadius: theme.radius.medium,
+    borderWidth: 1,
+    borderColor: theme.colors.container3,
+  },
   inputLike: {
     backgroundColor: theme.colors.container3,
-    borderRadius: theme.radius.medium,
     paddingHorizontal: theme.spacing.medium,
-    paddingVertical: 10,
-    marginVertical: theme.spacing.small,
     color: theme.colors.textInput,
     fontSize: 16,
-    borderWidth: 1,
     borderColor: theme.colors.container3,
   },
   label: {

@@ -476,11 +476,13 @@ export default function Home() {
                   ) : null}
                 </View>
 
-                {/* botões: editar (outline) e excluir (cheio) */}
                 <View style={modalStyle.actionsRow}>
                   <Button
                     title="Ver Agendamentos"
-                    onPress={() => navigation.navigate("Agenda")}
+                    onPress={() => {
+                      fecharModalView(); 
+                      navigation.navigate("Agenda"); 
+                    }}
                     style={[, { width: "100%" }]}
                     textStyle={modalStyle.deleteButtonText}
                   />

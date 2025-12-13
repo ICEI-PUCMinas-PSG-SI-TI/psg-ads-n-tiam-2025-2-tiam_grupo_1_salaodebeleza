@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, Pressable, Modal, StyleSheet } from "react-native";
+import { View, Text, Pressable, Modal, StyleSheet, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
 import { theme } from "../styles/theme";
@@ -107,6 +107,7 @@ export default function FilterDate({ onSelect }) {
                     value={new Date()}
                     mode="date"
                     display="calendar"
+                    minimumDate={new Date()}
                     onChange={(event, date) => {
                         if (event.type === "dismissed") {
                             setOpenPicker(false);
@@ -114,7 +115,24 @@ export default function FilterDate({ onSelect }) {
                             return;
                         }
 
-                        if (date) handleSelect(date);
+                        if (date) {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const picked = new Date(date);
+                            picked.setHours(0, 0, 0, 0);
+
+                            if (picked < today) {
+                                Alert.alert(
+                                    "Data inválida",
+                                    "Selecione apenas datas a partir de hoje."
+                                );
+                                setOpenPicker(false);
+                                setOpen(true);
+                                return;
+                            }
+
+                            handleSelect(date);
+                        }
                     }}
                 />
             )}

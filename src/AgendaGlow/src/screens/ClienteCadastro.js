@@ -9,7 +9,7 @@ import Button from '../components/Button';
 import Input from '../components/Input';
 import TextArea from '../components/TextArea';
 import { theme } from '../styles/theme';
-import { addCliente, updateCliente, getClienteById } from '../services/clienteService';
+import { addCliente, updateCliente, getClienteById, telefoneExiste } from '../services/clienteService';
 
 export default function ClienteCadastro() {
   const navigation = useNavigation();
@@ -23,7 +23,6 @@ export default function ClienteCadastro() {
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
-  // Controle de Modal
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMensagem, setModalMensagem] = useState('');
 
@@ -56,12 +55,33 @@ export default function ClienteCadastro() {
   }, [idParam]);
 
   const salvar = async () => {
-    // Validação mínima
     if (!nome.trim()) return abrirModal('O nome é obrigatório.');
     if (!telefone.trim()) return abrirModal('O telefone é obrigatório.');
 
     setLoading(true);
     try {
+      if (editingId) {
+        const original = await getClienteById(editingId);
+
+        if (original.success) {
+          const telOriginal = original.data.telefone;
+
+          if (telOriginal !== telefone.trim()) {
+            const existe = await telefoneExiste(telefone.trim());
+            if (existe) {
+              setLoading(false);
+              return abrirModal("Já existe outro cliente com esse telefone.");
+            }
+          }
+        }
+      } else {
+        const existe = await telefoneExiste(telefone.trim());
+        if (existe) {
+          setLoading(false);
+          return abrirModal("Já existe um cliente com esse telefone.");
+        }
+      }
+      
       if (editingId) {
         const result = await updateCliente(editingId, {
           nome: nome.trim(),
@@ -71,10 +91,10 @@ export default function ClienteCadastro() {
         });
 
         if (result.success) {
-          abrirModal('Cliente atualizado com sucesso!');
-          setTimeout(() => navigation.navigate('Clientes'), 1000);
+          abrirModal("Cliente atualizado com sucesso!");
+          setTimeout(() => navigation.navigate("Clientes"), 1000);
         } else {
-          abrirModal(result.message || 'Falha ao atualizar cliente.');
+          abrirModal(result.message || "Falha ao atualizar cliente.");
         }
       } else {
         const result = await addCliente({
@@ -85,14 +105,14 @@ export default function ClienteCadastro() {
         });
 
         if (result.success) {
-          abrirModal('Cliente cadastrado com sucesso!');
-          setTimeout(() => navigation.navigate('Clientes'), 1000);
+          abrirModal("Cliente cadastrado com sucesso!");
+          setTimeout(() => navigation.navigate("Clientes"), 1000);
         } else {
-          abrirModal(result.message || 'Falha ao salvar cliente.');
+          abrirModal(result.message || "Falha ao salvar cliente.");
         }
       }
     } catch (error) {
-      abrirModal(error.message || 'Erro inesperado.');
+      abrirModal(error.message || "Erro inesperado.");
     } finally {
       setLoading(false);
     }
@@ -122,7 +142,6 @@ export default function ClienteCadastro() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* MODAL ÚNICO */}
       <Modal visible={modalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>

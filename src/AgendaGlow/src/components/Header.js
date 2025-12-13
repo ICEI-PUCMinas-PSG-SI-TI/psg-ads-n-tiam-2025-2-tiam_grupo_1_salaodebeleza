@@ -1,28 +1,36 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useEffect, useState, useContext } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { theme } from "../styles/theme";
-import Logout from "./Logout";
+import { AuthContext } from "../context/AuthContext";
+import { getFuncionarioByUid } from "../services/funcionarioService";
 
-// Rotas que estão dentro do BottomTabs
 const BOTTOM_TABS_ROUTES = ['agenda', 'clientes', 'mais'];
 
 export default function Header({
-  onNotificationPress,
-  onProfilePress,
   pageTitle,
 }) {
   const navigation = useNavigation();
   const route = useRoute();
 
-  // Verifica se a rota atual é uma das barra de navegação
-  const isBottomTabsRoute = BOTTOM_TABS_ROUTES.includes(route.name?.toLowerCase());
-  
-  // Verifica se pode voltar (tem histórico de navegação)
-  const canGoBack = navigation.canGoBack();
+  const { user } = useContext(AuthContext);
+  const [funcionario, setFuncionario] = useState(null);
 
-  // Mostra o botão de voltar apenas se não estiver em uma rota do BottomTabs e puder voltar
+  useEffect(() => {
+    async function loadFuncionario() {
+      if (!user) return;
+      const result = await getFuncionarioByUid(user.uid);
+      if (result.success) {
+        setFuncionario(result.data);
+      }
+    }
+
+    loadFuncionario();
+  }, [user]);
+
+  const isBottomTabsRoute = BOTTOM_TABS_ROUTES.includes(route.name?.toLowerCase());
+  const canGoBack = navigation.canGoBack();
   const showBackButton = !isBottomTabsRoute && canGoBack;
 
   const handleGoBack = () => {
@@ -35,16 +43,8 @@ export default function Header({
     <View style={styles.container}>
       <View style={styles.left}>
         {showBackButton && (
-          <TouchableOpacity 
-            onPress={handleGoBack} 
-            style={styles.backButton}
-            activeOpacity={0.7}
-          >
-            <Ionicons
-              name="arrow-back"
-              size={24}
-              color={theme.colors.text}
-            />
+          <TouchableOpacity onPress={navigation.goBack} style={styles.backButton} activeOpacity={0.7}>
+            <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
           </TouchableOpacity>
         )}
       </View>
@@ -54,13 +54,14 @@ export default function Header({
       </View>
 
       <View style={styles.right}>
-
-        <TouchableOpacity onPress={onNotificationPress}>
-          <Ionicons
-            name="notifications-outline"
-            size={24}
-            color={theme.colors.text}
-            style={styles.icon}
+        <TouchableOpacity onPress={() => navigation.navigate("Mais")} activeOpacity={0.7}>
+          <Image
+            source={{
+              uri:
+                funcionario?.fotoUrl ||
+                "https://cdn-icons-png.flaticon.com/512/847/847969.png",
+            }}
+            style={styles.avatar}
           />
         </TouchableOpacity>
       </View>
@@ -115,7 +116,10 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
   },
   avatar: {
-    borderRadius: 50,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "#ddd",
   },
   
 });
