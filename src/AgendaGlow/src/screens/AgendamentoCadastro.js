@@ -13,6 +13,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { addAgendamento } from '../services/agendamentoService';
 import { enviarWhatsappAgendamento } from '../services/whatsappAgendamento';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { iniciarLembretesWhatsApp } from '../utils/lembreteAgendamentoUtils';
   
 
 export default function AgendamentoCadastro() {
@@ -105,9 +106,13 @@ const fecharModal = () => {
       console.log(result);
 
       if (result.success) {
+
+        await iniciarLembretesWhatsApp(result.id);
       // Abre modal de SUCESSO (apenas OK)
+ 
       abrirModalSucesso("Agendamento salvo com sucesso!");
-        
+       
+      
     } else {
       // Abre modal de ERRO (apenas OK)
       abrirModalErro(result.message || "Falha ao salvar agendamento.");
