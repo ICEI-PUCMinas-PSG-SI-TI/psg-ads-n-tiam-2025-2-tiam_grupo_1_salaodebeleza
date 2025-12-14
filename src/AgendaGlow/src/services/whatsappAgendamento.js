@@ -21,7 +21,7 @@ export function enviarWhatsappAgendamento({ nome, telefone, data, horario, servi
 
   const mensagem = `Olá ${nome}! 👋
 
-Seu agendamento no salão Maysa Rodriguesfoi realizado com sucesso.
+Seu agendamento no salão Maysa Rodrigues foi realizado com sucesso.
 
 📅 Data: ${data}
 ⏰ Horário: ${horario}
