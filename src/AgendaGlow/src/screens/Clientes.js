@@ -22,18 +22,11 @@ export default function Clientes() {
   const [loading, setLoading] = useState(true);
   const [modalViewVisible, setModalViewVisible] = useState(false);
   const [clienteSelecionado, setClienteSelecionado] = useState(null);
-  const [excluindo, setExcluindo] = useState(false);
-
-  // Modais genéricos (mensagem e confirmação)
   const [modalMensagem, setModalMensagem] = useState("");
-  const [modalMensagemVisible, setModalMensagemVisible] = useState(false);
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
-
-  const abrirModalMensagem = (msg) => {
-    setModalMensagem(msg);
-    setModalMensagemVisible(true);
-  };
-  const fecharModalMensagem = () => setModalMensagemVisible(false);
+  const [modalMessageVisible, setModalMessageVisible] = useState(false);
+  const [messageText, setMessageText] = useState("");
+  const [messageType, setMessageType] = useState("success"); 
 
   useEffect(() => {
     const unsubscribe = listenClientes((lista) => {
@@ -52,7 +45,7 @@ export default function Clientes() {
     setModalViewVisible(false);
   };
 
-  const handleExcluir = async () => {
+  const handleExcluir = () => {
     if (!clienteSelecionado?.cid) {
       abrirModalMensagem("ID do cliente não encontrado.");
       return;
@@ -60,14 +53,11 @@ export default function Clientes() {
 
     fecharModalView();
 
-    setTimeout(() => {
-      setModalConfirmVisible(true);
-    }, 100);
+    setTimeout(() => setModalConfirmVisible(true), 50);
   };
 
   const confirmarExclusao = async () => {
     setModalConfirmVisible(false);
-    setExcluindo(true);
 
     try {
       const result = await deleteCliente(clienteSelecionado.cid);
@@ -77,18 +67,27 @@ export default function Clientes() {
           prev.filter((c) => c.cid !== clienteSelecionado.cid)
         );
         setClienteSelecionado(null);
-        abrirModalMensagem("Cliente excluído com sucesso.");
+        abrirModalMensagem("Cliente excluído com sucesso.", "success");
       } else {
-        abrirModalMensagem(result.message || "Falha ao excluir cliente.");
+        abrirModalMensagem(result.message || "Falha ao excluir cliente.", "error");
       }
     } catch (error) {
       abrirModalMensagem(
-        error.message || "Erro inesperado ao excluir cliente."
+        error.message || "Erro inesperado ao excluir cliente.", "error"
       );
     } finally {
       setExcluindo(false);
     }
   };
+
+    const abrirModalMensagem = (msg, type = "success") => {
+      setMessageText(msg);
+      setMessageType(type);
+      setModalMessageVisible(true);
+    };
+    const fecharModalMensagem = () => {
+      setModalMessageVisible(false);
+    };
 
   const handleEditar = () => {
     if (clienteSelecionado) {
@@ -135,7 +134,6 @@ export default function Clientes() {
         </ScrollView>
       )}
 
-      {/* MODAL DE DETALHES */}
       <Modal
         visible={modalViewVisible}
         animationType="none"
@@ -159,7 +157,6 @@ export default function Clientes() {
 
             {clienteSelecionado && (
               <View style={modalStyle.modalInner}>
-                {/* resumo curto no topo (cartão claro) */}
                 <View style={modalStyle.topCard}>
                   <View style={modalStyle.topCardLeft}>
                     <View style={modalStyle.topCardIcon}>
@@ -189,7 +186,6 @@ export default function Clientes() {
                   </View>
                 </View>
 
-                {/* cartão branco com detalhes em duas colunas */}
                 <View style={modalStyle.detailsCard}>
                   <View style={modalStyle.detailRow}>
                     <View style={modalStyle.detailCol}>
@@ -227,7 +223,6 @@ export default function Clientes() {
                   ) : null}
                 </View>
 
-                {/* botões: editar (outline) e excluir (cheio) */}
                 <View style={modalStyle.actionsRow}>
                   <Button
                     title="Editar"
@@ -249,45 +244,87 @@ export default function Clientes() {
         </View>
       </Modal>
 
-      {/* --- MODAL DE CONFIRMAÇÃO */}
       <Modal
         visible={modalConfirmVisible}
-        transparent
-        animationType="fade"
+        animationType="none"
+        transparent={true}
         onRequestClose={() => setModalConfirmVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Confirmar Exclusão</Text>
-            <Text
-              style={{
-                color: theme.colors.text,
-                fontSize: 14,
-                marginBottom: 16,
-              }}
-            >
+        <View style={modalStyle.modalOverlay}>
+          <View style={modalStyle.modalContainer}>
+            <Text style={modalStyle.modalTitle}>Confirmar exclusão</Text>
+            <Text style={modalStyle.modalSubtitle}>
               Tem certeza que deseja excluir {clienteSelecionado?.nome}? Essa
               ação é irreversível.
             </Text>
 
-            <View style={styles.modalButtons}>
+            <View style={{ marginTop: 20, flexDirection: "row", gap: 10 }}>
               <Button
                 title="Cancelar"
                 onPress={() => setModalConfirmVisible(false)}
-                style={{ marginRight: 8, backgroundColor: theme.colors.cancel }}
+                style={{
+                  backgroundColor: theme.colors.white,
+                  borderWidth: 1,
+                  borderColor: theme.colors.primary,
+                  flex: 1,
+                }}
+                textStyle={{ color: theme.colors.primary, fontWeight: "700" }}
               />
-              <Button title="Confirmar" onPress={confirmarExclusao} />
+
+              <Button
+                title="Excluir"
+                onPress={confirmarExclusao}
+                style={{
+                  backgroundColor: theme.colors.primary,
+                  flex: 1,
+                }}
+                textStyle={{ color: theme.colors.white, fontWeight: "700" }}
+              />
             </View>
           </View>
         </View>
       </Modal>
 
-      {/* MODAL DE MENSAGEM */}
-      <Modal visible={modalMensagemVisible} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalBox}>
-            <Text style={styles.modalText}>{modalMensagem}</Text>
-            <Button title="OK" onPress={fecharModalMensagem} />
+      <Modal
+        visible={modalMessageVisible}
+        animationType="none"
+        transparent={true}
+        onRequestClose={() => setModalMessageVisible(false)}
+      >
+        <View style={modalStyle.modalOverlay}>
+          <View style={modalStyle.modalContainer}>
+            <Text
+              style={[
+                modalStyle.modalTitle,
+                {
+                  color: theme.colors.primary,
+                },
+              ]}
+            >
+              {messageType === "success" ? "Sucesso" : "Atenção"}
+            </Text>
+
+            <Text
+              style={[
+                modalStyle.modalSubtitle,
+                {
+                  color: theme.colors.textInput,
+                  marginTop: 10,
+                },
+              ]}
+            >
+              {messageText}
+            </Text>
+
+            <Button
+              title="OK"
+              onPress={fecharModalMensagem}
+              style={{
+                backgroundColor: theme.colors.primary,
+                marginTop: 20,
+              }}
+              textStyle={{ color: theme.colors.white, fontWeight: "700" }}
+            />
           </View>
         </View>
       </Modal>

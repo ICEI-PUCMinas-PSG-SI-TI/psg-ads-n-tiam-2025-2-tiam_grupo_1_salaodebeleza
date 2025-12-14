@@ -4,9 +4,10 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Alert,
   Image,
   TouchableOpacity,
+  Modal,
+  Alert,
 } from "react-native";
 import Header from "../components/Header";
 import Button from "../components/Button";
@@ -27,7 +28,17 @@ export default function Mais() {
   const [funcionario, setFuncionario] = useState(null);
   const { uploadImage, pickImage, takeImage } = useImage();
 
-  // Carrega dados ao abrir a tela
+  const [modalMessageVisible, setModalMessageVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
+  const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
+  const [modalConfirmData, setModalConfirmData] = useState({
+    title: "",
+    message: "",
+    onConfirm: null,
+    customButtons: null,
+  });
+
   useEffect(() => {
     if (!user) return;
     const loadFuncionario = async () => {
@@ -39,62 +50,57 @@ export default function Mais() {
     loadFuncionario();
   }, [user]);
 
-  // Escolher foto
-  const handleTrocarFoto = () => {
-    Alert.alert("Alterar foto", "Escolha uma opção", [
-      { text: "Galeria", onPress: escolherGaleria },
-      { text: "Câmera", onPress: abrirCamera },
-      { text: "Cancelar", style: "cancel" },
-    ]);
-  };
-
+  const handleTrocarFoto = () => { 
+    Alert.alert("Alterar foto", "Escolha uma opção", 
+      [ { text: "Galeria", onPress: escolherGaleria }, 
+        { text: "Câmera", onPress: abrirCamera }, 
+        { text: "Cancelar", style: "cancel" }, 
+      ]
+    ); 
+  }; 
+  
   const escolherGaleria = async () => {
     try {
       const uri = await pickImage();
-      if (!uri) return;
-
-      processarUpload(uri);
-    } catch (e) {
-      Alert.alert("Erro", e.message);
-    }
-  };
-
+      if (!uri) return; processarUpload(uri);
+    } catch (e) { 
+      Alert.alert("Erro", e.message); 
+    } 
+  }; 
+  
   const abrirCamera = async () => {
     try {
       const uri = await takeImage();
       if (!uri) return;
-
-      processarUpload(uri);
+      processarUpload(uri); 
     } catch (e) {
-      Alert.alert("Erro", e.message);
-    }
-  };
-
+      Alert.alert("Erro", e.message); 
+    } 
+  }; 
+  
   const processarUpload = async (uri) => {
     try {
-      Alert.alert("Aguarde", "Enviando foto...");
-
-      const imageUrl = await uploadImage(uri);
-
-      await updateFotoFuncionario(user.uid, imageUrl);
-
-      setFuncionario((prev) => ({ ...prev, fotoUrl: imageUrl }));
-
-      Alert.alert("Sucesso", "Foto atualizada!");
+      Alert.alert("Aguarde", "Enviando foto..."); 
+      const imageUrl = await uploadImage(uri); 
+      await updateFotoFuncionario(user.uid, imageUrl); 
+      setFuncionario((prev) => ({ ...prev, fotoUrl: imageUrl })
+      ); 
+      Alert.alert("Sucesso", "Foto atualizada!"); 
     } catch (error) {
-      console.log(error);
-      Alert.alert("Erro", "Não foi possível enviar a foto.");
-    }
+      console.log(error); 
+      Alert.alert("Erro", "Não foi possível enviar a foto."); 
+    } 
   };
-
-  // Lógica para alterar meus dados
+  
   const handleMeusDados = async () => {
     if (!user) {
-      Alert.alert(
-        "Sessão expirada",
-        "Sua sessão expirou. Por favor, faça o login novamente.",
-        [{ text: "OK", onPress: () => logout() }]
-      );
+      setModalConfirmData({
+        title: "Sessão expirada",
+        message: "Por favor, faça login novamente.",
+        onConfirm: logout,
+        customButtons: null,
+      });
+      setModalConfirmVisible(true);
       return;
     }
 
@@ -105,11 +111,19 @@ export default function Mais() {
     if (result.success) {
       navigation.navigate("FuncionarioEditar", { funcionario: result.data });
     } else {
-      Alert.alert(
-        "Erro",
-        result.message || "Não foi possível buscar seus dados."
-      );
+      setModalMessage(result.message || "Não foi possível buscar seus dados.");
+      setModalMessageVisible(true);
     }
+  };
+
+  const handleLogoutConfirm = () => {
+    setModalConfirmData({
+      title: "Sair da conta",
+      message: "Tem certeza que deseja sair?",
+      onConfirm: logout,
+      customButtons: null,
+    });
+    setModalConfirmVisible(true);
   };
 
   return (
@@ -119,7 +133,6 @@ export default function Mais() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={true}
       >
-        {/* CARD DO USUÁRIO COM FOTO */}
         {funcionario && (
           <View style={styles.userCard}>
             <TouchableOpacity onPress={handleTrocarFoto}>
@@ -188,12 +201,131 @@ export default function Mais() {
         <Button
           icon="log-out-outline"
           title=" Sair"
-          onPress={logout}
+          onPress={handleLogoutConfirm}
           style={{ width: "100%", width: "100%" }}
           seta="true"
           spaceBetween={true}
         />
       </ScrollView>
+
+      <Modal
+        visible={modalMessageVisible}
+        animationType="none"
+        transparent={true}
+        onRequestClose={() => setModalMessageVisible(false)}
+      >
+        <View style={modalStyle.modalBackground}>
+          <View style={modalStyle.modalContainer}>
+            <Text
+              style={[
+                modalStyle.modalTitle,
+                { color: theme.colors.primary }
+              ]}
+            >
+              Aviso
+            </Text>
+
+            <Text
+              style={[
+                modalStyle.modalSubtitle,
+                {
+                  color: theme.colors.textInput,
+                  marginTop: 10,
+                },
+              ]}
+            >
+              {modalMessage}
+            </Text>
+
+            <Button
+              title="OK"
+              onPress={() => setModalMessageVisible(false)}
+              style={{
+                backgroundColor: theme.colors.primary,
+                marginTop: 20,
+              }}
+              textStyle={{
+                color: theme.colors.white,
+                fontWeight: "700",
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={modalConfirmVisible}
+        animationType="none"
+        transparent={true}
+        onRequestClose={() => setModalConfirmVisible(false)}
+      >
+        <View style={modalStyle.modalBackground}>
+          <View style={modalStyle.modalContainer}>
+            <Text style={modalStyle.modalTitle}>{modalConfirmData.title}</Text>
+
+            <Text style={modalStyle.modalSubtitle}>
+              {modalConfirmData.message}
+            </Text>
+
+            <View style={{ marginTop: 20, flexDirection: "row", gap: 10 }}>
+              {modalConfirmData.customButtons ? (
+                modalConfirmData.customButtons.map((btn, idx) => (
+                  <Button
+                    key={idx}
+                    title={btn.label}
+                    onPress={() => {
+                      setModalConfirmVisible(false);
+                      btn.action();
+                    }}
+                    style={{
+                      backgroundColor: theme.colors.primary,
+                      flex: 1,
+                    }}
+                    textStyle={{
+                      color: theme.colors.white,
+                      fontWeight: "700",
+                    }}
+                  />
+                ))
+              ) : (
+                <>
+                  <Button
+                    title="Cancelar"
+                    onPress={() => setModalConfirmVisible(false)}
+                    style={{
+                      backgroundColor: theme.colors.white,
+                      borderWidth: 1,
+                      borderColor: theme.colors.primary,
+                      flex: 1,
+                    }}
+                    textStyle={{
+                      color: theme.colors.primary,
+                      fontWeight: "700",
+                    }}
+                  />
+
+                  <Button
+                    title="Confirmar"
+                    onPress={() => {
+                      setModalConfirmVisible(false);
+                      modalConfirmData.onConfirm?.();
+                    }}
+                    style={{
+                      backgroundColor: theme.colors.primary,
+                      flex: 1,
+                    }}
+                    textStyle={{
+                      color: theme.colors.white,
+                      fontWeight: "700",
+                    }}
+                  />
+                </>
+              )}
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 }
@@ -247,5 +379,61 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     alignSelf: "flex-start",
     marginBottom: theme.spacing.medium,
+  },
+});
+
+const modalStyle= StyleSheet.create({
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  modalContainer: {
+    width: "100%",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: theme.colors.text,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: theme.colors.textSecondary || "#444",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  modalButtonsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+  },
+  button: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  confirmButton: {
+    backgroundColor: theme.colors.primary,
+  },
+  confirmButtonText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 16,
+  },
+  cancelButton: {
+    backgroundColor: "#ddd",
+  },
+  cancelButtonText: {
+    color: "#333",
+    fontWeight: "700",
+    fontSize: 16,
   },
 });

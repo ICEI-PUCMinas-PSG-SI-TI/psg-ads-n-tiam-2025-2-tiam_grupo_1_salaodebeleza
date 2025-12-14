@@ -4,6 +4,13 @@ import { File, Directory, Paths } from "expo-file-system";
 
 export async function generateRelatoriosPDF(listaOriginal, filters, helpers) {
   try {
+
+    // SOMA DOS VALORES
+    const totalValor = listaOriginal.reduce((acc, a) => {
+      const v = parseFloat(a.valor);
+      return acc + (isNaN(v) ? 0 : v);
+    }, 0);
+
     const html = `
     <html>
     <head>
@@ -15,7 +22,6 @@ export async function generateRelatoriosPDF(listaOriginal, filters, helpers) {
             color: #333333;
         }
 
-        /* Simulação da fonte Inspiration */
         @font-face {
             font-family: 'Inspiration';
             src: local('Inspiration-Regular');
@@ -47,7 +53,7 @@ export async function generateRelatoriosPDF(listaOriginal, filters, helpers) {
             font-size: 20px;
             color: #a3564aff;
             margin-top: 35px;
-            margin-bottom: 20px; /* mais espaço antes da tabela */
+            margin-bottom: 20px;
         }
 
         p {
@@ -84,7 +90,16 @@ export async function generateRelatoriosPDF(listaOriginal, filters, helpers) {
             border-bottom: 1px solid #E0E0E0;
         }
 
-        /* Margem das páginas do PDF */
+        .total-row td {
+            font-weight: bold;
+            background: #FFF5F0;
+            border-top: 2px solid #684040ff;
+        }
+
+        .total-label {
+            text-align: right;
+        }
+
         @page {
             margin-top: 2cm;
             margin-bottom: 2cm;
@@ -134,6 +149,12 @@ export async function generateRelatoriosPDF(listaOriginal, filters, helpers) {
         <td>R$ ${a.valor || "-"}</td>
     </tr>
     `).join("")}
+
+    <tr class="total-row">
+        <td colspan="5" class="total-label">Total Geral:</td>
+        <td>R$ ${totalValor.toFixed(2)}</td>
+    </tr>
+    
     </tbody>
     </table>
 
